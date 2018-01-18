@@ -65,8 +65,6 @@ if isHPC
     % design files
     hcpdesignfile =  '/pub/ggaut/HCP/behav_Result_WM_LR.mat';
     hcpcombdesignfile =  '/pub/ggaut/HCP/behav_Result_WM_LR_comb.mat';
-    
-    results_directory = '/pub/ggaut/VDGLM/Results'; 
 else
     % osu
     osuroifile = fullfile(getenv('HOME'), 'Dropbox','FMRI', 'restingstatedata',...
@@ -87,10 +85,9 @@ else
         'varianceGLM', 'onsetfiles', 'behav_Result_WM_LR.mat');
     hcpcombdesignfile =  fullfile( getenv('HOME'), 'Dropbox','FMRI', 'Projects', ...
         'varianceGLM', 'onsetfiles', 'behav_Result_WM_LR_comb.mat');
-    
-    results_directory = fullfile(getenv('HOME'), 'Dropbox', 'FMRI', ...
-        'Projects', 'varianceGLM', 'Results');
 end
+
+[results_directory] = set_results_directory( isHPC ); 
 
 %% Pick simulation
 if (whsim==26)

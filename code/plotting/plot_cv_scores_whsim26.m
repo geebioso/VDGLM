@@ -3,12 +3,7 @@ function [] = plot_cv_scores_whsim26(isHPC, dotest)
 % This function plots the out of sample log likelihood scores 
 
 %% Set directory 
-if isHPC
-    results_directory = '/pub/ggaut/VDGLM/Results';
-else
-    results_directory = fullfile( getenv('HOME'), 'Dropbox', 'FMRI', 'Projects',...
-        'varianceGLM', 'Results');
-end
+[results_directory] = set_results_directory( isHPC ); 
 
 input_directory = fullfile( results_directory, 'batch_analyses', 'combined');
 if dotest

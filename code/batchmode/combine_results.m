@@ -22,12 +22,7 @@ LOG.setLogLevel(LOG.OFF);
 
 
 %% Set up input and output directories 
-if isHPC
-    results_directory = '/pub/ggaut/VDGLM/Results';
-else
-    results_directory = fullfile( getenv('HOME'), 'Dropbox', 'FMRI', 'Projects',...
-        'varianceGLM', 'Results');     
-end
+[results_directory] = set_results_directory( isHPC ) 
 
 input_directory = fullfile( results_directory, 'batch_analyses', 'single_jobs'); 
 output_directory = fullfile( results_directory, 'batch_analyses', 'combined'); 

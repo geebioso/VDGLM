@@ -295,7 +295,7 @@ for s=1:NS
 end
 runtime = toc;
 
-LOG.info('INFO', sprintf('Total Run Time = %2.2f\n', runtime));
+LOG.info('INFO', sprintf('Total Run Time = %2.2f', runtime));
 
 %% Convert cell arrays to arrays
 for m=1:M
@@ -342,7 +342,7 @@ for s=1:NS
 end
 
 savedwhsim = whsim;
-LOG.debug('DEBUG', sprintf( 'saving file %s', filenm) ); 
+LOG.info('INFO', sprintf( 'saving file %s', filenm) ); 
 save( filenm , 'allbicm', 'allllsm'  , 'bestmodelBIC' , 'bestmodelCV' ,...
     'M', 'K' , 'models' , 'savedwhsim', 'runtime', 'subjs', 'start_sub', ...
     'end_sub', '-v7.3');
