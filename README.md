@@ -78,7 +78,19 @@ The function `combine_results.m` will combine all results from the directory
 
 # Code Overview 
     
-This code will run the analyses  **Important**: you will have to make several 
+This code will run the analyses. The directory structure of the code is as 
+follows: 
+
+* `code`: main directory 
+    * `optimization`: contains VDGLM objective function, gradients, and constraint
+    * `plotting`: functions for plotting results      
+    * `stats`: functions for computing statistics     
+    * `batchmode`: functions for fitting models in batch mode     
+    * `utils`: utility functions    
+
+
+
+**Important**: you will have to make several 
 changes to get this code to run on your machine. You will have to edit the file
  `set_analysis_options.m` to set the paths to the data and the design files. 
 The files that we are using for analysis 
@@ -112,22 +124,31 @@ was plotted.
 
 # Example Output    
     
-If we load an output file (e.g., `paramswm_cc_whs1.mat`) it will load several variables:     
+If we load an output file (e.g., `paramswm_cc_whs1.mat`) it will load several 
+variables:     
 
-*  `allbicm [NS x R x P]`: contains the BIC scores for `NS` subjects, `R` regions, and `P` parameters     
+*  `allbicm [NS x R x P]`: contains the BIC scores for `NS` subjects, `R` 
+regions, and `P` parameters     
 *  `allllsm [NS x R x P]`: contains the log likelihood scores     
-*  `bestmodelBIC [NS x R]`: contains the best models for each subject and region compute by BIC. The number indexes into the cell array `models` (e.g, `bestmodelBIC(s,r) = 1`, corresponds to `models{1}`)     
-*  `bestmodelCV [NS x R]`: contains the best model for each subject and region computed by out-of-sample log likelihood     
+*  `bestmodelBIC [NS x R]`: contains the best models for each subject and 
+region compute by BIC. The number indexes into the cell array `models` (e.g, 
+`bestmodelBIC(s,r) = 1`, corresponds to `models{1}`)     
+*  `bestmodelCV [NS x R]`: contains the best model for each subject and region 
+computed by out-of-sample log likelihood     
 *  `M`: number of models     
 *  `K`: number of cross validation folds    
 *  `savedwhsim`: inicates which analysis was just saved     
-*  `models`: a cell array containing information about each model. The fields in models are:    
-*  `code`: lists which model we are running and which columns are in the mean and variance design    
+*  `models`: a cell array containing information about each model. The fields 
+in models are:    
+*  `code`: lists which model we are running and which columns are in the mean 
+and variance design    
 *  `meaneffects`: lists the mean effects in text    
 *  `vareffects`: lists the variance effects in text    
 *  `description`: text description of the model    
-*  `meancols`: lists which columns of the full design are part of the mean design    
-*  `varcols`:  lists which columns of the full design are part of the variance design    
+*  `meancols`: lists which columns of the full design are part of the mean 
+design    
+*  `varcols`:  lists which columns of the full design are part of the variance 
+design    
 *  `designlabels`: labels of the design matrix    
 *  `inits`: initial values for the optimization    
 *  `paramlabels`: cell of parameter descriptions    
@@ -179,25 +200,29 @@ subjects, and V is the number of voxels.
 
 The directories on my local machine are: 
 
-`Results`: contains all results     
-    `single_analyses`: results for analyses run all at once        
-    `batch_analyses`: results for analyses run in batch    
-        `single_jobs`: contains results from single jobs     
-        `combined`: contains results combined from all single jobs results     
-        `null_single_jobs`: contains results from single null sampling jobs     
-        `null_combined`: contains results combined from all single null sampling jobs     
+* `Results`: contains all results     
+    * `single_analyses`: results for analyses run all at once        
+    * `batch_analyses`: results for analyses run in batch    
+        * `single_jobs`: contains results from single jobs     
+        * `combined`: contains results combined from all single jobs results     
+        * `null_single_jobs`: contains results from single null sampling jobs     
+        * `null_combined`: contains results combined from all single null
+ sampling jobs     
 
-`images`: contains figures and images 
-    `contasts`: volumetric analysis contrasts 
-    `wb_contrasts`: work bench contrasts (CIfTI) 
-    `wb_effects`: work bench effect indicators 
+* `images`: contains figures and images 
+    * `contasts`: volumetric analysis contrasts 
+    * `wb_contrasts`: work bench contrasts (CIfTI) 
+    * `wb_effects`: work bench effect indicators 
 
-`ROI2NIfTI`: contains nii files and functions for converting between vectors and nii     
-    `files`: nii files used to create images in `images\contrasts` and `images\wb_contrasts`     
-        `effects`: nii effect indicators used to create images in `images\wb_effects`            
-    `dicm2nii`: contains code for converting between dicm and nii       
+* `ROI2NIfTI`: contains nii files and functions for converting between vectors 
+and nii     
+    * `files`: nii files used to create images in `images\contrasts` and 
+`images\wb_contrasts`     
+        * `effects`: nii effect indicators used to create images in 
+`images\wb_effects`            
+    * `dicm2nii`: contains code for converting between dicm and nii       
 
-`onsetfiles`: contains the onsetfiles for HCP and OSUWB datasets 
+* `onsetfiles`: contains the onsetfiles for HCP and OSUWB datasets 
 
 
 
