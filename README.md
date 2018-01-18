@@ -58,6 +58,7 @@ will copy the combined directory on the HPC to the current directory. The
 results structure is as follows: 
 
 `Results`: contains all results    
+
     `single_analyses`: results for analyses run all at once    
     `batch_analyses`: results for analyses run in batch    
         `single_jobs`: contains results from single jobs    
