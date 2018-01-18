@@ -60,10 +60,15 @@ results structure is as follows:
 `Results`: contains all results    
 
     `single_analyses`: results for analyses run all at once    
+
     `batch_analyses`: results for analyses run in batch    
+
         `single_jobs`: contains results from single jobs    
+
         `combined`: contains results combined from all single jobs results    
+
         `null_single_jobs`: contains results from single null sampling jobs    
+
         `null_combined`: contains results combined from all single null 
 sampling jobs 
 
