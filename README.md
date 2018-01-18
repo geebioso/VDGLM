@@ -101,26 +101,43 @@ are `tc_csf_wm_motion_out_globalMask5000_203subj.mat` for the OSUWB data and
 `behav_Result_WM_LR.mat` contains the uncombined design (10 conditions) and 
 `behav_Result_WM_LR_comb.mat` contains the combined design (4 conditions). 
 
-The key files are:    
+The key analysis files are:    
     
-`analyzedata_batch_v2.m`: This is the main function for analyzing a batch of 
-subjects and the compiled version of this function is called when we submit a 
-job to the HPC.     
+`batchmode/analyzedata_batch_v2.m`: This is the main function for analyzing a 
+batch of subjects and the compiled version of this function is called when we 
+submit a job to the HPC. This funciton performs parameter analysis and computes
+ out-of-sample log likelihood,  model predictions, and BIC. 
 
-`set_analysis_options_v2.m`: This file sets analysis parameters and is called 
-by `analyzedata_batch_v2.m`. Edit this function to specify the paths to the 
-data and the design matrices. The function takes an analysis number as a 
-parameter and returns the options for analysis. Some important options that are
- set are all data and output file paths, the models to run,  whether to 
+`batchmode/set_analysis_options_v2.m`: This file sets analysis parameters and 
+is called by `analyzedata_batch_v2.m`. Edit this function to specify the paths 
+to the data and the design matrices. The function takes an analysis number as a
+ parameter and returns the options for analysis. Some important options that 
+are set are all data and output file paths, the models to run, whether to 
 prewhiten, and whether to add head motion regressors. 
     
-`fit_models_cv.m`: This file is the workhorse function for fitting models. It 
-fitsboth GLM and VDGLM models and can fit pre-whitened or non-pre-whitened 
-models. Cross validation is done inside this function. 
+`batchmode/fit_models_cv.m`: This file is the workhorse function for fitting 
+models. It fitsboth GLM and VDGLM models and can fit pre-whitened or 
+non-pre-whitened models. Cross validation is done inside this function. 
 
 `plot_cerebral_cortex.m`: This function plots all results and output a 
 structure `sims`. `sims` contains a field `simi` for each simulation `i` that 
 was plotted.     
+
+The main statistical functions are: 
+
+`stats/compute_cohens_d.m`: This computes cohen's d for each parameter of each
+model. The output is stored in nii format in the directory `../ROI2NIfTI/files`
+. This output is then visualized using the HCP work bench software. 
+
+`stats/null_sample_hypothesis_test.m`: This will compute the null distribution 
+by sampling datsets. Output can be used to test the expected false positive
+rate for the VDGLM. This function is not ready to be used quite yet. 
+
+The main plotting function is: 
+
+`plotting/plot_simulations.m`: This function plots are plots of model
+comparisons, brain visualizations of model comparisons, parameter histograms, 
+and model predictions versus the actual data. 
 
 # Examples
 
@@ -181,10 +198,55 @@ before the current model in the second cell elements. e.g. {'Var+Mean', 'Mean'}
  indicates that the 'Mean' model must have been run for the  'Var+Mean' to run.
 No dependency is indicated by an empty string.  
 
+## Fitting a single subject 
+To fit subject 1 in test mode (test mode only supports subjects 1-5), run the 
+following command: 
+```
+analyzedata_batch_v2(26, 1, 0, 1, 1, INFO, '')
+```
+The command line output will look like: 
+
+```
+INFO:Running Simulation 26
+INFO:    whsim: 26.000000
+INFO:    whs: 2
+INFO:    K: 10.000000
+INFO:    seed: 1
+INFO:    Tremove: 10
+INFO:    doconstrained: 1
+INFO:    prewhiten: 1
+INFO:    var_log_transform: 0
+INFO:    TukN: 5.000000
+INFO:    multivariate: 0
+INFO:    roifile: /Users/Garren/Dropbox/FMRI/restingstatedata/tc_WM_875subj.mat
+INFO:    designfile: /Users/Garren/Dropbox/FMRI/Projects/varianceGLM/onsetfiles/behav_Result_WM_LR.mat
+INFO:    combdesignfile: /Users/Garren/Dropbox/FMRI/Projects/varianceGLM/onsetfiles/behav_Result_WM_LR_comb.mat
+INFO:    output_directory: /Users/Garren/Dropbox/FMRI/Projects/varianceGLM/Results/batch_analyses/single_jobs_test
+INFO:    addmotion: 1
+INFO:    runmodels:
+INFO:        model: Var+Mean, depends on: Mean
+INFO:        model: Mean, depends on: 
+INFO:        model: Var, depends on: Intercept
+INFO:        model: Intercept, depends on: 
+INFO:Loading data: /Users/Garren/Dropbox/FMRI/restingstatedata/tc_WM_875subj.mat
+INFO:Converting data and transforming to z-scores
+INFO:Creating convolved design matrix for all experimental variables
+INFO:    dotest = 1
+INFO:Creating design for model 1 of 4 (Var+Mean)
+INFO:Creating design for model 2 of 4 (Mean)
+INFO:Creating design for model 3 of 4 (Var)
+INFO:Creating design for model 4 of 4 (Intercept)
+INFO:Fitting models ..... working on subject 1 of [1:1]
+
+INFO:Total Run Time = 8.70
+INFO:saving file /Users/Garren/Dropbox/FMRI/Projects/varianceGLM/Results/batch_analyses/single_jobs_test/paramswm_whs26_batch_1_to_1_test
+```
+
+
 ## Output  
     
-If we load an output file (e.g., `paramswm_cc_whs1.mat`) it will load several 
-variables:     
+If we load an output file (e.g., i`paramswm_whs26_batch_1_to_1_test`), the
+following variables  will be loaded:     
 
 *  `allbicm [NS x R x P]`: contains the BIC scores for `NS` subjects, `R` 
 regions, and `P` parameters     
