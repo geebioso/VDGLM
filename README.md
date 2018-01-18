@@ -204,9 +204,11 @@ No dependency is indicated by an empty string.
 ## Fitting a single subject 
 To fit subject 1 in test mode (test mode only supports subjects 1-5), run the 
 following command: 
+
 ```
 analyzedata_batch_v2(26, 1, 0, 1, 1, 'INFO', '')
 ```
+
 The command line output will be: 
 
 ```
@@ -283,9 +285,10 @@ design
 *  `allparams`: all parameter values [NS x P x R]    
 *  `allpredsm`: all mean predictions [T x S x R]    
 *  `allpredsv`: all variance predictions [T x S x R]        
-    
-        For example:    
  
+For example:    
+
+``` 
            models{1}    
                    
                ans =     
@@ -310,6 +313,7 @@ design
                           allpredsv: [395×142×299 single]       
 
 ```
+
 ## Where to Modify Code
 
 To modify the code to run your machine, you will have to edit the functions
