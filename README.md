@@ -224,5 +224,7 @@ and nii
 
 * `onsetfiles`: contains the onsetfiles for HCP and OSUWB datasets 
 
+Most of these are excluded from the git repo to keep the size of the repo 
+maneageable. 
 
 
