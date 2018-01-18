@@ -46,9 +46,8 @@ prewhiten, and whether to add head motion regressors.
 models. It fitsboth GLM and VDGLM models and can fit pre-whitened or 
 non-pre-whitened models. Cross validation is done inside this function. 
 
-`plot_cerebral_cortex.m`: This function plots all results and output a 
-structure `sims`. `sims` contains a field `simi` for each simulation `i` that 
-was plotted.     
+`batchmode/combine_results.m`: This file combines the results from all single
+jobs. 
 
 The main statistical functions are: 
 
@@ -74,7 +73,7 @@ Before trying any examples, make sure to set the paths by running
 ## Setting up a simulation 
 Here is the example output from running the function 
 `set_analysis_options_v2.m` with the parameters `whsim=26`, `isHPC=0`, 
-`dotest=0`, and `LOG=LOG = log4m.getLogger('')`: 
+`dotest=0`, and `LOG=LOG = log4m.getLogger('test_log.txt')`: 
 
 ```
 opts = 
