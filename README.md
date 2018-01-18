@@ -202,9 +202,9 @@ No dependency is indicated by an empty string.
 To fit subject 1 in test mode (test mode only supports subjects 1-5), run the 
 following command: 
 ```
-analyzedata_batch_v2(26, 1, 0, 1, 1, INFO, '')
+analyzedata_batch_v2(26, 1, 0, 1, 1, 'INFO', '')
 ```
-The command line output will look like: 
+The command line output will be: 
 
 ```
 INFO:Running Simulation 26
@@ -308,14 +308,10 @@ design
 
 ## Where to Modify Code
 
-To modify the code to run on all voxels, you will have to edit the functions 
-`set_analysis_options_v2.m` and `analyzedata_batch_v2.m`. In 
-`set_analysis_options_v2.m`, add another simulation with the same options that 
-are output for the other simulations. In `analyzedata_batch_v2.m`, you 
-will have to change the data that is loaded (Line 13). The data needs to be 
-size T x S x V where T is the length of the time series, S is the number of 
-subjects, and V is the number of voxels. 
-
+To modify the code to run your machine, you will have to edit the function
+`utils/set_results_directory.m` to indicate where you want your results to be 
+saved. Make sure that the directory structure is the same as the `Results` 
+directory structure outlined below. 
 
 ## Working Directory Structure
 
