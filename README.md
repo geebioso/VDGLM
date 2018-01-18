@@ -74,7 +74,7 @@ Before trying any examples, make sure to set the paths by running
 ## Setting up a simulation 
 Here is the example output from running the function 
 `set_analysis_options_v2.m` with the parameters `whsim=26`, `isHPC=0`, 
-`dotest=0`, and `LOG=LOG = log4m.getLogger(l'')`: 
+`dotest=0`, and `LOG=LOG = log4m.getLogger('')`: 
 
 ```
 opts = 
@@ -111,15 +111,16 @@ is dependent on (if applicable).
 The variance models are hard coded to depend on the output of a corresponding
 mean model in order to speed up fitting time. This change is motivated by how 
 prewhitening works. The prewhitening procedure works as follows: 
-- Fit GLM0
-    - prewhiten (using residuals of GLM0) 
-    - Fit GLM1
+- Fit GLM0    
+    - prewhiten (using residuals of GLM0)     
+    - Fit GLM1 on prewhitened data     
+
 This code adds the additional VDGLM fitting step so that the whole procedure 
-is now:
-- Fit GLM0
-    - prewhiten (using residuals of GLM0) 
-    - Fit GLM1
-    - Fit VDGLM0
+is now:    
+- Fit GLM0    
+    - prewhiten (using residuals of GLM0)     
+    - Fit GLM1 on prewhitened data    
+    - Fit VDGLM0    
 Encoding dependencies allows us to fit the mean models using OLS (which is 
 faster than our optimization procedure). Model dependencies are hard-coded in 
 the third entry of each entry of run_models. The entry is a cell of length two 
