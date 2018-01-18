@@ -141,6 +141,9 @@ and model predictions versus the actual data.
 
 # Examples
 
+Before trying any examples, make sure to set the paths by running 
+`add_all_paths.m`.
+
 ## Setting up a simulation 
 Here is the example output from running the function 
 `set_analysis_options_v2.m` with the parameters `whsim=26`, `isHPC=0`, 
@@ -345,6 +348,8 @@ and nii
 * `onsetfiles`: contains the onsetfiles for HCP and OSUWB datasets 
 
 Most of these are excluded from the git repo to keep the size of the repo 
-maneageable. 
+maneageable. You will need to make stand in directories for some of the 
+output to save. `Results` and `images` and their subdirectories will need to 
+exist for functions to run.  
 
 
