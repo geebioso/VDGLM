@@ -18,3 +18,4 @@ code/models
 code/old
 code/tstats
 *.m~
+test_log.txt
