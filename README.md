@@ -3,79 +3,6 @@
 The code in this repository will fit the VDGLM to the 1200 subject release 
 of the Human Connectome Project (HCP) on the UCI High Performance Cluster (HPC). 
 
-# Running on the HPC 
-
-## Sending Code and Data to HPC 
-
-To send code and the requisite data to the HPC, open up a terminal and type 
-the following commands: 
-
-```
-source toHPC.bash
-source send_data_to_HPC.bash
-```
-
-## Compiling on the HPC 
-
-```
-module load MATALB/r2017b
-mcc -m analyzedata_batch.m -I /data/users/ggaut/VDGLM
-```
-
-## Submitting Jobs 
-
-The main functions for submitting jobs on the HPC are `submit_all_jobs.bash` 
-and `single_job_submit.bash`. To submit jobs, cd to the directory `/data/users/ggaut/VDGLM`
-and type the command: 
-
-```
-source submit_all_jobs.bash [whsim] [dotest] [isHPC] [start_sub] [increment] [end_sub] [loglevel] [logfile] single_job_submit.bash
-``` 
-
-This command will run the analysis starting at subject `start_sub` and ending
- at subject `end_sub` incrementing by `increment` subjects. E.g., `1 1 5` will 
-run subject 1,2,3,4,5 and `1 2 5` will run subjects 1,3,5. The other options 
-are:    
-* whsim: the simulation number (26 for CIfTI with prewhitening)     
-* dotest: are we running in test mode (0/1)    
-* isHPC: are we running on the HPC (0/1)     
-* loglevel: one of {ALL, TRACE, DEBUG, INFO, WARN, ERROR, FATAL, OFF}     
-* logfile: where to save log. is deprecated since I turned logging to file off 
-in the code     
-
-## HPC Results
-
-The HPC Results directory is contained in `/pub/ggaut/VDGLM`. The Results 
-structure will be the same as the directory structure on my local machine. 
-To copy results from the HPC to my machine, use the `rsync` command. For 
-example: 
-
-```
-rsync -av ggaut@hpc.oit.uci.edu:/pub/ggaut/VDGLM/Results/batch_analyses/combined .
-```
-
-will copy the combined directory on the HPC to the current directory. The
-results structure is as follows: 
-
-* `Results`: contains all results    
-    * `single_analyses`: results for analyses run all at once    
-    * `batch_analyses`: results for analyses run in batch    
-        * `single_jobs`: contains results from single jobs    
-        * `combined`: contains results combined from all single jobs results    
-        * `null_single_jobs`: contains results from single null sampling jobs    
-        * `null_combined`: contains results combined from all single null 
-sampling jobs 
-
-## Combining Results 
-
-The function `combine_results.m` will combine all results from the directory 
-`Results\batch_analyses\single_jobs` into single files and store them in 
-`Results\batch_analyses\combined`.  
-
-## To-do
-
-1) Use job arrays rather than for-loop for submitting multiple jobs 
-
 # Code Overview 
     
 This code will run the analyses. The directory structure of the code is as 
@@ -356,4 +283,75 @@ maneageable. You will need to make stand in directories for some of the
 output to save. `Results` and `images` and their subdirectories will need to 
 exist for functions to run.  
 
+# Running on the HPC
 
+## Sending Code and Data to HPC
+
+To send code and the requisite data to the HPC, open up a terminal and type
+the following commands:
+
+```
+source toHPC.bash
+source send_data_to_HPC.bash
+```
+
+## Compiling on the HPC
+
+```
+module load MATALB/r2017b
+mcc -m analyzedata_batch.m -I /data/users/ggaut/VDGLM
+```
+
+## Submitting Jobs
+
+The main functions for submitting jobs on the HPC are `submit_all_jobs.bash`
+and `single_job_submit.bash`. To submit jobs, cd to the directory `/data/users/ggaut/VDGLM`
+and type the command:
+
+```
+source submit_all_jobs.bash [whsim] [dotest] [isHPC] [start_sub] [increment] [end_sub] [loglevel] [logfile] single_job_submit.bash
+```
+
+This command will run the analysis starting at subject `start_sub` and ending
+ at subject `end_sub` incrementing by `increment` subjects. E.g., `1 1 5` will
+run subject 1,2,3,4,5 and `1 2 5` will run subjects 1,3,5. The other options
+are:
+* whsim: the simulation number (26 for CIfTI with prewhitening)
+* dotest: are we running in test mode (0/1)
+* isHPC: are we running on the HPC (0/1)
+* loglevel: one of {ALL, TRACE, DEBUG, INFO, WARN, ERROR, FATAL, OFF}
+* logfile: where to save log. is deprecated since I turned logging to file off
+in the code
+
+## HPC Results
+
+The HPC Results directory is contained in `/pub/ggaut/VDGLM`. The Results
+structure will be the same as the directory structure on my local machine.
+To copy results from the HPC to my machine, use the `rsync` command. For
+example:
+
+```
+rsync -av ggaut@hpc.oit.uci.edu:/pub/ggaut/VDGLM/Results/batch_analyses/combined .
+```
+
+will copy the combined directory on the HPC to the current directory. The
+results structure is as follows:
+
+* `Results`: contains all results
+    * `single_analyses`: results for analyses run all at once
+    * `batch_analyses`: results for analyses run in batch
+        * `single_jobs`: contains results from single jobs
+        * `combined`: contains results combined from all single jobs results
+        * `null_single_jobs`: contains results from single null sampling jobs
+        * `null_combined`: contains results combined from all single null
+sampling jobs
+
+## Combining Results
+
+The function `combine_results.m` will combine all results from the directory
+`Results\batch_analyses\single_jobs` into single files and store them in
+`Results\batch_analyses\combined`.
+
+## To-do
+
+1) Use job arrays rather than for-loop for submitting multiple jobs
