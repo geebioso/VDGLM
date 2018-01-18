@@ -175,16 +175,11 @@ is now:
     - Fit VDGLM0
 Encoding dependencies allows us to fit the mean models using OLS (which is 
 faster than our optimization procedure). Model dependencies are hard-coded in 
-the following way:     
-    * Int  &lt- Var
-    * Mean &lt- Var+Mean    
-Where &lt- indicates that the first model must run for the second to run.
-
-The way we represent this dependency is in the third entry of each entry of
-run_models. The entry is a cell of length two with the model name in
-the first cell element and the model that must run before the current
-model in the second cell elements. e.g. {'Var+Mean', 'Mean'} indicates 
-Mean &lt- Var+Mean. 
+the third entry of each entry of run_models. The entry is a cell of length two 
+with the model name in the first cell element and the model that must run 
+before the current model in the second cell elements. e.g. {'Var+Mean', 'Mean'}
+ indicates that the 'Mean' model must have been run for the  'Var+Mean' to run.
+No dependency is indicated by an empty string.  
 
 ## Output  
     
@@ -252,9 +247,9 @@ design
 ## Where to Modify Code
 
 To modify the code to run on all voxels, you will have to edit the functions 
-`set_analysis_options.m` and `analyzedata_cerebral_cortex.m`. In 
-`set_analysis_options.m`, add another simulation with the same options that 
-are output for the other simulations. In `analyzedata_cerebral_cortex.m`, you 
+`set_analysis_options_v2.m` and `analyzedata_batch_v2.m`. In 
+`set_analysis_options_v2.m`, add another simulation with the same options that 
+are output for the other simulations. In `analyzedata_batch_v2.m`, you 
 will have to change the data that is loaded (Line 13). The data needs to be 
 size T x S x V where T is the length of the time series, S is the number of 
 subjects, and V is the number of voxels. 
