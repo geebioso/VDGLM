@@ -122,7 +122,71 @@ models. Cross validation is done inside this function.
 structure `sims`. `sims` contains a field `simi` for each simulation `i` that 
 was plotted.     
 
-# Example Output    
+# Examples
+
+## Setting up a simulation 
+Here is the example output from running the function 
+`set_analysis_options_v2.m` with the parameters `whsim=26`, `isHPC=0`, 
+`dotest=0`, and `LOG=LOG = log4m.getLogger(l'')`: 
+
+```
+opts = 
+
+  struct with fields:
+
+                whsim: 26
+                  whs: 2
+                    K: 10
+                 seed: 1
+              Tremove: 10
+        doconstrained: 1
+            prewhiten: 1
+    var_log_transform: 0
+                 TukN: 5
+         multivariate: 0
+              roifile: '/Users/Garren/Dropbox/FMRI/restingstatedata/tc_WM_875subj.mat'
+           designfile: '/Users/Garren/Dropbox/FMRI/Projects/varianceGLM/onsetfiles/behav_Result_WM_LR.mat'
+       combdesignfile: '/Users/Garren/Dropbox/FMRI/Projects/varianceGLM/onsetfiles/behav_Result_WM_LR_comb.mat'
+            runmodels: {4×1 cell}
+     output_directory: '/Users/Garren/Dropbox/FMRI/Projects/varianceGLM/Results/batch_analyses/single_jobs'
+            addmotion: 1
+```
+
+`opts.runmodels` contains information on the 4 models we are going to fit. 
+`opts.runmodels{m}{1}` contains the mean design columns for model `m`. 
+`opts.runmodels{m}{2}` contains the variance design columns, and 
+`opts.runmodels{m}{3}` contains the model description such that 
+`opts.runmodels{m}{3}{1}` contains the model name and 
+`opts.rummodels{m}{3}{2}` contains the model name of the model that model `m` 
+is dependent on (if applicable). 
+
+### Model Dependencies 
+The variance models are hard coded to depend on the output of a corresponding
+mean model in order to speed up fitting time. This change is motivated by how 
+prewhitening works. The prewhitening procedure works as follows: 
+- Fit GLM0
+    - prewhiten (using residuals of GLM0) 
+    - Fit GLM1
+This code adds the additional VDGLM fitting step so that the whole procedure 
+is now:
+- Fit GLM0
+    - prewhiten (using residuals of GLM0) 
+    - Fit GLM1
+    - Fit VDGLM0
+Encoding dependencies allows us to fit the mean models using OLS (which is 
+faster than our optimization procedure). Model dependencies are hard-coded in 
+the following way:     
+    * Int  &lt- Var
+    * Mean &lt- Var+Mean    
+Where &lt- indicates that the first model must run for the second to run.
+
+The way we represent this dependency is in the third entry of each entry of
+run_models. The entry is a cell of length two with the model name in
+the first cell element and the model that must run before the current
+model in the second cell elements. e.g. {'Var+Mean', 'Mean'} indicates 
+Mean &lt- Var+Mean. 
+
+## Output  
     
 If we load an output file (e.g., `paramswm_cc_whs1.mat`) it will load several 
 variables:     
