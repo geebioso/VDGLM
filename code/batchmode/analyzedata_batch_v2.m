@@ -4,16 +4,16 @@ function [] = analyzedata_batch_v2(whsim, dotest, isHPC, start_sub, end_sub, log
 % by whsim and the function set_analysis_options_v2.m. We fit models for
 % subjects start_sub:1:end_sub. The function can be run on my personal
 % computer or the UCI HPC. The test flag causes the model to run with a
-% reduced number of subjects and regions. 
+% reduced number of subjects and regions.
 
 % INPUT:
 %   numeric whsim: which simulation
-%   bool dotest(0/1): run in test mode? 
-%   bool isHPC (0/1): run on HPC or personal computer 
+%   bool dotest(0/1): run in test mode?
+%   bool isHPC (0/1): run on HPC or personal computer
 %   numeric start_sub: start subject
 %   numeric end_sub: end subject
 %   char logging: type of logging e.g, {'ALL','TRACE','DEBUG','INFO','WARN','ERROR','FATAL','OFF'}
-%   char logfile: log file, useless argument because I have set the loglevel to off, but log4.m requires it  
+%   char logfile: log file, useless argument because I have set the loglevel to off, but log4.m requires it
 
 % NOTE: running this on the HPC will change the input type to char, hence
 %   the following if statment that makes the requisite inputs numeric
@@ -75,8 +75,9 @@ designlabels = dat.designlabels;
 T = dat.T;
 R = dat.R;
 motionX = dat.motionX;
+scrubX = dat.scrubX;
 
-% get information on this batch of subjects 
+% get information on this batch of subjects
 subject_list = start_sub:end_sub;
 NS = length(subject_list);
 subjs = dat.subjs(start_sub:end_sub);
@@ -87,7 +88,7 @@ LOG.debug('DEBUG', sprintf('\tT = %d', T));
 
 if start_sub > size(tcn, 2)
     LOG.error('ERROR', ['Start subject index is too large. Try using a smaller'...
-        'index or not running in test mode']); 
+        'index or not running in test mode']);
 end
 
 %% Set random seed
@@ -226,16 +227,18 @@ whtest_sets = cell( 1 , K+1 );
 if K>0
     cv = cvpartition( T ,'kfold',K);
     for f=1:K
-        whtrain = find( cv.training( f ));
-        whtest  = find( cv.test( f ));
+        %         whtrain = find( cv.training( f ));
+        %         whtest  = find( cv.test( f ));
+        whtrain = cv.training( f );
+        whtest  = cv.test( f );
         whtrain_sets{ f } = whtrain;
         whtest_sets{ f } = whtest;
     end
 end
 
 % Add one fold with all data used for training AND testing
-whtrain_sets{ K+1 } = 1:T;
-whtest_sets{ K+1 } = 1:T;
+whtrain_sets{ K+1 } = true(T,1);
+whtest_sets{ K+1 } = true(T,1);
 
 % Design matrix. Have to pre-assign design for each subject so we can
 % process each subject in parallel
@@ -251,28 +254,30 @@ for s=1:NS
     
     if addmotion
         motionnow = double(motionX{i});
+        scrubnow  = scrubX{i};
     else
         motionnow = [];
+        scrubnow  = [];
     end
     
     % Loop over regions/voxels
-    for j=1:R 
+    for j=1:R
         if rem(j, 100) == 0
             LOG.info( 'INFO', sprintf('\tregion %d\n' , j ));
         end
         YALL = YS(:,j);
         
         %%  FIT MODELS
-
+        
         [ paramsnow, ismotionparam, bicnow, lloutofsample, predm, predv, badchol ] = fit_models_cv(...
-            models, design, motionnow, YALL, var_log_transform, ...
+            models, design, motionnow, scrubnow, YALL, var_log_transform, ...
             doconstrained, TukN, optim_opts, whtrain_sets, whtest_sets, LOG, i, j);
         
         if badchol
             LOG.warn('WARN', sprintf('S is not positive definite subject %d, region %d', i, j));
         end
         
-        % Save Results for Each Fold 
+        % Save Results for Each Fold
         for f = 1:K+1
             % compute BIC
             for m = 1:M
@@ -282,8 +287,20 @@ for s=1:NS
                     allparams{s,j,m}  = paramsnow{m}(~ismotionparam{m});
                     motionparams{s,j,m} = paramsnow{m}(ismotionparam{m});
                     allbic{s,j,m}     = bicnow{m};
-                    allpredm{s,j,m}   = predm{m}';
-                    allpredv{s,j,m}   = predv{m}';
+                    
+                    % get around scrubbing
+                    if addmotion
+                        temp_predm = NaN(T,1);
+                        temp_predv = NaN(T,1);
+                        temp_predm(~scrubnow) = predm{m};
+                        temp_predv(~scrubnow) = predv{m};
+                    else
+                        temp_predm = predm{m};
+                        temp_predv = predv{m};
+                    end
+                    
+                    allpredm{s,j,m}   = temp_predm';
+                    allpredv{s,j,m}   = temp_predv';
                 else
                     % Store the out-of-sample likelihood for the f-th partition
                     alllls{s,j,f,m} = lloutofsample{f,m};
@@ -342,8 +359,8 @@ for s=1:NS
 end
 
 savedwhsim = whsim;
-LOG.info('INFO', sprintf( 'saving file %s', filenm) ); 
-save( filenm , 'allbicm', 'allllsm'  , 'bestmodelBIC' , 'bestmodelCV' ,...
+LOG.info('INFO', sprintf( 'saving file %s', filenm) );
+save( filenm , 'allbicm', 'allllsm', 'alllls', 'bestmodelBIC' , 'bestmodelCV' ,...
     'M', 'K' , 'models' , 'savedwhsim', 'runtime', 'subjs', 'start_sub', ...
     'end_sub', '-v7.3');
 

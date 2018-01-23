@@ -37,13 +37,14 @@ T = length(res);
 if TukN < 0
     TukN = round(2*sqrt(T));
 end
-A = autocorr_woolrich(res,TukN - 1 );
-A = A(1:end);
+A = autocorr_woolrich(res,TukN -1 );
 
 % Tukey Taper
-power = (1:T)';
-Tuk = 0.5*( 1 + cos( (pi*power)/TukN));
-Tuk(1:TukN) = Tuk(1:TukN).*A;
+%power = (1:T)';
+lag = (0:T-1)';
+Tuk = 0.5*( 1 + cos( (pi*lag)/TukN ));
+%Tuk(1:TukN) = Tuk(1:TukN).*A;
+Tuk(1:TukN) = Tuk(1:TukN).*A; 
 Tuk((TukN+1):end) = 0; % assumption from paper 
 
 % compute sample autocovariance from Tukey Taper

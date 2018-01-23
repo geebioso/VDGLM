@@ -50,8 +50,8 @@ lw = 1.5;
 T = size(design, 1); 
 models = models(models_to_plot); 
 M = length(models); 
-NS = size(models{1}.allparams, 1); 
-R = size(models{1}.allparams, 3); 
+NS = size(models{models_to_plot(1)}.allparams, 1); 
+R = size(models{models_to_plot(1)}.allparams, 3); 
 
 meandesignnow = design(:, models{1}.meancols);
 vardesignnow = design(:, models{1}.varcols);
@@ -90,30 +90,30 @@ for k=1:M
     labels = [labels titlestr];
     
     % Calculate mean and std of data for these cases (separately for each time point)
-    meany = mean( tcn(:,wh) , 2 );
+    meany = nanmean( tcn(:,wh) , 2 );
     % stdy = std( tcn(:,wh) , [] , 2 );
     stdy = var( tcn(:,wh) , [] , 2 );
     
     % Predictions from model for these cases
     ypreds_mean = nanmean( models{ m }.allpredsm(:,wh) , 2 );
     
-    if strcmp( var_method, 'meanpred')
+    %if strcmp( var_method, 'meanpred')
         ypreds_std  = nanmean( models{ m }.allpredsv(:,wh) , 2 );
-    elseif strcmp( var_method, 'sample')
+    %elseif strcmp( var_method, 'sample')
         samples = zeros( T, NS, R);
         for s = 1:NS
             for r = 1:R
-                %for n = 1:nsamp
                 samples(:,s,r) = normrnd( allpredsm(:,s,r), allpredsv(:,s,r));
-                %end
             end
         end
-        ypreds_std = var(samples(:,wh), [], 2);
-    end
+        samp_ypreds_std = var(samples(:,wh), [], 2);
+        samp_ypreds_mean = nanmean( samples(:,wh), 2 );
+    %end
     
     % Plot the means
     axes(hs(1));
     plot( 1:T , ypreds_mean - m, 'b-' , 'LineWidth' , lw ); hold on;
+    plot( 1:T , samp_ypreds_mean - 1, 'b--' , 'LineWidth' , lw ); hold on;
     plot( 1:T , meany - m, 'r-' , 'LineWidth' , lw );
     title( titlestr );
     xlim( [ 0 T ] );
@@ -122,6 +122,7 @@ for k=1:M
     % Plot the stds
     axes(hs(2));
     plot( 1:T , ypreds_std - m - 1, 'b-' , 'LineWidth' , lw ); hold on;
+    plot( 1:T , samp_ypreds_std - 1, 'b--' , 'LineWidth' , lw ); hold on;
     plot( 1:T , stdy - m - 1, 'r-' , 'LineWidth' , lw );
     xlim( [ 0 T ] );
     ylim( [-M-1 NC]);

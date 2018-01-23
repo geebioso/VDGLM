@@ -42,7 +42,7 @@ LOG.info('INFO', 'Converting data and transforming to z-scores' );
 
 if whs == 2 % then we are using HCP data and have run 1 and run 2 timecourses
     tc = tc(:,1);
-    motionX = motionX(:,1); 
+     motionX = motionX(:,1); 
 end
 
 if whs==9
@@ -71,6 +71,30 @@ if Tremove>0
     for s = 1:NS
        motionX{s}( 1:Tremove , :) = [];  
     end
+end
+
+%% Split Motion and Scrubbing
+if whs == 2
+    tempX = cell(NS,1);
+    scrubX = cell(NS,1);
+    for s = 1:NS
+        if s == 11
+           x = 1;  
+        end
+        tempX{s} = motionX{s}(:,1:6);
+        if size(motionX{s},2) > 6
+            scrubX{s} = false(T,1); 
+            for c = 7:size(motionX{s}, 2)
+                temp = false(T,1); 
+                [~, ii] = max( motionX{s}(:,c) ); 
+               temp(ii) = true; 
+               scrubX{s} = or( scrubX{s}, temp); 
+            end
+        else
+            scrubX{s} = false(T, 1); 
+        end
+    end
+    motionX = tempX; 
 end
 %% Convert each ROI / Subject data to Z-scores
 stdnow = std( tcn , [] , 1 );
@@ -172,7 +196,6 @@ if dotest
 end
 
 %% Load Into Data Structure 
-
 dat = struct(); 
 dat.tcn = tcn;  
 dat.design = design; 
@@ -183,8 +206,10 @@ dat.R = R;
 dat.subjs = subjs; 
 if addmotion
     dat.motionX = motionX; 
+    dat.scrubX = scrubX; 
 else
     dat.motionX = NaN;  
+    dat.scrubX = NaN; 
 end
 
 

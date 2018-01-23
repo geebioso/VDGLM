@@ -1,4 +1,4 @@
-function[] = combine_results( isHPC , dotest, logging)
+function[] = combine_results( whsim, isHPC , dotest, logging)
 
 % This function will read through the directory containing results from
 % single subjects and aggregate them into a combined result. Due to the
@@ -8,6 +8,7 @@ function[] = combine_results( isHPC , dotest, logging)
 % results. 
 
 % INPUT: 
+%   numeric whsim: which simulation 
 %   bool isHPC: are we doing this on the HPC? 
 %   bool dotest: are we in test mode? 
 
@@ -16,7 +17,7 @@ function[] = combine_results( isHPC , dotest, logging)
 % run things that way. 
 
 % create the logger reference:
-LOG = log4m.getLogger('');
+LOG = log4m.getLogger('test_log.txt');
 LOG.setCommandWindowLevel(LOG.(logging));
 LOG.setLogLevel(LOG.OFF);
 
@@ -49,6 +50,11 @@ end
 
 ii = cellfun( @(x) ~isempty(x), filenames, 'UniformOutput', true);
 filenames = filenames(ii); 
+
+% get only files that are from the appropriate simulation 
+ii = cellfun( @(x)  contains( x, sprintf('whs%d', whsim)) , filenames, 'UniformOutput', true); 
+filenames = filenames( ii ); 
+
 NF = length(filenames); 
 
 %% Get list of all subjects
@@ -174,24 +180,24 @@ end
 %% Save it all! Models saved separately 
 fprintf('\n'); 
 for m = 1:M
-    filename = fullfile( output_directory, sprintf('allmodels_%d', m));
+    filename = fullfile( output_directory, sprintf('whs%d_allmodels_%d', whsim, m));
     all_models_now = all_models{m};
     fprintf('Saving all_models %d\n', m); 
     save( filename, 'all_models_now' , '-v7.3');
 end
 
 fprintf('Saving allbicm\n');
-save( fullfile( output_directory, 'allbicm.mat'), 'allbicm');
+save( fullfile( output_directory, sprintf('whs%d_allbicm.mat', whsim)), 'allbicm');
 fprintf('Saving allllsm\n');
-save( fullfile( output_directory, 'allllsm.mat'), 'allllsm');
+save( fullfile( output_directory, sprintf('whs%d_allllsm.mat', whsim)), 'allllsm');
 fprintf('Saving bestmodelBIC\n');
-save( fullfile( output_directory, 'bestmodelBIC.mat'), 'bestmodelBIC');
+save( fullfile( output_directory, sprintf('whs%d_bestmodelBIC.mat', whsim)), 'bestmodelBIC');
 fprintf('Saving bestmodelCV\n');
-save( fullfile( output_directory, 'bestmodelCV.mat'), 'bestmodelCV');
+save( fullfile( output_directory, sprintf('whs%d_bestmodelCV.mat', whsim)), 'bestmodelCV');
 fprintf('Saving all_subjs\n');
-save( fullfile( output_directory, 'all_subjs.mat'), 'all_subjs');
+save( fullfile( output_directory, sprintf('whs%d_all_subjs.mat', whsim)), 'all_subjs');
 fprintf('Saving sub_nums\n');
-save( fullfile( output_directory, 'sub_nums.mat'), 'sub_nums');
+save( fullfile( output_directory, sprintf('whs%d_sub_nums.mat', whsim)), 'sub_nums');
 
 
 

@@ -1,5 +1,5 @@
 function [ paramsnow, ismotionparam, bicnow, lloutofsample, predm, predv, badchol ] = fit_models_cv(...
-    models, X, motionnow, Y, var_log_transform, doconstrained, TukN, ...
+    models, X, motionnow, scrubnow, Y, var_log_transform, doconstrained, TukN, ...
     optim_opts, whtrain_sets, whtest_sets, LOG, i, j)
 
 % This function returns the parameter estimates for a pair of models of the
@@ -87,6 +87,16 @@ for m = 1:M
     end
 end
 
+%% Scrubbing
+for f = 1:K
+    whtrain_sets{f}(scrubnow) = [];
+    whtest_sets{f}(scrubnow)  = [];
+end
+
+Y(scrubnow) = [];
+X(scrubnow,:) = [];
+motionnow(scrubnow, :) = [];
+
 %% Fit models by Model Pairs
 
 paramsnow = cell( M, 1 );
@@ -121,29 +131,9 @@ for mp = 1:size( model_pairs , 1 )
     ismotionparam{ dep_idx } = [false(1, length(meancolsnow)), true(1, size(motionnow, 2)), false(1, length(varcolsnow))];
     
     %% Prewhiten
+    % Prewhiten on all the data
     
-    % %     % Option 1: Prewhiten on each training and test fold
-    % %     % Would go inside the fold for loop
-    % %     [Y_pre_train, Xm_pre_train, B_pre, sigma2_pre, ~, ~ , ~, badcholtrain ] = solve_glm_prewhiten(...
-    % %         Xm( trainnow, : ), Y( trainnow ), TukN );
-    % %     [Y_pre_test, Xm_pre_test, ~, ~, ~, ~ , ~, badcholtest ] = solve_glm_prewhiten(...
-    % %         Xm( testnow, : ), Y( testnow ), TukN );
-    % %
-    % %     if badcholtrain
-    % %         LOG.info( 'INFO', 'bad training autocovariance matrix');
-    % %     end
-    % %
-    % %     if badcholtest
-    % %         LOG.info( 'INFO', 'bad test autocovariance matrix');
-    % %     end
-    % %
-    % %     badchol = or(badcholtrain, badcholtest);
-    
-    % Option 2: Prewhiten on all the data
-    if j == 2
-       x = 1;  
-    end
-    [Y_pre, Xm_pre, B_pre, sigma2_pre, ~, ~ , ~, badchol ] = solve_glm_prewhiten(...
+    [Y_pre, Xm_pre, ~, ~, ~, ~ , ~, badchol ] = solve_glm_prewhiten(...
         Xm, Y, TukN );
     
     %% Fit Each Fold 
@@ -152,8 +142,8 @@ for mp = 1:size( model_pairs , 1 )
         trainnow = whtrain_sets{f};
         testnow = whtest_sets{f};
         
-        ntrain = length( trainnow );
-        ntest  = length( testnow );
+        ntrain = sum( trainnow );
+        ntest  = sum( testnow );
         
         % set train and test for variance matrix
         Xv_train = Xv( trainnow, : );
@@ -183,7 +173,7 @@ for mp = 1:size( model_pairs , 1 )
             ind_fun = @(x) loglik_varmean_matrix_var( x,Xm_pre_train, Xv_train( :, 1 )  , Y_pre_train);
             
             % Define the (negative) out-of-sample likelihood
-            funtest = @(x) loglik_varmean_matrix_var( x ,Xm_pre_test, Xv_test  , Y_pre_test);
+            funtest = @(x) loglik_varmean_matrix_var( x ,Xm_pre_test, Xv_test , Y_pre_test);
             ind_funtest = @(x) loglik_varmean_matrix_var( x ,Xm_pre_test, Xv_test( :, 1 )  , Y_pre_test);
             
             % Define the predicted activation function
@@ -198,7 +188,6 @@ for mp = 1:size( model_pairs , 1 )
         indparams =  [B_pre; sigma2_pre];
         
         %% Fit Dependent Model (VDGLM-optimization)
-        
         if ~(length(unique(Y)) == 1) % i.e., if the data is from within the brain
             if (doconstrained==0) % run the unconstrained optimizer
                 [depparams,fval,exitflag,output,grad,hessian] = fminunc(fun, initsnow, optim_opts);
@@ -223,10 +212,11 @@ for mp = 1:size( model_pairs , 1 )
         
         %% Store parameters
         if f == K
+    
             paramsnow{ dep_idx } = depparams';
             paramsnow{ ind_idx } = indparams';
             
-            % compute adn store BIC, out-of-sample log-likelihood, predictions
+            % compute and store BIC, out-of-sample log-likelihood, predictions
             bicnow{ dep_idx } = log( ntrain )*length(depparams) + 2*fun( depparams );
             bicnow{ ind_idx } = log( ntrain )*length(indparams) + 2*ind_fun( indparams );
             
@@ -234,6 +224,15 @@ for mp = 1:size( model_pairs , 1 )
             [ predm{ dep_idx } , predv{ dep_idx } ] = predfun( depparams );
             [ predm{ ind_idx } , predv{ ind_idx } ] = ind_predfun( indparams );
         else
+%             ind_funtest = @(x) loglik_varmean_matrix_var( x ,Xm_pre_test, Xv_test(:,1) , Y_pre_test);
+%             Xm_pre_test(1,:) = []; 
+%             Xv_test(1,:) = []; 
+%             Y_pre_test(1,:) = []; 
+%             ind_funtest2 = @(x) loglik_varmean_matrix_var( x ,Xm_pre_test, Xv_test(:,1)  , Y_pre_test);
+%              
+%             ind_funtest(indparams)
+%             ind_funtest2(indparams)
+            
             lloutofsample{ f, dep_idx } = -funtest(depparams);
             lloutofsample{ f, ind_idx } = -ind_funtest(indparams);
         end

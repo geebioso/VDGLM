@@ -46,7 +46,7 @@ elseif strcmp(plotby, 'subj')
     % Rearranging ROIs according to the areas best fit by first model
     [ ~ , index ] = sort( py(:,1) , 1 , 'descend' );
     area( py( index , : ) );
-    legend( descriptions );
+    legend( descriptions(models_to_plot) );
     xlabel( 'Subject' );
     ylabel( '% ROIs' );
     ylim( [ 0 100 ] );

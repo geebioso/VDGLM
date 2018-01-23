@@ -42,18 +42,13 @@ LOG.setLogLevel(LOG.OFF);
 plot_params = false;         % plot histograms of the parameters?
 plot_brain = false;         % do brain plots?
 plot_preds = true;         % do predicted vs actual plots
-plot_best = false;           % do best model plots
+plot_best = true;           % do best model plots
 
 var_method = 'meanpred';      % choose fom 'sample', 'meanpred'
 nsamp = 100;                % numer of samples to use if var_method is 'sample'
 models_to_plot = [1:4];     % which models to plot
 
-if isHPC
-    results_directory = '/pub/ggaut/VDGLM/Results';
-else
-    results_directory = fullfile( getenv('HOME'), 'Dropbox', 'FMRI', 'Projects',...
-        'varianceGLM', 'Results');
-end
+[results_directory] = set_results_directory( isHPC ); 
 
 
 %%
@@ -267,7 +262,6 @@ switch multivariate
         if plot_preds
             %% 3) Predicted vs actual
             % all models CV
-            groups ={ 1 2 3 4};
             fig = 299;
             name = 'Model Predictions Overall + Data (CV model Selection)';
             filenm = fullfile( results_directory, '..', 'images', sprintf('model_predictions_overall_CV_whsim%d', whsim));

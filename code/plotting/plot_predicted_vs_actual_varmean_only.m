@@ -68,23 +68,23 @@ for r = 1:R
 end
 for r = 1:R
     wh_subjs = ismember(bestmodel(:,r), [1, 3]);
-    meany(:,r)    = mean( tcn(:,wh_subjs,r), 2);
+    meany(:,r)    = nanmean( tcn(:,wh_subjs,r), 2);
     vary(:,r)     = var(  tcn(:,wh_subjs,r), [], 2);
-    samp_ypreds_mean(:,r) = mean( samples(:, wh_subjs, r), 2);
+    samp_ypreds_mean(:,r) = nanmean( samples(:, wh_subjs, r), 2);
     samp_ypreds_var(:,r)  = var( samples(:, wh_subjs, r), [], 2);
     
-    ypreds_mean(:,r) = mean(  models{ 1 }.allpredsm(:, wh_subjs, r), 2);
-    ypreds_var(:,r)  = mean(  models{ 1 }.allpredsv(:, wh_subjs, r), 2);
+    ypreds_mean(:,r) = nanmean(  models{ 1 }.allpredsm(:, wh_subjs, r), 2);
+    ypreds_var(:,r)  = nanmean(  models{ 1 }.allpredsv(:, wh_subjs, r), 2);
 end
 
-meany = mean( meany, 2 );
-vary  = mean( vary, 2 );
-samp_ypreds_mean = mean( samp_ypreds_mean, 2 );
-samp_ypreds_var = mean( samp_ypreds_var, 2 );
-ypreds_mean = mean( ypreds_mean, 2 );
-ypreds_var = mean( ypreds_var, 2 );
+meany = nanmean( meany, 2 );
+vary  = nanmean( vary, 2 );
+samp_ypreds_mean = nanmean( samp_ypreds_mean, 2 );
+samp_ypreds_var = nanmean( samp_ypreds_var, 2 );
+ypreds_mean = nanmean( ypreds_mean, 2 );
+ypreds_var = nanmean( ypreds_var, 2 );
 
-labels = [labels 'Var+Mean'];
+labels = [labels 'Var+Mean/Var'];
 
 % Plot the means
 axes(hs(1));
@@ -119,21 +119,21 @@ for r = 1:R
 end
 for r = 1:R
     wh_subjs = ~ismember(bestmodel(:,r), [1, 3]);
-    meany(:,r)    = mean( tcn(:,wh_subjs,r), 2);
+    meany(:,r)    = nanmean( tcn(:,wh_subjs,r), 2);
     vary(:,r)     = var(  tcn(:,wh_subjs,r), [], 2);
-    samp_ypreds_mean(:,r) = mean( samples(:, wh_subjs, r), 2);
+    samp_ypreds_mean(:,r) = nanmean( samples(:, wh_subjs, r), 2);
     samp_ypreds_var(:,r)  = var( samples(:, wh_subjs, r), [], 2);
     
-    ypreds_mean(:,r) = mean(  models{ 1 }.allpredsm(:, wh_subjs, r), 2);
-    ypreds_var(:,r)  = mean(  models{ 1 }.allpredsv(:, wh_subjs, r), 2);
+    ypreds_mean(:,r) = nanmean(  models{ 1 }.allpredsm(:, wh_subjs, r), 2);
+    ypreds_var(:,r)  = nanmean(  models{ 1 }.allpredsv(:, wh_subjs, r), 2);
 end
 
-meany = mean( meany, 2 );
-vary  = mean( vary, 2 );
-samp_ypreds_mean = mean( samp_ypreds_mean, 2 );
-samp_ypreds_var = mean( samp_ypreds_var, 2 );
-ypreds_mean = mean( ypreds_mean, 2 );
-ypreds_var = mean( ypreds_var, 2 );
+meany = nanmean( meany, 2 );
+vary  = nanmean( vary, 2 );
+samp_ypreds_mean = nanmean( samp_ypreds_mean, 2 );
+samp_ypreds_var = nanmean( samp_ypreds_var, 2 );
+ypreds_mean = nanmean( ypreds_mean, 2 );
+ypreds_var = nanmean( ypreds_var, 2 );
 
 labels = [labels 'Other'];
 

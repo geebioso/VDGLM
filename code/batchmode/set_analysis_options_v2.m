@@ -4,46 +4,46 @@ function [ opts, dotest ] = set_analysis_options_v2(whsim, isHPC, dotest, LOG)
 %   Right now this code will not run for any sim numbers except 26 and 27.
 %   I got rid of the other simulations to make the code more readable and
 %   because we will most likely not run many in the future--add them later.
-%   
+%
 %   This functions changes from the original function
-%   set_analysis_options.m as follows: 
-% 
+%   set_analysis_options.m as follows:
+%
 %   I'm hard coding in a way to make the variance models depend on the
 %   output of the mean models in order to speed up fitting time. The
-%   motivation for this change is how prewhitening works: 
+%   motivation for this change is how prewhitening works:
 %   - Fit GLM0
 %       - prewhiten
 %       - Fit GLM1
-%   I am going to add an additional step so that the procedure becomes: 
+%   I am going to add an additional step so that the procedure becomes:
 %   - Fit GLM0
 %       - prewhiten
 %       - Fit GLM1
 %       - Fit VDGLM0
 %   Then we can fit the mean models using OLS (which is faster than our
-%   optimization procedure). 
-%   Model dependencies are hard-coded in the following way: 
+%   optimization procedure).
+%   Model dependencies are hard-coded in the following way:
 %       Int  <- Var
-%       Mean <- Var+Mean 
+%       Mean <- Var+Mean
 %   Where <- indicates that the first model must run for the second to run.
-%   
+%
 %   The way we represent this dependency is in the third entry of each entry of
 %   run_models. The entry is a cell of length two with the model name in
 %   the first cell element and the model that must run before the current
-%   model in the second cell elements. e.g. {'Var+Mean', 'Mean'} indicates 
-%   Mean <- Var+Mean. 
-% 
+%   model in the second cell elements. e.g. {'Var+Mean', 'Mean'} indicates
+%   Mean <- Var+Mean.
+%
 %   The set-up is reflected here and the change in the code is reflected in
-%   the function fit_models.m 
+%   the function fit_models.m
 
 
 % INPUT:
 %   whsim: which analysis do we want to run?
-%   isHPC: switch for running on a local machine or on the UCI HPC 
-%   dotest: switch for running in test mode (discards a lot of data) 
+%   isHPC: switch for running on a local machine or on the UCI HPC
+%   dotest: switch for running in test mode (discards a lot of data)
 
 % OUTPUT:
-%   dotest: switch for running in test mode (discards a lot of data) 
-%   opts: structure that contains 
+%   dotest: switch for running in test mode (discards a lot of data)
+%   opts: structure that contains
 %       whs: which dataset
 %       K: number of cross validation folds
 %       seed: random seed
@@ -74,7 +74,7 @@ else
     osucombdesignfile = '';
     
     % hcp
-    if ismember(whsim, [26, 27])
+    if ismember(whsim, [26, 27, 28])
         hcproifile =  fullfile(getenv('HOME'), 'Dropbox','FMRI', ...
             'restingstatedata','tc_WM_875subj.mat');
     else
@@ -87,7 +87,7 @@ else
         'varianceGLM', 'onsetfiles', 'behav_Result_WM_LR_comb.mat');
 end
 
-[results_directory] = set_results_directory( isHPC ); 
+[results_directory] = set_results_directory( isHPC );
 
 %% Pick simulation
 if (whsim==26)
@@ -102,19 +102,20 @@ if (whsim==26)
     var_log_transform = false;
     TukN = 5;
     multivariate = false;
-    addmotion = true; 
+    addmotion = true;
     
     roifile = hcproifile;
     designfile = hcpdesignfile;
     combdesignfile = hcpcombdesignfile;
-    output_directory = fullfile( results_directory, 'batch_analyses', 'single_jobs'); 
+    output_directory = fullfile( results_directory, 'batch_analyses', 'single_jobs');
     
     runmodels  = {
-        {{ 'Intercept' , '0-back', '2-back' , 'Instruction' } , { 'Intercept' , '0-back', '2-back', 'Instruction' }    , {'Var+Mean', 'Mean'} },
-        {{ 'Intercept' , '0-back', '2-back' , 'Instruction' } , { 'Intercept' }                         , {'Mean', ''} },
+        {{ '0-back', '2-back' , 'Instruction' } , { 'Intercept' , '0-back', '2-back', 'Instruction' }    , {'Var+Mean', 'Mean'} },
+        {{ '0-back', '2-back' , 'Instruction' } , { 'Intercept' }                         , {'Mean', ''} },
         {{ 'Intercept' }                                      , { 'Intercept' , '0-back', '2-back', 'Instruction'  }   , {'Var', 'Intercept'}},
         {{ 'Intercept'                            }           , { 'Intercept'                       }   , {'Intercept', ''}   },
         };
+    
 elseif (whsim==27)
     % HCP DATA BASIC (NO TD, NO PW) with FIXATION IN VARIANCE
     whs     = 2; % which data set? 8= Ohio State Well Being (edge voxels removed); 0 = HCP WM
@@ -127,24 +128,49 @@ elseif (whsim==27)
     var_log_transform = false;
     TukN = NaN;
     multivariate = false;
-    addmotion = true; 
+    addmotion = true;
     
     roifile = hcproifile;
     designfile = hcpdesignfile;
     combdesignfile = hcpcombdesignfile;
-    output_directory = fullfile( results_directory, 'batch_analyses', 'single_jobs'); 
+    output_directory = fullfile( results_directory, 'batch_analyses', 'single_jobs');
     
     runmodels  = {
-        {{ 'Intercept' , '0-back', '2-back' , 'Instruction' } , { 'Intercept' , '0-back', '2-back', 'Instruction' }    , {'Var+Mean', 'Mean'} },
-        {{ 'Intercept' , '0-back', '2-back' , 'Instruction' } , { 'Intercept' }                         , {'Mean', ''} },
+        {{ '0-back', '2-back' , 'Instruction' } , { 'Intercept' , '0-back', '2-back', 'Instruction' }    , {'Var+Mean', 'Mean'} },
+        {{ '0-back', '2-back' , 'Instruction' } , { 'Intercept' }                         , {'Mean', ''} },
+        {{ 'Intercept' }                                      , { 'Intercept' , '0-back', '2-back', 'Instruction'  }   , {'Var', 'Intercept'}},
+        {{ 'Intercept'                            }           , { 'Intercept'                       }   , {'Intercept', ''}   },
+        };
+elseif whsim == 28
+    % HCP DATA BASIC CIFTI (NO TD, PW) with FIXATION IN VARIANCE
+    whs     = 2; % which data set? 8= Ohio State Well Being (edge voxels removed); 0 = HCP WM
+    K       = 10; % Number of folds in CV; K=0 do not CV
+    seed    = 1;
+    Tremove = 10; % How many time steps to remove from data?
+    doconstrained = true; % 1 = Use fmincon; 0 = fminunc
+    
+    prewhiten = true;
+    var_log_transform = false;
+    TukN = 5;
+    multivariate = false;
+    addmotion = false;
+    
+    roifile = hcproifile;
+    designfile = hcpdesignfile;
+    combdesignfile = hcpcombdesignfile;
+    output_directory = fullfile( results_directory, 'batch_analyses', 'single_jobs');
+    
+    runmodels  = {
+        {{ '0-back', '2-back' , 'Instruction' } , { 'Intercept' , '0-back', '2-back', 'Instruction' }    , {'Var+Mean', 'Mean'} },
+        {{ '0-back', '2-back' , 'Instruction' } , { 'Intercept' }                         , {'Mean', ''} },
         {{ 'Intercept' }                                      , { 'Intercept' , '0-back', '2-back', 'Instruction'  }   , {'Var', 'Intercept'}},
         {{ 'Intercept'                            }           , { 'Intercept'                       }   , {'Intercept', ''}   },
         };
 end
 
-%% Change Output Directory to Test if Applicable 
+%% Change Output Directory to Test if Applicable
 if dotest
-   output_directory = [output_directory '_test'];  
+    output_directory = [output_directory '_test'];
 end
 
 %% Change doubles to ints for printing
@@ -171,7 +197,7 @@ opts.designfile = designfile;
 opts.combdesignfile = combdesignfile;
 opts.runmodels = runmodels;
 opts.output_directory = output_directory;
-opts.addmotion = addmotion;     
+opts.addmotion = addmotion;
 
 %% Print Options
 LOG.info( 'INFO', sprintf('Running Simulation %d', whsim));
@@ -192,11 +218,11 @@ end
 
 LOG.info('INFO', sprintf('\trunmodels:'))
 for i = 1:length(runmodels)
-    LOG.info('INFO', sprintf('\t\tmodel: %s, depends on: %s', opts.runmodels{i}{3}{1}, opts.runmodels{i}{3}{2})); 
+    LOG.info('INFO', sprintf('\t\tmodel: %s, depends on: %s', opts.runmodels{i}{3}{1}, opts.runmodels{i}{3}{2}));
 end
 
 if and(isnan(TukN), prewhiten)
-   LOG.error('ERROR', 'Change Tukey Taper window or don''t prewhiten'); 
+    LOG.error('ERROR', 'Change Tukey Taper window or don''t prewhiten');
 end
 
 
