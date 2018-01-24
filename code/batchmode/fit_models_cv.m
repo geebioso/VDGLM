@@ -49,7 +49,7 @@ function [ paramsnow, ismotionparam, bicnow, lloutofsample, predm, predv, badcho
 LOG.debug('DEBUG', sprintf('fitting subject %d, region %d', i, j)); 
 T = size(Y,1);
 M = length(models);
-K = length(whtrain_sets); % the last fold is all data
+K = length(whtrain_sets) - 1; % the last fold is all data
 
 %% Find model dependencies
 model_pairs = [];
@@ -88,7 +88,7 @@ for m = 1:M
 end
 
 %% Scrubbing
-for f = 1:K
+for f = 1:K+1
     whtrain_sets{f}(scrubnow) = [];
     whtest_sets{f}(scrubnow)  = [];
 end
@@ -98,10 +98,9 @@ X(scrubnow,:) = [];
 motionnow(scrubnow, :) = [];
 
 %% Fit models by Model Pairs
-
 paramsnow = cell( M, 1 );
 bicnow = cell( M, 1 );
-lloutofsample = cell( K, M );
+lloutofsample = cell( K+1, M );
 predm = cell( M, 1 );
 predv = cell( M, 1 );
 ismotionparam = cell( M, 1 );
@@ -125,8 +124,7 @@ for mp = 1:size( model_pairs , 1 )
         models{ dep_idx}.initsmotion*ones(1, size(motionnow,2)), ... % motion regressors
         models{ dep_idx}.initsvar]'; % variance parameters
     
-    % indicate which paramters are motion parameters (we won't end up
-    % saving them)
+    % indicate which parameters are motion parameters
     ismotionparam{ ind_idx } = [false(1, length(meancolsnow)), true(1, size(motionnow, 2)), false(1)];
     ismotionparam{ dep_idx } = [false(1, length(meancolsnow)), true(1, size(motionnow, 2)), false(1, length(varcolsnow))];
     
@@ -137,7 +135,7 @@ for mp = 1:size( model_pairs , 1 )
         Xm, Y, TukN );
     
     %% Fit Each Fold 
-    for f = 1:K
+    for f = 1:K+1
         
         trainnow = whtrain_sets{f};
         testnow = whtest_sets{f};
@@ -211,7 +209,7 @@ for mp = 1:size( model_pairs , 1 )
         end
         
         %% Store parameters
-        if f == K
+        if f == K+1
     
             paramsnow{ dep_idx } = depparams';
             paramsnow{ ind_idx } = indparams';

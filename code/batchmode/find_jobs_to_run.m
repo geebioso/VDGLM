@@ -1,4 +1,4 @@
-function [subjs_run, subjs_to_run] = find_jobs_to_run(isHPC, dotest)
+function [subjs_run, subjs_to_run] = find_jobs_to_run(whsim, isHPC, dotest)
 
 if isHPC
     results_directory = '/pub/ggaut/VDGLM/Results';
@@ -24,19 +24,22 @@ for f = 1:NF
     filenames{f} = files(f).name;
 end
 
-if NF > 2
-    if strcmp(filenames{1}, '.')
-        filenames = filenames(3:end);
-        NF = NF - 2;
-    end
+% get rid of hidden files 
+for f = 1:NF
+    filenames{f} = files(f).name; 
+    if filenames{f}(1) == '.'
+      filenames{f} = [];  
+   end
 end
 
-if NF > 1
-    if strcmp(filenames{1}, '.DS_Store')
-        filenames(1) = [];
-        NF = NF - 1;
-    end
-end
+ii = cellfun( @(x) ~isempty(x), filenames, 'UniformOutput', true);
+filenames = filenames(ii); 
+
+% get only files that are from the appropriate simulation 
+ii = cellfun( @(x)  contains( x, sprintf('whs%d', whsim)) , filenames, 'UniformOutput', true); 
+filenames = filenames( ii ); 
+
+NF = length(filenames); 
 
 %% Get lists of subjects 
 subjs_run = [];

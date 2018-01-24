@@ -152,17 +152,14 @@ switch whs
         designlabels = { 'Intercept' , '0-back' , '2-back' , 'Instruction', 'Fixation', 'T_Instruction'};
 end
 
-
-
 %% Remove Subject 67 From HCP Data (HEAD MOTION)
 switch whs
     case {0,1,2}
-        if whsim ~= 26 
+        if ~ismember( whsim,  [26 27 28])
             tcn(:, 67, :) = [];
             NS = NS - 1;
         end
 end
-
 
 %% Multivariate
 

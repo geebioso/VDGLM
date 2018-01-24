@@ -279,7 +279,6 @@ for s=1:NS
         
         % Save Results for Each Fold
         for f = 1:K+1
-            % compute BIC
             for m = 1:M
                 
                 if (f==K+1)
@@ -330,9 +329,9 @@ for m=1:M
 end
 
 % Calculate the total out-of-sample log-likelihoods across folds
-P = size(alllls, 4);
+M = size(alllls, 4);
 allllsm = nansum( cell2mat( alllls(:,:,1:K,:)) , 3 );
-allllsm = reshape(allllsm, [ NS, R, P]);
+allllsm = reshape(allllsm, [ NS, R, M]);
 
 allbicm = cell2mat( allbic );
 

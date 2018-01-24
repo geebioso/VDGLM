@@ -1,8 +1,8 @@
-function [models, allbicm, allllsm, bestmodelBIC, bestmodelCV, all_subjs, bad_subjs, sub_nums] = ...
+function [models, allbicm, allllsm, bestmodelBIC, bestmodelCV, all_subjs, sub_nums] = ...
     load_results(results_directory, whsim, dotest, LOG)
 
 LOG.info('INFO', sprintf('Loading Results, whsim = %d', whsim));
-if ismember(whsim, [26, 27])
+if ismember(whsim, [26, 27, 28])
     
     input_directory = fullfile(results_directory, 'batch_analyses', 'combined');
     if dotest
@@ -17,22 +17,33 @@ if ismember(whsim, [26, 27])
         filenames{i} = files(i).name;
     end
     
+    % get simulation file names 
+    % get only files that are from the appropriate simulation 
+    ii = cellfun( @(x)  contains( x, sprintf('whs%d', whsim)) , filenames, 'UniformOutput', true); 
+    filenames = filenames( ii ); 
+    
     % get model files
     ii = cellfun( @(x) regexp( x , 'allmodels' ), filenames, 'UniformOutput', 0);
     ii = cellfun( @(x) ~isempty(x), ii);
     filenames = filenames(ii);
+    NF = length(filenames); 
     
     % parse model number from each filename
-    mods = cellfun( @(x) str2num( x(regexp( x, '\d*'))), filenames, 'UniformOutput', 1);
+    mods = zeros(NF, 1); 
+    for f = 1:NF
+        temp = split(filenames{f}, '_'); 
+        temp = split(temp{3}, '.'); 
+        mods(f) = str2num(temp{1}); 
+    end
     
     M = length(mods);
     models = cell(M,1);
     
     for i = 1:M
         m = mods(i);
-        filename = fullfile( input_directory, sprintf( 'allmodels_%d.mat', m));
-        load(filename);
+        filename = fullfile( input_directory, sprintf( 'whs%d_allmodels_%d.mat', whsim, m));
         LOG.info('INFO', sprintf('\t%s', filename));
+        load(filename);
         models{i} = all_models_now;
         
         models{i}.allparams = single(models{i}.allparams);
@@ -48,12 +59,11 @@ if ismember(whsim, [26, 27])
         'bestmodelBIC.mat'; ...
         'bestmodelCV.mat'; ...
         'all_subjs.mat'; ...
-        'bad_subjs.mat'; ... 
         'sub_nums.mat'
         };
     
     for f = 1:length(filenames)
-        filename = fullfile( input_directory, filenames{f});
+        filename = fullfile( input_directory, sprintf('whs%d_%s', whsim, filenames{f}));
         load(filename);
         LOG.info('INFO', sprintf('\t%s', filename));
     end
@@ -68,7 +78,6 @@ else
     end
     load(filenm);
     LOG.info('INFO', sprintf('\t%s', filename));
-    bad_subjs = [];
     all_subjs = [];
     
 end

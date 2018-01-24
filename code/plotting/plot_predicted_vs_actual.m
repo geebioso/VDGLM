@@ -113,7 +113,7 @@ for k=1:M
     % Plot the means
     axes(hs(1));
     plot( 1:T , ypreds_mean - m, 'b-' , 'LineWidth' , lw ); hold on;
-    plot( 1:T , samp_ypreds_mean - 1, 'b--' , 'LineWidth' , lw ); hold on;
+    plot( 1:T , samp_ypreds_mean - m, 'b--' , 'LineWidth' , lw ); hold on;
     plot( 1:T , meany - m, 'r-' , 'LineWidth' , lw );
     title( titlestr );
     xlim( [ 0 T ] );
@@ -122,7 +122,7 @@ for k=1:M
     % Plot the stds
     axes(hs(2));
     plot( 1:T , ypreds_std - m - 1, 'b-' , 'LineWidth' , lw ); hold on;
-    plot( 1:T , samp_ypreds_std - 1, 'b--' , 'LineWidth' , lw ); hold on;
+    plot( 1:T , samp_ypreds_std - m - 1, 'b--' , 'LineWidth' , lw ); hold on;
     plot( 1:T , stdy - m - 1, 'r-' , 'LineWidth' , lw );
     xlim( [ 0 T ] );
     ylim( [-M-1 NC]);

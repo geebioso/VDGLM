@@ -171,7 +171,7 @@ R = dat.R;
 
 %% Load Results
 
-[models, allbicm, allllsm, bestmodelBIC, bestmodelCV, all_subjs, bad_subjs, sub_nums] = ...
+[models, allbicm, allllsm, bestmodelBIC, bestmodelCV, all_subjs, sub_nums] = ...
     load_results(results_directory, whsim, dotest, LOG);
 
 NS = size( models{1}.allpredsm, 2 );
