@@ -4,7 +4,6 @@
 scp analyzedata_batch_v2.m ggaut@hpc.oit.uci.edu:/data/users/ggaut/VDGLM/analyzedata_batch_v2.m
 scp null_sample_hypothesis_test.m ggaut@hpc.oit.uci.edu:/data/users/ggaut/VDGLM/null_sample_hypothesis_test.m
 scp solve_glm.m ggaut@hpc.oit.uci.edu:/data/users/ggaut/VDGLM/solve_glm.m
-scp solve_glm_prewhiten.m ggaut@hpc.oit.uci.edu:/data/users/ggaut/VDGLM/solve_glm_prewhiten.m
 scp fit_models_cv.m ggaut@hpc.oit.uci.edu:/data/users/ggaut/VDGLM/fit_models_cv.m
 scp combine_results.m ggaut@hpc.oit.uci.edu:/data/users/ggaut/VDGLM/combine_results.m
 scp combine_results_null_sample_hypothesis_test.m ggaut@hpc.oit.uci.edu:/data/users/ggaut/VDGLM/combine_results_null_sample_hypothesis_test.m

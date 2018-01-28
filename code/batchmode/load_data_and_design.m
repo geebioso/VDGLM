@@ -155,7 +155,7 @@ end
 %% Remove Subject 67 From HCP Data (HEAD MOTION)
 switch whs
     case {0,1,2}
-        if ~ismember( whsim,  [26 27 28])
+        if ~(whs == 2)
             tcn(:, 67, :) = [];
             NS = NS - 1;
         end

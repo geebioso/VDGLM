@@ -39,14 +39,14 @@ LOG.setLogLevel(LOG.OFF);
 
 %% Options
 
-plot_params = false;         % plot histograms of the parameters?
+plot_params = false;        % plot histograms of the parameters?
 plot_brain = false;         % do brain plots?
-plot_preds = true;         % do predicted vs actual plots
+plot_preds = true;          % do predicted vs actual plots
 plot_best = true;           % do best model plots
 
-var_method = 'meanpred';      % choose fom 'sample', 'meanpred'
+var_method = 'meanpred';    % choose fom 'sample', 'meanpred'
 nsamp = 100;                % numer of samples to use if var_method is 'sample'
-models_to_plot = [1:4];     % which models to plot
+models_to_plot = 1:4;       % which models to plot 
 
 [results_directory] = set_results_directory( isHPC ); 
 
@@ -262,22 +262,42 @@ switch multivariate
         if plot_preds
             %% 3) Predicted vs actual
             % all models CV
-            fig = 299;
-            name = 'Model Predictions Overall + Data (CV model Selection)';
-            filenm = fullfile( results_directory, '..', 'images', sprintf('model_predictions_overall_CV_whsim%d', whsim));
-            plot_predicted_vs_actual( tcn, fig, name, models, bestmodelCV, ...
-                models_to_plot, design, var_method, filenm, sub_nums)
+            M = length(models_to_plot);
+            groups = cell(M,1); 
+            for m = 1:M
+                groups{m} = models_to_plot(m);
+            end
             
-            
-            
-            % all models BIC
+            % all models BIC only data points that prefer each model 
             fig = 298;
             name = 'Model Predictions Overall + Data (BIC model Selection)';
-            filenm = fullfile( results_directory, '..', 'images', sprintf('model_predictions_overall_BIC_whsim%d', whsim));
+            filenm = fullfile( results_directory, '..', 'images', sprintf('model_predictions_pref_BIC_whsim%d', whsim));
             plot_predicted_vs_actual( tcn, fig, name, models, bestmodelBIC, ...
-                models_to_plot, design, var_method, filenm, sub_nums)
+                models_to_plot, groups, design, var_method, filenm, sub_nums);
             
+            % OOSLL 
+            fig = 299;
+            name = 'Model Predictions Overall + Data (CV model Selection)';
+            filenm = fullfile( results_directory, '..', 'images', sprintf('model_predictions_pref_CV_whsim%d', whsim));
+            plot_predicted_vs_actual( tcn, fig, name, models, bestmodelCV, ...
+                models_to_plot, groups, design, var_method, filenm, sub_nums);
             
+            % all models all data points 
+            groups = cell(M,1); 
+            for m = 1:M
+                groups{m} = models_to_plot;
+            end
+            fig = 297;
+            name = 'Model Predictions Overall + Data (CV model Selection)';
+            filenm = fullfile( results_directory, '..', 'images', sprintf('model_predictions_all_BIC_whsim%d', whsim));
+            plot_predicted_vs_actual( tcn, fig, name, models, bestmodelBIC, ...
+                models_to_plot, groups, design, var_method, filenm, sub_nums);
+            
+            fig = 296;
+            name = 'Model Predictions Overall + Data (CV model Selection)';
+            filenm = fullfile( results_directory, '..', 'images', sprintf('model_predictions_all_CV_whsim%d', whsim));
+            plot_predicted_vs_actual( tcn, fig, name, models, bestmodelCV, ...
+                models_to_plot, groups, design, var_method, filenm, sub_nums);
             
             % just the Var+Mean and Var models CV
             fig = 300;

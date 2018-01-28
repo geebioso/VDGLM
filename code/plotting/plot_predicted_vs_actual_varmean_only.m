@@ -22,16 +22,18 @@ meandesignnow = design(:, models{1}.meancols);
 vardesignnow = design(:, models{1}.varcols);
 
 % plot mean design
+map = brewermap( 4, 'Set1'); 
+size_diff = size(vardesignnow, 2) - size(meandesignnow,2); 
 for c = 1:size(meandesignnow,2)
     axes(hs(1));
-    plot( 1:T , meandesignnow(:,c) * 0.2 + c - 1, '-' , 'LineWidth' , lw ); hold on;
+    plot( 1:T , meandesignnow(:,c) * 0.2 + c - 1 + size_diff, '-' , 'LineWidth' , lw, 'Color', map(c+size_diff,:) ); hold on;
     
 end
 
 % plot variance design
 for c = 1:size(vardesignnow,2)
     axes(hs(2));
-    plot( 1:T , vardesignnow(:,c) * 0.2 + c - 1, '-' , 'LineWidth' , lw ); hold on;
+    plot( 1:T , vardesignnow(:,c) * 0.2 + c - 1, '-' , 'LineWidth' , lw, 'Color', map(c,:) ); hold on;
 end
 
 % number of conditions to plot

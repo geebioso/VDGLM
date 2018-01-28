@@ -1,5 +1,5 @@
 function [] = plot_predicted_vs_actual( tcn, fig, name, models, bestmodel, ...
-    models_to_plot, design, var_method, filenm, sub_nums )
+    models_to_plot, groups, design, var_method, filenm, sub_nums )
 
 % This function plots model predictions against the actual data. It groups
 % data points (e.g., a time series from a subject and roi) by which model
@@ -57,16 +57,18 @@ meandesignnow = design(:, models{1}.meancols);
 vardesignnow = design(:, models{1}.varcols);
 
 % plot mean design
+map = brewermap( 4, 'Set1'); 
+size_diff = size(vardesignnow, 2) - size(meandesignnow,2); 
 for c = 1:size(meandesignnow,2)
     axes(hs(1));
-    plot( 1:T , meandesignnow(:,c) * 0.2 + c - 1, '-' , 'LineWidth' , lw ); hold on;
+    plot( 1:T , meandesignnow(:,c) * 0.2 + c - 1 + size_diff, '-' , 'LineWidth' , lw , 'Color', map(c+size_diff,:) ); hold on;
     
 end
 
 % plot variance design
 for c = 1:size(vardesignnow,2)
     axes(hs(2));
-    plot( 1:T , vardesignnow(:,c) * 0.2 + c - 1, '-' , 'LineWidth' , lw ); hold on;
+    plot( 1:T , vardesignnow(:,c) * 0.2 + c - 1, '-' , 'LineWidth' , lw , 'Color', map(c,:) ); hold on;
 end
 
 % number of conditions to plot
@@ -83,7 +85,7 @@ for k=1:M
     allpredsv = models{m}.allpredsv;
     
     % Find the ROIs and Subject combinations for which model m is best
-    wh = find( bestmodel(:) == m );
+    wh = find( ismember( bestmodel(:), groups{k} ) );
     % What is the percentage of cases?
     pc = length( wh ) * 100 / ( NS * R );
     titlestr  = sprintf( '%s (%3.2f%%)' , models{ m }.description{1} , pc );

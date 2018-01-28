@@ -271,7 +271,8 @@ for s=1:NS
         
         [ paramsnow, ismotionparam, bicnow, lloutofsample, predm, predv, badchol ] = fit_models_cv(...
             models, design, motionnow, scrubnow, YALL, var_log_transform, ...
-            doconstrained, TukN, optim_opts, whtrain_sets, whtest_sets, LOG, i, j);
+            doconstrained, TukN, prewhiten, optim_opts, whtrain_sets, ...
+            whtest_sets, LOG, i, j);
         
         if badchol
             LOG.warn('WARN', sprintf('S is not positive definite subject %d, region %d', i, j));

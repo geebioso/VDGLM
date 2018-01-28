@@ -58,34 +58,7 @@ function [ opts, dotest ] = set_analysis_options_v2(whsim, isHPC, dotest, LOG)
 
 
 %% Set directories for OSUWB and HCP data
-if isHPC
-    % hcproifile =  '/pub/ggaut/HCP/all_tc_hpc.mat';
-    hcproifile =  '/pub/ggaut/HCP/tc_WM_875subj.mat';
-    
-    % design files
-    hcpdesignfile =  '/pub/ggaut/HCP/behav_Result_WM_LR.mat';
-    hcpcombdesignfile =  '/pub/ggaut/HCP/behav_Result_WM_LR_comb.mat';
-else
-    % osu
-    osuroifile = fullfile(getenv('HOME'), 'Dropbox','FMRI', 'restingstatedata',...
-        'tc_motion_CSF_WM_out_WorkingMem177.mat');
-    osudesignfile = fullfile(getenv('HOME'), 'Dropbox','FMRI', 'Projects', ...
-        'varianceGLM', 'onsetfiles','WorkingMem_mtx_3column_filter90s.mat');
-    osucombdesignfile = '';
-    
-    % hcp
-    if ismember(whsim, [26, 27, 28])
-        hcproifile =  fullfile(getenv('HOME'), 'Dropbox','FMRI', ...
-            'restingstatedata','tc_WM_875subj.mat');
-    else
-        hcproifile =  fullfile(getenv('HOME'), 'Dropbox','anatomical',...
-            'ICAresults','all_tc_hcp.mat');
-    end
-    hcpdesignfile =  fullfile( getenv('HOME'), 'Dropbox','FMRI', 'Projects', ...
-        'varianceGLM', 'onsetfiles', 'behav_Result_WM_LR.mat');
-    hcpcombdesignfile =  fullfile( getenv('HOME'), 'Dropbox','FMRI', 'Projects', ...
-        'varianceGLM', 'onsetfiles', 'behav_Result_WM_LR_comb.mat');
-end
+
 
 [results_directory] = set_results_directory( isHPC );
 
@@ -104,9 +77,7 @@ if (whsim==26)
     multivariate = false;
     addmotion = true;
     
-    roifile = hcproifile;
-    designfile = hcpdesignfile;
-    combdesignfile = hcpcombdesignfile;
+    [ roifile, designfile, combdesignfile ] = set_design_filenames(isHPC, whs);
     output_directory = fullfile( results_directory, 'batch_analyses', 'single_jobs');
     
     runmodels  = {
@@ -130,9 +101,7 @@ elseif (whsim==27)
     multivariate = false;
     addmotion = true;
     
-    roifile = hcproifile;
-    designfile = hcpdesignfile;
-    combdesignfile = hcpcombdesignfile;
+    [ roifile, designfile, combdesignfile ] = set_design_filenames(isHPC, whs);
     output_directory = fullfile( results_directory, 'batch_analyses', 'single_jobs');
     
     runmodels  = {
@@ -155,9 +124,7 @@ elseif whsim == 28
     multivariate = false;
     addmotion = false;
     
-    roifile = hcproifile;
-    designfile = hcpdesignfile;
-    combdesignfile = hcpcombdesignfile;
+    [ roifile, designfile, combdesignfile ] = set_design_filenames(isHPC, whs);
     output_directory = fullfile( results_directory, 'batch_analyses', 'single_jobs');
     
     runmodels  = {
@@ -165,6 +132,53 @@ elseif whsim == 28
         {{ '0-back', '2-back' , 'Instruction' } , { 'Intercept' }                         , {'Mean', ''} },
         {{ 'Intercept' }                                      , { 'Intercept' , '0-back', '2-back', 'Instruction'  }   , {'Var', 'Intercept'}},
         {{ 'Intercept'                            }           , { 'Intercept'                       }   , {'Intercept', ''}   },
+        };
+elseif whsim == 29
+    % HCP DATA BASIC CIFTI (NO TD, PW) with FIXATION IN VARIANCE
+    whs     = 2; % which data set? 8= Ohio State Well Being (edge voxels removed); 0 = HCP WM
+    K       = 10; % Number of folds in CV; K=0 do not CV
+    seed    = 1;
+    Tremove = 10; % How many time steps to remove from data?
+    doconstrained = true; % 1 = Use fmincon; 0 = fminunc
+    
+    prewhiten = false;
+    var_log_transform = false;
+    TukN = 5;
+    multivariate = false;
+    addmotion = false;
+    
+    [ roifile, designfile, combdesignfile ] = set_design_filenames(isHPC, whs);
+    output_directory = fullfile( results_directory, 'batch_analyses', 'single_jobs');
+    
+    runmodels  = {
+        {{ '0-back', '2-back' , 'Instruction' } , { 'Intercept' , '0-back', '2-back', 'Instruction' }    , {'Var+Mean', 'Mean'} },
+        {{ '0-back', '2-back' , 'Instruction' } , { 'Intercept' }                         , {'Mean', ''} },
+        {{ 'Intercept' }                                      , { 'Intercept' , '0-back', '2-back', 'Instruction'  }   , {'Var', 'Intercept'}},
+        {{ 'Intercept'                            }           , { 'Intercept'                       }   , {'Intercept', ''}   },
+        };
+    
+elseif whsim == 40
+    % Just Fits two different GLM models. One uses fixation in the mean
+    % design, the other uses the intercept
+    whs     = 2; % which data set? 8= Ohio State Well Being (edge voxels removed); 0 = HCP WM
+    K       = 10; % Number of folds in CV; K=0 do not CV
+    seed    = 1;
+    Tremove = 10; % How many time steps to remove from data?
+    doconstrained = true; % 1 = Use fmincon; 0 = fminunc
+    
+    prewhiten = false;
+    var_log_transform = false;
+    TukN = NaN;
+    multivariate = false;
+    addmotion = false;
+    
+    [ roifile, designfile, combdesignfile ] = set_design_filenames(isHPC, whs);
+    output_directory = fullfile( results_directory, 'batch_analyses', 'single_jobs');
+    
+    runmodels  = {
+        {{ 'Fixation' , '0-back', '2-back' , 'Instruction' } , { 'Intercept' }, {'Mean_Fix', ''} },
+        {{ 'Intercept', '0-back', '2-back' , 'Instruction' } , { 'Intercept' }, {'Mean_Int', ''} },
+        
         };
 end
 
@@ -225,4 +239,37 @@ if and(isnan(TukN), prewhiten)
     LOG.error('ERROR', 'Change Tukey Taper window or don''t prewhiten');
 end
 
+end
 
+function [ roifile, designfile, combdesignfile ] = set_design_filenames(isHPC, whs) 
+
+if isHPC
+    % hcproifile =  '/pub/ggaut/HCP/all_tc_hpc.mat';
+    roifile =  '/pub/ggaut/HCP/tc_WM_875subj.mat';
+    
+    % design files
+    designfile =  '/pub/ggaut/HCP/behav_Result_WM_LR.mat';
+    combdesignfile =  '/pub/ggaut/HCP/behav_Result_WM_LR_comb.mat';
+else
+    % osu
+    roifile = fullfile(getenv('HOME'), 'Dropbox','FMRI', 'restingstatedata',...
+        'tc_motion_CSF_WM_out_WorkingMem177.mat');
+    designfile = fullfile(getenv('HOME'), 'Dropbox','FMRI', 'Projects', ...
+        'varianceGLM', 'onsetfiles','WorkingMem_mtx_3column_filter90s.mat');
+    combdesignfile = '';
+    
+    % hcp
+    if whs==2
+        roifile =  fullfile(getenv('HOME'), 'Dropbox','FMRI', ...
+            'restingstatedata','tc_WM_875subj.mat');
+    else
+        roifile =  fullfile(getenv('HOME'), 'Dropbox','anatomical',...
+            'ICAresults','all_tc_hcp.mat');
+    end
+    designfile =  fullfile( getenv('HOME'), 'Dropbox','FMRI', 'Projects', ...
+        'varianceGLM', 'onsetfiles', 'behav_Result_WM_LR.mat');
+    combdesignfile =  fullfile( getenv('HOME'), 'Dropbox','FMRI', 'Projects', ...
+        'varianceGLM', 'onsetfiles', 'behav_Result_WM_LR_comb.mat');
+end
+
+end

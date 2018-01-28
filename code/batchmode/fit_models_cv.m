@@ -1,10 +1,10 @@
 function [ paramsnow, ismotionparam, bicnow, lloutofsample, predm, predv, badchol ] = fit_models_cv(...
     models, X, motionnow, scrubnow, Y, var_log_transform, doconstrained, TukN, ...
-    optim_opts, whtrain_sets, whtest_sets, LOG, i, j)
+    prewhiten, optim_opts, whtrain_sets, whtest_sets, LOG, i, j)
 
 % This function returns the parameter estimates for a pair of models of the
-% form (independent, dependent) such that the estimates of the dependent
-% model (VDGLM) depend on the estimates of the independent model (GLM). The
+% form (GLM, VDGLM) such that the estimates of the VDGLM
+% model depend on the estimates of the GLM model. The
 % reason for setting the code up this way is that the prewhitening procedure
 % depends on the solution of the GLM. Thus the entire fitting procedure in
 % this function is as follows:
@@ -46,7 +46,7 @@ function [ paramsnow, ismotionparam, bicnow, lloutofsample, predm, predv, badcho
 %   bool badchol: was there a problem with solving the root of the
 %       autocovariance matrix during prewhitening?
 
-LOG.debug('DEBUG', sprintf('fitting subject %d, region %d', i, j)); 
+LOG.debug('DEBUG', sprintf('fitting subject %d, region %d', i, j));
 T = size(Y,1);
 M = length(models);
 K = length(whtrain_sets) - 1; % the last fold is all data
@@ -55,35 +55,39 @@ K = length(whtrain_sets) - 1; % the last fold is all data
 model_pairs = [];
 for m = 1:M
     
-    % get independent models and find the models that depend on them
+    % get GLM models and find the models that depend on them
     if ~isempty(models{m}.code{3}{2})
         
-        dep_model = models{m}.code{3}{1};
-        ind_model = models{m}.code{3}{2};
+        vdglm_model = models{m}.code{3}{1};
+        glm_model = models{m}.code{3}{2};
         
-        % find independent model
-        ind_idx = -1;
+        % find GLM model
+        glm_idx = -1;
         for m2 = 1:M
             
-            if strcmp( models{m2}.code{3}{1}, ind_model )
-                ind_idx = m2;
+            if strcmp( models{m2}.code{3}{1}, glm_model )
+                glm_idx = m2;
                 % store that model m must be run before model m2
-                model_pair = [m ind_idx];
+                model_pair = [m glm_idx];
                 
                 % check that the design matrices match
-                if isequal(models{m}.code{1}, models{ind_idx}.code{1})
-                    LOG.debug('DEBUG', sprintf('%s <- %s, mean design matrices match', ind_model, dep_model));
+                if isequal(models{m}.code{1}, models{glm_idx}.code{1})
+                    LOG.debug('DEBUG', sprintf('%s <- %s, mean design matrices match', glm_model, vdglm_model));
                     model_pairs = [model_pairs; model_pair];
                 else
-                    LOG.error('ERROR', sprintf('%s <- %s: Mean design matrices do not match for dependent models', ind_model, dep_model));
+                    LOG.error('ERROR', sprintf('%s <- %s: Mean design matrices do not match for GLM and VDGLM models', glm_model, vdglm_model));
                 end
             end
         end
         
-        % in case independent model is not found
-        if ind_idx == -1
-            LOG.error('ERROR', sprintf('independent model %s is missing for dependent model %s', ind_model, dep_model));
+        % in case GLM model is not found
+        if glm_idx == -1
+            LOG.error('ERROR', sprintf('GLM model %s is missing for VDGLM model %s', glm_model, vdglm_model));
         end
+    elseif and( ~isempty( models{m}.code{3}{1}), ~ismember( m, model_pairs)) % If no VDGLM models, just get GLM models
+        glm_idx = m;
+        model_pair = [NaN glm_idx];
+        model_pairs = [model_pairs; model_pair];
     end
 end
 
@@ -106,35 +110,34 @@ predv = cell( M, 1 );
 ismotionparam = cell( M, 1 );
 
 for mp = 1:size( model_pairs , 1 )
-    dep_idx = model_pairs( mp , 1 );
-    ind_idx = model_pairs( mp , 2 );
+    vdglm_idx = model_pairs( mp , 1 );
+    glm_idx = model_pairs( mp , 2 );
     
-    % Which columns to include for the mean effect
-    meancolsnow = models{ dep_idx }.meancols;
+    % Which columns to include for the mean effect (GLM and
+    % VDGLM models share mean design matrix) 
+    meancolsnow = models{ glm_idx }.meancols;
     
     % Which columns to include for the variance effect
-    varcolsnow  = models{ dep_idx }.varcols;
+    if ~isnan( vdglm_idx ) 
+        varcolsnow  = models{ vdglm_idx }.varcols;
+    else
+        varcolsnow  = models{ glm_idx }.varcols; 
+    end
     
     % set up design matrices
     Xm = [X(:, meancolsnow), motionnow]; % if no motion, motionnow will be empty
     Xv = X(:, varcolsnow );
     
-    % Initial parameters for VDGLM optimization
-    initsnow = [models{ dep_idx }.initsmean, ... % mean experiment regressors
-        models{ dep_idx}.initsmotion*ones(1, size(motionnow,2)), ... % motion regressors
-        models{ dep_idx}.initsvar]'; % variance parameters
-    
     % indicate which parameters are motion parameters
-    ismotionparam{ ind_idx } = [false(1, length(meancolsnow)), true(1, size(motionnow, 2)), false(1)];
-    ismotionparam{ dep_idx } = [false(1, length(meancolsnow)), true(1, size(motionnow, 2)), false(1, length(varcolsnow))];
+    ismotionparam{ glm_idx } = [false(1, length(meancolsnow)), true(1, size(motionnow, 2)), false(1)];
     
     %% Prewhiten
     % Prewhiten on all the data
+    if prewhiten
+        [Y_pre, Xm_pre, B_pre, sigma2_pre, L, badchol ] = solve_glm( Xm, Y, prewhiten, TukN);
+    end
     
-    [Y_pre, Xm_pre, ~, ~, ~, ~ , ~, badchol ] = solve_glm_prewhiten(...
-        Xm, Y, TukN );
-    
-    %% Fit Each Fold 
+    %% Fit Each Fold
     for f = 1:K+1
         
         trainnow = whtrain_sets{f};
@@ -145,94 +148,122 @@ for mp = 1:size( model_pairs , 1 )
         
         % set train and test for variance matrix
         Xv_train = Xv( trainnow, : );
-        Xv_test  = Xv( testnow, : );
+        Xv_test  = Xv( testnow,  : );
         
-        Xm_pre_train = Xm_pre( trainnow, : );
-        Xm_pre_test  = Xm_pre( testnow,  : );
-        
-        Y_pre_train = Y_pre( trainnow );
-        Y_pre_test  = Y_pre( testnow  );
-        
-        %%  Define the Likelihoods and Prediction Functions
-        % for independent and dependent models
-        if var_log_transform
-            fun = @(x) loglik_varmean_matrix_logtransform( x,Xm_pre_train, Xv_train , Y_pre_train);
-            ind_fun = @(x) loglik_varmean_matrix_logtransform( x,Xm_pre_train, Xv_train( :, 1 )  , Y_pre_train);
+        if prewhiten
+            Xm_train = Xm_pre( trainnow, : );
+            Xm_test  = Xm_pre( testnow,  : );
             
-            % Define the (negative) out-of-sample likelihood
-            funtest = @(x) loglik_varmean_matrix_logtransform( x ,Xm_pre_test, Xv_test  , Y_pre_test);
-            ind_funtest = @(x) loglik_varmean_matrix_logtransform( x ,Xm_pre_test, Xv_test( :, 1 )  , Y_pre_test);
-            
-            % Define the predicted activation function
-            predfun = @(x) preds_varmean_matrix_logtransform( x,Xm_pre_test, Xv_test );
-            ind_predfun = @(x) preds_varmean_matrix_logtransform( x,Xm_pre_test, Xv_test( :, 1 ) );
+            Y_train = Y_pre( trainnow );
+            Y_test  = Y_pre( testnow  );
         else
-            fun = @(x) loglik_varmean_matrix_var( x,Xm_pre_train, Xv_train , Y_pre_train);
-            ind_fun = @(x) loglik_varmean_matrix_var( x,Xm_pre_train, Xv_train( :, 1 )  , Y_pre_train);
+            Xm_train = Xm( trainnow, : );
+            Xm_test  = Xm( testnow,  : );
+            
+            Y_train = Y( trainnow );
+            Y_test  = Y( testnow  );
+        end
+        
+        % Define the Likelihoods and Prediction Functions
+        if var_log_transform
+            ind_fun = @(x) loglik_varmean_matrix_logtransform( x,Xm_train, Xv_train( :, 1 )  , Y_train);
             
             % Define the (negative) out-of-sample likelihood
-            funtest = @(x) loglik_varmean_matrix_var( x ,Xm_pre_test, Xv_test , Y_pre_test);
-            ind_funtest = @(x) loglik_varmean_matrix_var( x ,Xm_pre_test, Xv_test( :, 1 )  , Y_pre_test);
+            ind_funtest = @(x) loglik_varmean_matrix_logtransform( x ,Xm_test, Xv_test( :, 1 )  , Y_test);
             
             % Define the predicted activation function
-            predfun = @(x) preds_varmean_matrix_var( x,Xm_pre_test, Xv_test );
-            ind_predfun = @(x) preds_varmean_matrix_var( x,Xm_pre_test, Xv_test( :, 1 ) );
+            ind_predfun = @(x) preds_varmean_matrix_logtransform( x,Xm_test, Xv_test( :, 1 ) );
+        else
+            ind_fun = @(x) loglik_varmean_matrix_var( x,Xm_train, Xv_train( :, 1 )  , Y_train);
+            
+            % Define the (negative) out-of-sample likelihood
+            ind_funtest = @(x) loglik_varmean_matrix_var( x ,Xm_test, Xv_test( :, 1 )  , Y_test);
+            
+            % Define the predicted activation function
+            ind_predfun = @(x) preds_varmean_matrix_var( x,Xm_test, Xv_test( :, 1 ) );
         end
         
         %% Fit Independent Model (GLM-OLS)
-        [B_pre, sigma2_pre, ~] = solve_glm(Xm_pre_train, Y_pre_train);
+        [~, ~, B, sigma2, ~, badchol] = solve_glm( Xm_train, Y_train, 0 ); % do not prewhiten (we will have already done it above)
         
-        % store independent model parameters
-        indparams =  [B_pre; sigma2_pre];
+        % store GLM model parameters
+        indparams =  [B; sigma2];
         
         %% Fit Dependent Model (VDGLM-optimization)
-        if ~(length(unique(Y)) == 1) % i.e., if the data is from within the brain
-            if (doconstrained==0) % run the unconstrained optimizer
-                [depparams,fval,exitflag,output,grad,hessian] = fminunc(fun, initsnow, optim_opts);
-            else % run the constrained optimizer 
-                x0 = initsnow;
-                A = [];
-                b = [];
-                Aeq = [];
-                beq = [];
-                lb  = [];
-                ub  = [];
+        if ~isnan( vdglm_idx )
+            
+            % Which columns to include for the variance effect
+            varcolsnow  = models{ vdglm_idx }.varcols;
+            
+            % Initial parameters for VDGLM optimization
+            initsnow = [models{ vdglm_idx }.initsmean, ... % mean experiment regressors
+                models{ vdglm_idx}.initsmotion*ones(1, size(motionnow,2)), ... % motion regressors
+                models{ vdglm_idx}.initsvar]'; % variance parameters
+            
+            % Indicate motion parameters
+            ismotionparam{ vdglm_idx } = [false(1, length(meancolsnow)), true(1, size(motionnow, 2)), false(1, length(varcolsnow))];
+            
+            % Define the Likelihoods and Prediction Functions
+            if var_log_transform
+                fun = @(x) loglik_varmean_matrix_logtransform( x,Xm_train, Xv_train , Y_train);
                 
-                % Define the non-linear constraint function
-                nonlcon = @(x) varconstraint2( x, Xm_pre_train, Xv_train );
+                % Define the (negative) out-of-sample likelihood
+                funtest = @(x) loglik_varmean_matrix_logtransform( x ,Xm_test, Xv_test  , Y_test);
                 
-                % Run the constrained optimizer
-                [depparams,fval,exitflag,output,lambda,grad,hessian] = fmincon(fun,x0,A,b,Aeq,beq,lb,ub,nonlcon,optim_opts);
+                % Define the predicted activation function
+                predfun = @(x) preds_varmean_matrix_logtransform( x,Xm_test, Xv_test );
+            else
+                fun = @(x) loglik_varmean_matrix_var( x,Xm_train, Xv_train , Y_train);
+                
+                % Define the (negative) out-of-sample likelihood
+                funtest = @(x) loglik_varmean_matrix_var( x ,Xm_test, Xv_test , Y_test);
+                
+                % Define the predicted activation function
+                predfun = @(x) preds_varmean_matrix_var( x,Xm_test, Xv_test );
             end
-        else
-            depparams = nan(size(initsnow));
+            
+            if ~(length(unique(Y)) == 1) % i.e., if the data is from within the brain
+                if (doconstrained==0) % run the unconstrained optimizer
+                    [depparams,fval,exitflag,output,grad,hessian] = fminunc(fun, initsnow, optim_opts);
+                else % run the constrained optimizer
+                    x0 = initsnow;
+                    A = [];
+                    b = [];
+                    Aeq = [];
+                    beq = [];
+                    lb  = [];
+                    ub  = [];
+                    
+                    % Define the non-linear constraint function
+                    nonlcon = @(x) varconstraint2( x, Xm_train, Xv_train );
+                    
+                    % Run the constrained optimizer
+                    [depparams,fval,exitflag,output,lambda,grad,hessian] = fmincon(fun,x0,A,b,Aeq,beq,lb,ub,nonlcon,optim_opts);
+                end
+            else
+                depparams = nan(size(initsnow));
+            end
+            
         end
-        
         %% Store parameters
         if f == K+1
-    
-            paramsnow{ dep_idx } = depparams';
-            paramsnow{ ind_idx } = indparams';
-            
+
             % compute and store BIC, out-of-sample log-likelihood, predictions
-            bicnow{ dep_idx } = log( ntrain )*length(depparams) + 2*fun( depparams );
-            bicnow{ ind_idx } = log( ntrain )*length(indparams) + 2*ind_fun( indparams );
+            if ~isnan( vdglm_idx ) 
+                paramsnow{ vdglm_idx } = depparams';
+                bicnow{ vdglm_idx } = log( ntrain )*length(depparams) + 2*fun( depparams );
+                [ predm{ vdglm_idx } , predv{ vdglm_idx } ] = predfun( depparams );
+            end
             
-            % Compute predicted means and stds
-            [ predm{ dep_idx } , predv{ dep_idx } ] = predfun( depparams );
-            [ predm{ ind_idx } , predv{ ind_idx } ] = ind_predfun( indparams );
+            paramsnow{ glm_idx } = indparams';
+            bicnow{ glm_idx } = log( ntrain )*length(indparams) + 2*ind_fun( indparams );
+            [ predm{ glm_idx } , predv{ glm_idx } ] = ind_predfun( indparams );
         else
-%             ind_funtest = @(x) loglik_varmean_matrix_var( x ,Xm_pre_test, Xv_test(:,1) , Y_pre_test);
-%             Xm_pre_test(1,:) = []; 
-%             Xv_test(1,:) = []; 
-%             Y_pre_test(1,:) = []; 
-%             ind_funtest2 = @(x) loglik_varmean_matrix_var( x ,Xm_pre_test, Xv_test(:,1)  , Y_pre_test);
-%              
-%             ind_funtest(indparams)
-%             ind_funtest2(indparams)
             
-            lloutofsample{ f, dep_idx } = -funtest(depparams);
-            lloutofsample{ f, ind_idx } = -ind_funtest(indparams);
+            if ~isnan( vdglm_idx ) 
+                lloutofsample{ f, vdglm_idx } = -funtest(depparams);
+            end
+            lloutofsample{ f, glm_idx } = -ind_funtest(indparams);
         end
         
     end

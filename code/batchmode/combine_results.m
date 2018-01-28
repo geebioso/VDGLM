@@ -32,8 +32,8 @@ if dotest
    output_directory = [output_directory '_test'];  
 end
 
-fprintf('Input directory: %s\n', input_directory); 
-fprintf('Output directory: %s\n\n', output_directory); 
+LOG.info('INFO',sprintf('Input directory: %s', input_directory)); 
+LOG.info('INFO',sprintf('Output directory: %s\n', output_directory)); 
 
 %% Get list of all single job names 
 files = dir(input_directory);
@@ -126,7 +126,6 @@ for m = 1:M
 end
 
 %% Iterate over files and add to master storage
-LOG.info('INFO', sprintf('Adding from directory %s', input_directory))
 for f = 1:NF
     
     filenow = fullfile(input_directory, filenames{f});

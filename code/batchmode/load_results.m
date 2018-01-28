@@ -2,7 +2,7 @@ function [models, allbicm, allllsm, bestmodelBIC, bestmodelCV, all_subjs, sub_nu
     load_results(results_directory, whsim, dotest, LOG)
 
 LOG.info('INFO', sprintf('Loading Results, whsim = %d', whsim));
-if ismember(whsim, [26, 27, 28])
+if whsim > 25 
     
     input_directory = fullfile(results_directory, 'batch_analyses', 'combined');
     if dotest
