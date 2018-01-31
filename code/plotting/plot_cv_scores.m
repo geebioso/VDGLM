@@ -1,4 +1,4 @@
-function [] = plot_cv_scores_whsim26(isHPC, dotest)
+function [] = plot_cv_scores(whsim, isHPC, dotest)
 
 % This function plots the out of sample log likelihood scores 
 
@@ -13,8 +13,8 @@ end
 fprintf('Input directory: %s\n', input_directory);
 
 %% Load Results 
-load(fullfile( input_directory, 'allllsm.mat')); 
-load(fullfile( input_directory, 'bestmodelCV.mat')); 
+load(fullfile( input_directory, sprintf('whs%d_allllsm.mat', whsim))); 
+load(fullfile( input_directory, sprintf('whs%d_bestmodelCV.mat', whsim))); 
 
 % sort subjects by how many ROIS prefer the Var+Mean model 
 pref_vm = bestmodelCV == 1; 
