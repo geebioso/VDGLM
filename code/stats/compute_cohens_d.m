@@ -192,11 +192,9 @@ if dobraincontingency
             BC.(simfield).contrast_names = cont_strs; 
             
             for c = 1:NC
-                
-                fprintf('Processing %s at effect size %2.2f\n', cont_str, effect_threshold);
-                
                 % get contrast names
                 cont_str = cont_strs{c};
+                fprintf('Processing %s at effect size %2.2f\n', cont_str, effect_threshold);
                 mean_cont_str = [cont_str '_mean'];
                 var_cont_str = [cont_str '_var'];
                 
@@ -337,52 +335,52 @@ if doscatter
     filename = fullfile( results_directory, '../images', sprintf('cohensd_mean_var_scatter_whs%d', whsim));
     print(filename, '-dpng');
     
-    %% Plot Num regions by threshold
-    h = figure(2); clf;
-    h.Position = [-7 387 1261 318];
-    
-    for c = 1:NC
-        cont_str = cont_strs{c};
-        cont_str = strrep(cont_str, '2', 'two');
-        cont_str = strrep(cont_str, '0', 'zero');
-        
-        mean_rois = abs(out.(cont_str).mean_rois);
-        var_rois = abs(out.(cont_str).var_rois);
-        
-        mean_rois = sort(mean_rois);
-        var_rois = sort(var_rois);
-        
-        thresholds = sort( [mean_rois; var_rois]);
-        NT = length(thresholds);
-        
-        pct_mean = zeros(NT,1);
-        pct_var = zeros(NT,1);
-        pct_both = zeros(NT,1);
-        for t = 1:NT
-            
-            mean_over = mean_rois > thresholds(t);
-            var_over  = var_rois > thresholds(t);
-            both_over = and( mean_rois > thresholds(t) , var_rois > thresholds(t) );
-            mean_over(both_over) = false;
-            var_over(both_over) = false;
-            
-            pct_mean(t) = sum( mean_over )/NT;
-            pct_var(t)  = sum( var_over  )/NT;
-            pct_both(t) = sum( both_over )/NT;
-        end
-        
-        subplot(1,NC, c);
-        plot(thresholds, pct_mean*100); hold on;
-        plot(thresholds, pct_var*100 ); hold on;
-        plot(thresholds, pct_both*100); hold on;
-        xlabel('d');
-        ylabel('pct rois');
-        title(strrep(cont_str, '_', '\_'));
-        
-        legend('Location', 'best', {'Mean', 'Var', 'Both'});
-    end
-    
-    filename = fullfile( results_directory, '../images', sprintf('cohend_num_above_threshold_whs%d', whsim));
-    print(filename, '-dpng');
+%     %% Plot Num regions by threshold
+%     h = figure(2); clf;
+%     h.Position = [-7 387 1261 318];
+%     
+%     for c = 1:NC
+%         cont_str = cont_strs{c};
+%         cont_str = strrep(cont_str, '2', 'two');
+%         cont_str = strrep(cont_str, '0', 'zero');
+%         
+%         mean_rois = abs(out.(cont_str).mean_rois);
+%         var_rois = abs(out.(cont_str).var_rois);
+%         
+%         mean_rois = sort(mean_rois);
+%         var_rois = sort(var_rois);
+%         
+%         thresholds = sort( [mean_rois; var_rois]);
+%         NT = length(thresholds);
+%         
+%         pct_mean = zeros(NT,1);
+%         pct_var = zeros(NT,1);
+%         pct_both = zeros(NT,1);
+%         for t = 1:NT
+%             
+%             mean_over = mean_rois > thresholds(t);
+%             var_over  = var_rois > thresholds(t);
+%             both_over = and( mean_rois > thresholds(t) , var_rois > thresholds(t) );
+%             mean_over(both_over) = false;
+%             var_over(both_over) = false;
+%             
+%             pct_mean(t) = sum( mean_over )/NT;
+%             pct_var(t)  = sum( var_over  )/NT;
+%             pct_both(t) = sum( both_over )/NT;
+%         end
+%         
+%         subplot(1,NC, c);
+%         plot(thresholds, pct_mean*100); hold on;
+%         plot(thresholds, pct_var*100 ); hold on;
+%         plot(thresholds, pct_both*100); hold on;
+%         xlabel('d');
+%         ylabel('pct rois');
+%         title(strrep(cont_str, '_', '\_'));
+%         
+%         legend('Location', 'best', {'Mean', 'Var', 'Both'});
+%     end
+%     
+%     filename = fullfile( results_directory, '../images', sprintf('cohend_num_above_threshold_whs%d', whsim));
+%     print(filename, '-dpng');
 end
 
