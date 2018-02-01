@@ -220,6 +220,7 @@ allbic    = cell( NS , R , M );
 alllls    = cell( NS , R , K+1 , M ); % all log likelihoods
 allpredm  = cell( NS , R , M );       % all mean predictions at each time point
 allpredv  = cell( NS , R , M );       % all variance predictions at each time point
+allbadchol = zeros(NS, R, M); 
 
 % Determine train/test partitions
 whtrain_sets = cell( 1 , K+1 );
@@ -262,7 +263,7 @@ for s=1:NS
     
     % Loop over regions/voxels
     for j=1:R
-        if rem(j, 100) == 0
+        if rem(j, 10) == 0
             LOG.info( 'INFO', sprintf('\tregion %d\n' , j ));
         end
         YALL = YS(:,j);
@@ -274,7 +275,7 @@ for s=1:NS
             doconstrained, TukN, prewhiten, optim_opts, whtrain_sets, ...
             whtest_sets, LOG, i, j);
         
-        if badchol
+        if any( badchol ) 
             LOG.warn('WARN', sprintf('S is not positive definite subject %d, region %d', i, j));
         end
         
@@ -301,6 +302,7 @@ for s=1:NS
                     
                     allpredm{s,j,m}   = temp_predm';
                     allpredv{s,j,m}   = temp_predv';
+                    allbadchol(s,j,:) = badchol; 
                 else
                     % Store the out-of-sample likelihood for the f-th partition
                     alllls{s,j,f,m} = lloutofsample{f,m};
@@ -362,5 +364,5 @@ savedwhsim = whsim;
 LOG.info('INFO', sprintf( 'saving file %s', filenm) );
 save( filenm , 'allbicm', 'allllsm', 'alllls', 'bestmodelBIC' , 'bestmodelCV' ,...
     'M', 'K' , 'models' , 'savedwhsim', 'runtime', 'subjs', 'start_sub', ...
-    'end_sub', '-v7.3');
+    'end_sub', 'allbadchol', '-v7.3');
 
