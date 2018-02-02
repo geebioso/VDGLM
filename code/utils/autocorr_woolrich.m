@@ -20,7 +20,8 @@ for m = 0:M
     
     t1 = res(1:(N-m)) - resbar; 
     t2 = res(m+1:N) - resbar; 
-    A(m+1) = (1/varhat)*sum(t1.*t2)/(N-m); 
+    % A(m+1) = (1/varhat)*sum(t1.*t2)/(N-m); % unbiased
+    A(m+1) = (1/varhat)*sum(t1.*t2)/(N);  % biased 
 end
 
 end

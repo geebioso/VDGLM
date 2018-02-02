@@ -135,6 +135,10 @@ for mp = 1:size( model_pairs , 1 )
     %% Prewhiten
     % Prewhiten on all the data
     if prewhiten
+            
+    if and( i == 1, j == 5)
+        x = 1;
+    end
         [Y_pre, Xm_pre, B_pre, sigma2_pre, L, bc ] = solve_glm( Xm, Y, prewhiten, TukN);
         badchol( glm_idx ) = bc; 
     end
