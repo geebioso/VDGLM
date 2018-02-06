@@ -4,7 +4,7 @@ input_directory = 'batchmode/Results_all';
 whmodel = 1;
 var_correction = 0;
 dobraincontingency = 1;
-doscatter = 1;
+doscatter = 0;
 docompute = 1;
 logscale = 0;
 doabs = 0;
@@ -76,8 +76,8 @@ if docompute
         
         %% Load Data
         
-%         [models, allbicm, allllsm, bestmodelBIC, bestmodelCV, all_subjs, bad_subjs] = ...
-%             load_results(results_directory, whsim, dotest, LOG);
+        %         [models, allbicm, allllsm, bestmodelBIC, bestmodelCV, all_subjs, bad_subjs] = ...
+        %             load_results(results_directory, whsim, dotest, LOG);
         allparams = models{whmodel}.allparams;
         
         [NS, P, R] = size(allparams);
@@ -130,19 +130,34 @@ if docompute
             
         end
     end
+    
+    % save D
+    filename = fullfile( results_directory, 'single_analyses', ...
+        sprintf('cohensd_whs%d_whmodel%d', whsim, whmodel));
+    
+    save( filename, 'D');
+    
     filename = fullfile(results_directory, '../ROI2NIfTI', 'files', ...
         sprintf('cohensd_whs%d_whmodel%d', whsim, whmodel));
     
-    % output contrast names 
-    f = fopen( sprintf('contrast_names_whs%d.txt', whsim), 'w'); 
+    % output contrast names
+    f = fopen( sprintf('contrast_names_whs%d.txt', whsim), 'w');
     for c = 1:NC
-        fprintf(f, '%s\n', D.(simfield).contrast_names{c});  
+        fprintf(f, '%s\n', D.(simfield).contrast_names{c});
     end
-
+    
     if whsim < 26
         error('YOU NEED TO WRITE CODE FOR COHENS D FOR THIS SIMULATION');
     else
-        ROI2dscalar_nii_multi(whsim, D.(simfield).cohensd, ...
+        
+        temp = zeros(R, NC); 
+        for c = 1:NC
+           temp(:,c) = D.(simfield).cohensd{c};  
+        end
+        
+        ROI2dscalar_nii_v2(temp, filename, D.(simfield).contrast_names);
+        
+        ROI2dscalar_nii_multi(D.(simfield).cohensd, ...
             D.(simfield).contrast_names, filename, 'pct');
     end
 end
@@ -167,13 +182,13 @@ if dobraincontingency
         cont_strs = {'2bck_minus_0bck', '2bck_minus_baseline', '0bck_minus_baseline'}; % contrast strings
         
         NC = length(cont_strs);
-        f = fopen( sprintf('effect_names_whs%d.txt', whsim), 'w'); 
+        f = fopen( sprintf('effect_names_whs%d.txt', whsim), 'w');
         for c = 1:NC
-            fprintf(f, '%s\n', cont_strs{c}); 
+            fprintf(f, '%s\n', cont_strs{c});
         end
         effect_thresholds = [0.2, 0.5, 0.8];
         simfield = sprintf('sim%d', whsim);
-        BC.(simfield) = struct(); 
+        BC.(simfield) = struct();
         
         for i = 1:length(effect_thresholds)
             
@@ -188,8 +203,8 @@ if dobraincontingency
                     effect_str = 'large';
             end
             
-            BC.(simfield).(effect_str) = cell(NC,1); 
-            BC.(simfield).contrast_names = cont_strs; 
+            BC.(simfield).(effect_str) = cell(NC,1);
+            BC.(simfield).contrast_names = cont_strs;
             
             for c = 1:NC
                 % get contrast names
@@ -217,7 +232,7 @@ if dobraincontingency
                 all_effects( both_effect )    = 3;
                 all_effects( neither_effect ) = 0;
                 
-                BC.(simfield).(effect_str){c} = all_effects; 
+                BC.(simfield).(effect_str){c} = all_effects;
             end
             
             filename = fullfile(results_directory, '../ROI2NIfTI', 'files', ...
@@ -232,13 +247,15 @@ if dobraincontingency
             
         end
     end
-end
-
-for i = {'small', 'medium', 'large'}
-    fprintf('%s\n', i{1}); 
-    for c = 1:NC
-       fprintf('\tlength unique = %d\n', length(unique(BC.sim26.(i{1}){c})));  
+    
+    
+    for i = {'small', 'medium', 'large'}
+        fprintf('%s\n', i{1});
+        for c = 1:NC
+            fprintf('\tlength unique = %d\n', length(unique(BC.sim26.(i{1}){c})));
+        end
     end
+    
 end
 %% Mean Variance Scatter Plot
 
@@ -335,52 +352,52 @@ if doscatter
     filename = fullfile( results_directory, '../images', sprintf('cohensd_mean_var_scatter_whs%d', whsim));
     print(filename, '-dpng');
     
-%     %% Plot Num regions by threshold
-%     h = figure(2); clf;
-%     h.Position = [-7 387 1261 318];
-%     
-%     for c = 1:NC
-%         cont_str = cont_strs{c};
-%         cont_str = strrep(cont_str, '2', 'two');
-%         cont_str = strrep(cont_str, '0', 'zero');
-%         
-%         mean_rois = abs(out.(cont_str).mean_rois);
-%         var_rois = abs(out.(cont_str).var_rois);
-%         
-%         mean_rois = sort(mean_rois);
-%         var_rois = sort(var_rois);
-%         
-%         thresholds = sort( [mean_rois; var_rois]);
-%         NT = length(thresholds);
-%         
-%         pct_mean = zeros(NT,1);
-%         pct_var = zeros(NT,1);
-%         pct_both = zeros(NT,1);
-%         for t = 1:NT
-%             
-%             mean_over = mean_rois > thresholds(t);
-%             var_over  = var_rois > thresholds(t);
-%             both_over = and( mean_rois > thresholds(t) , var_rois > thresholds(t) );
-%             mean_over(both_over) = false;
-%             var_over(both_over) = false;
-%             
-%             pct_mean(t) = sum( mean_over )/NT;
-%             pct_var(t)  = sum( var_over  )/NT;
-%             pct_both(t) = sum( both_over )/NT;
-%         end
-%         
-%         subplot(1,NC, c);
-%         plot(thresholds, pct_mean*100); hold on;
-%         plot(thresholds, pct_var*100 ); hold on;
-%         plot(thresholds, pct_both*100); hold on;
-%         xlabel('d');
-%         ylabel('pct rois');
-%         title(strrep(cont_str, '_', '\_'));
-%         
-%         legend('Location', 'best', {'Mean', 'Var', 'Both'});
-%     end
-%     
-%     filename = fullfile( results_directory, '../images', sprintf('cohend_num_above_threshold_whs%d', whsim));
-%     print(filename, '-dpng');
+    %     %% Plot Num regions by threshold
+    %     h = figure(2); clf;
+    %     h.Position = [-7 387 1261 318];
+    %
+    %     for c = 1:NC
+    %         cont_str = cont_strs{c};
+    %         cont_str = strrep(cont_str, '2', 'two');
+    %         cont_str = strrep(cont_str, '0', 'zero');
+    %
+    %         mean_rois = abs(out.(cont_str).mean_rois);
+    %         var_rois = abs(out.(cont_str).var_rois);
+    %
+    %         mean_rois = sort(mean_rois);
+    %         var_rois = sort(var_rois);
+    %
+    %         thresholds = sort( [mean_rois; var_rois]);
+    %         NT = length(thresholds);
+    %
+    %         pct_mean = zeros(NT,1);
+    %         pct_var = zeros(NT,1);
+    %         pct_both = zeros(NT,1);
+    %         for t = 1:NT
+    %
+    %             mean_over = mean_rois > thresholds(t);
+    %             var_over  = var_rois > thresholds(t);
+    %             both_over = and( mean_rois > thresholds(t) , var_rois > thresholds(t) );
+    %             mean_over(both_over) = false;
+    %             var_over(both_over) = false;
+    %
+    %             pct_mean(t) = sum( mean_over )/NT;
+    %             pct_var(t)  = sum( var_over  )/NT;
+    %             pct_both(t) = sum( both_over )/NT;
+    %         end
+    %
+    %         subplot(1,NC, c);
+    %         plot(thresholds, pct_mean*100); hold on;
+    %         plot(thresholds, pct_var*100 ); hold on;
+    %         plot(thresholds, pct_both*100); hold on;
+    %         xlabel('d');
+    %         ylabel('pct rois');
+    %         title(strrep(cont_str, '_', '\_'));
+    %
+    %         legend('Location', 'best', {'Mean', 'Var', 'Both'});
+    %     end
+    %
+    %     filename = fullfile( results_directory, '../images', sprintf('cohend_num_above_threshold_whs%d', whsim));
+    %     print(filename, '-dpng');
 end
 

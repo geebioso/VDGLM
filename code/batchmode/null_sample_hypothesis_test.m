@@ -19,8 +19,10 @@ function [] = null_sample_hypothesis_test(whsim, dotest, isHPC, start_sub, end_s
 
 % TIMING: 
 % 449.44s for test mode with 100 samples on my laptop 
+% 52.49s for test mode with 10 samples on my laptop 
 % 7.94s for analyzedata_batch_v2.m for one subject during test on my laptop
-%    => expect 56 times slower execution 
+%   with 10 samples 
+%    => expect 65 times slower execution 
 
 % 4088.10s for analyzedata_batch_v2.m on the HPC for 1 subject 
 %   =>  228,930 seconds = 64 hours for 1 subject on the HPC with 100 samples 
@@ -240,7 +242,7 @@ allparams = cell( NS , R , M, Nsamp );
 motionparams = cell( NS , R , M, Nsamp );
 allbic    = cell( NS , R , M, Nsamp );
 alllls    = cell( NS , R , M , Nsamp, K+1 ); % all log likelihoods
-allbadchol = zeros(NS, R, M, Nsamp); 
+allbadchol = zeros(NS, R, M); 
 
 % Determine train/test partitions
 whtrain_sets = cell( 1 , K+1 );
@@ -314,7 +316,7 @@ for s=1:NS
             models, Xm, ismotionparam, Xv, Y, var_log_transform, doconstrained, TukN, ...
             prewhiten, optim_opts, whtrain_sets, whtest_sets, LOG, i, j, Nsamp);
         
-        allbadchol(i,j,:,n) = badchol; 
+        allbadchol(i,j,:) = badchol; 
         
         for f=1:K+1
             for m = 1:M

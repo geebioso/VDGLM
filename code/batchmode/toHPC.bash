@@ -25,6 +25,8 @@ scp autocorr_woolrich.m ggaut@hpc.oit.uci.edu:/data/users/ggaut/VDGLM/autocorr_w
 scp spm_Gpdf.m ggaut@hpc.oit.uci.edu:/data/users/ggaut/VDGLM/spm_Gpdf.m
 scp spm_hrf.m ggaut@hpc.oit.uci.edu:/data/users/ggaut/VDGLM/spm_hrf.m
 scp set_results_directory.m ggaut@hpc.oit.uci.edu:/data/users/ggaut/VDGLM/set_results_directory.m
+scp toepsolve.m ggaut@hpc.oit.uci.edu:/data/users/ggaut/VDGLM/toepsolve.m
+scp toepsolve.c ggaut@hpc.oit.uci.edu:/data/users/ggaut/VDGLM/toepsolve.c
 cd ../batchmode 
 
 # matlab utility functions 

@@ -38,6 +38,7 @@ done
 rm $SPEC_FILENAME
 
 # add brain files
+echo "Creating .spec file" 
 echo "Adding brain files" 
 wb_command -add-to-spec-file $SPEC_FILENAME \
     CORTEX_RIGHT ../../ROI2NIfTI/S1200.R.pial_MSMAll.32k_fs_LR.surf.gii

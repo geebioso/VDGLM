@@ -3,6 +3,7 @@ function [Y, X, B, sigma2, W, badchol ] = solve_glm( X, Y, prewhiten, varargin)
 
 ac_mode = 'AR'; % 'Tukey' or 'AR'
 ar_order = 2;
+
 % This function returns the prewhitened OLS solution of the model
 %   Y = Xm*B + e
 % fit using only the data contained in trainnow. Prewhitening proceeds as

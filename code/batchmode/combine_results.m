@@ -1,4 +1,4 @@
-function[] = combine_results( whsim, isHPC , dotest, logging)
+cdfunction[] = combine_results( whsim, isHPC , dotest, logging)
 
 % This function will read through the directory containing results from
 % single subjects and aggregate them into a combined result. Due to the
