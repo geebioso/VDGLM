@@ -59,7 +59,16 @@ K = length(whtrain_sets) - 1; % the last fold is all data
 
 %% Prewhiten the data
 if prewhiten
-    [Y_pre, Xm_pre, B_pre, sigma2_pre, L, badchol ] = solve_glm( Xm, Y, prewhiten, TukN);
+    [Y_pre, Xm_pre, B_pre, sigma2_pre, W, badchol ] = solve_glm( Xm, Y, prewhiten, TukN);
+    
+    % get inverse of whitening matrix
+    Winv = inv(W); 
+    if rcond(Winv) < eps
+        badchol = 1;  
+    else
+        badchol = 0; 
+    end
+    
 end
 
 % solve the non-prewhitened GLM
@@ -78,13 +87,14 @@ lloutofsample = cell( K+1 , M , Nsamp );
 vdglm_idx = 1;
 glm_idx = 2;
 
+
 for n = 1:Nsamp
     
     % add noise to the non-prewhitened mean trend
     % we add standard noise because variance is accounted for by L
     % (L is the square root matrix of the sample autocovariance)
     noise = mvnrnd(zeros(T, 1), eye(T))';
-    Ysamp = Yhat + L*noise; % removing noise would be Ypre = L \ Ysamp;
+    Ysamp = Yhat + Winv*noise; % removing noise would be Ypre = L \ Ysamp;
 
     %% Fit Each Fold
     for f = 1:K+1

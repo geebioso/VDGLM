@@ -90,7 +90,7 @@ if prewhiten
         % compute whitening matrix 
         w = zeros(T,1);  % from On the performance of autocorrelation estimation algorithms for fMRI analysis. Lenoski
         w(1:ar_order+1) = a;
-        W = tril(toeplitz(w));
+        W = tril(toeplitz(w)); % I checked that these reduce the prewhitening 
         
         badchol = 0; 
     end

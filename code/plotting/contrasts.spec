@@ -12,6 +12,11 @@
              Selected="true">
       ../../ROI2NIfTI/S1200.L.pial_MSMAll.32k_fs_LR.surf.gii
    </DataFile>
+   <DataFile Structure="Cortex"
+             DataFileType="CONNECTIVITY_DENSE_LABEL"
+             Selected="true">
+      ../../ROI2NIfTI/Gordon333.32k_fs_LR.dlabel.nii
+   </DataFile>
    <DataFile Structure="CortexLeft"
              DataFileType="CONNECTIVITY_DENSE_SCALAR"
              Selected="true">

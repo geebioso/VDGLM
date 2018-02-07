@@ -1,5 +1,9 @@
 function [] = null_sample_hypothesis_test(whsim, dotest, isHPC, start_sub, end_sub, Nsamp, logging, logfile)
 
+
+%% THIS CODE IS SCREWED UP: WE WANT TO MODEL THE AUTOCORRELATION AS THE INVERSE OF THE WHITENING MATRIX 
+
+
 % This function generated data from the mean model, adds autocorrelation
 % similar to the empirical autocorrelation, and then estimates the VDGLM
 % parameters. The goal is to find the false positive rate from null data
@@ -316,7 +320,7 @@ for s=1:NS
             models, Xm, ismotionparam, Xv, Y, var_log_transform, doconstrained, TukN, ...
             prewhiten, optim_opts, whtrain_sets, whtest_sets, LOG, i, j, Nsamp);
         
-        allbadchol(i,j,:) = badchol; 
+        allbadchol(s,j,:) = badchol; 
         
         for f=1:K+1
             for m = 1:M

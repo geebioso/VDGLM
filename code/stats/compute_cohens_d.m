@@ -16,7 +16,7 @@ addpath('ROI2NIfTI');
 addpath('/Users/Garren/Dropbox/FMRI/BrainVisualization/NIfTI/NIfTI');
 addpath('/Users/Garren/Dropbox/FMRI/Projects/varianceGLM/ROI2NIfTI/dicm2nii');
 
-LOG = log4m.getLogger('');
+LOG = log4m.getLogger('test_log.txt');
 LOG.setCommandWindowLevel(LOG.INFO);
 LOG.setLogLevel(LOG.OFF);
 
@@ -76,8 +76,8 @@ if docompute
         
         %% Load Data
         
-        %         [models, allbicm, allllsm, bestmodelBIC, bestmodelCV, all_subjs, bad_subjs] = ...
-        %             load_results(results_directory, whsim, dotest, LOG);
+        [models, allbicm, allllsm, bestmodelBIC, bestmodelCV, all_subjs, bad_subjs] = ...
+            load_results(results_directory, whsim, dotest, LOG);
         allparams = models{whmodel}.allparams;
         
         [NS, P, R] = size(allparams);
@@ -155,10 +155,10 @@ if docompute
            temp(:,c) = D.(simfield).cohensd{c};  
         end
         
-        ROI2dscalar_nii_v2(temp, filename, D.(simfield).contrast_names);
+        ROI2dscalar_nii_v2(temp, filename, D.(simfield).contrast_names, 'pct');
         
-        ROI2dscalar_nii_multi(D.(simfield).cohensd, ...
-            D.(simfield).contrast_names, filename, 'pct');
+        save( fullfile( results_directory, '..', 'code', 'stats',...
+            sprintf('cohensd_whs%d_whmodel%d.mat', whsim, whmodel)), 'D'); 
     end
 end
 
@@ -241,7 +241,7 @@ if dobraincontingency
             if whsim < 26
                 error('YOU NEED TO WRITE CODE FOR COHENS D FOR THIS SIMULATION');
             else
-                ROI2dscalar_nii_multi(whsim, BC.(simfield).(effect_str), ...
+                ROI2dscalar_nii_multi(BC.(simfield).(effect_str), ...
                     BC.(simfield).contrast_names, filename, 'pct');
             end
             
