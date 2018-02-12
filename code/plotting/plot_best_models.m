@@ -53,6 +53,7 @@ elseif strcmp(plotby, 'subj')
     xlim( [ 1 NS ] );
 end
 
+hold on ; 
 title( sprintf('Best Model for each ROI and Subject'));
 set( gcf , 'Name' , name );
 set( gca, 'FontSize', 13);

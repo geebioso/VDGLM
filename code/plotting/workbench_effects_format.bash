@@ -43,6 +43,8 @@ wb_command -add-to-spec-file $SPEC_FILENAME \
     CORTEX_RIGHT ../../ROI2NIfTI/S1200.R.pial_MSMAll.32k_fs_LR.surf.gii
 wb_command -add-to-spec-file $SPEC_FILENAME \
     CORTEX_LEFT ../../ROI2NIfTI/S1200.L.pial_MSMAll.32k_fs_LR.surf.gii
+wb_command -add-to-spec-file $SPEC_FILENAME \
+    CORTEX ../../ROI2NIfTI/Gordon333.32k_fs_LR.dlabel.nii
 
 # add all results files 
 ITER=1

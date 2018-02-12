@@ -41,12 +41,12 @@ LOG.setLogLevel(LOG.OFF);
 
 plot_params = false;        % plot histograms of the parameters?
 plot_brain = false;         % do brain plots?
-plot_preds = true;          % do predicted vs actual plots
+plot_preds = false;          % do predicted vs actual plots
 plot_best = true;           % do best model plots
 
 var_method = 'meanpred';    % choose fom 'sample', 'meanpred'
 nsamp = 100;                % numer of samples to use if var_method is 'sample'
-models_to_plot = 1:4;       % which models to plot 
+models_to_plot = 1:2;       % which models to plot 
 
 [results_directory] = set_results_directory( isHPC ); 
 
@@ -172,7 +172,7 @@ R = dat.R;
 %% Load Results
 
 [models, allbicm, allllsm, bestmodelBIC, bestmodelCV, all_subjs, sub_nums] = ...
-    load_results(results_directory, whsim, dotest, LOG);
+    load_results(results_directory, whsim, dotest, LOG, 'analyze');
 
 NS = size( models{1}.allpredsm, 2 );
 R  = size( models{1}.allpredsm, 3 ); 
