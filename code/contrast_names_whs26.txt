@@ -1,8 +1,0 @@
-2bck_minus_0bck_mean
-2bck_minus_0bck_var
-2bck_minus_baseline_mean
-2bck_minus_baseline_var
-0bck_minus_baseline_mean
-0bck_minus_baseline_var
-Instruction_minus_baseline_mean
-Instruction_minus_baseline_var
