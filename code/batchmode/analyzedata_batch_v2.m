@@ -177,7 +177,11 @@ for m=1:M
     % But set intercept to 1
     wh2 = find( ismember( model.vareffects , 'Intercept' ));
     if ~isempty( wh2 )
-        initsvar( wh2 ) = 1;
+        if var_log_transform
+            initsvar( wh2 ) = 0;
+        else
+            initsvar( wh2 ) = 1;
+        end
     end
     
     model.initsmean = initsmean;

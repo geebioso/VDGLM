@@ -1,4 +1,4 @@
-function [Y, X, B, sigma2, W, badchol ] = solve_glm( X, Y, prewhiten, varargin)
+function [Y, X, B, sigma2, W, badchol, df ] = solve_glm( X, Y, prewhiten, varargin)
 % TukN, prewhiten)
 
 ac_mode = 'AR'; % 'Tukey' or 'AR'
@@ -50,6 +50,9 @@ if prewhiten
     % compute raw autocorrelation
     
     if strcmp(ac_mode, 'Tukey')
+        
+        error('Tukey Taper is deprecated'); 
+        
         %% Tukey Taper
         
         if TukN < 0
@@ -66,18 +69,21 @@ if prewhiten
         Tuk((TukN+1):end) = 0; % assumption from paper
         
         % compute sample autocovariance from Tukey Taper
-        autocov = Tuk*var(res);
+        autocov = Tuk*var(res); 
         S = toeplitz( autocov );
         
         % compute cholesky whitening matrix, if unable to compute
         % decomposition, don't prewhiten ( L = eye(size(S)) )
-        [W, p] = chol(S, 'lower');
+        [Winv, p] = chol(S, 'lower');
         if p ~= 0
             badchol = 1;
-            W = eye(size(S));
+            Winv = eye(size(S));
         else
             badchol = 0;
         end
+        
+        Y = Winv\Y;
+        X = Winv\X;
         
     elseif strcmp(ac_mode, 'AR')
         %% AR model
@@ -93,11 +99,13 @@ if prewhiten
         W = tril(toeplitz(w)); % I checked that these reduce the prewhitening 
         
         badchol = 0; 
+        
+         %% 3) Pre-whitening
+        Y = W*Y;
+        X = W*X;
     end
     
-    %% 3) Pre-whitening
-    Y = W\Y;
-    X = W\X;
+   
     
     %% 4) Compute GLM Parameters (with pre-whitened data)
     B = (X'*X) \ X' * Y;

@@ -108,21 +108,21 @@ lloutofsample = cell( K+1, M );
 predm = cell( M, 1 );
 predv = cell( M, 1 );
 ismotionparam = cell( M, 1 );
-badchol = NaN( M, 1 ); 
+badchol = NaN( M, 1 );
 
 for mp = 1:size( model_pairs , 1 )
     vdglm_idx = model_pairs( mp , 1 );
     glm_idx = model_pairs( mp , 2 );
     
     % Which columns to include for the mean effect (GLM and
-    % VDGLM models share mean design matrix) 
+    % VDGLM models share mean design matrix)
     meancolsnow = models{ glm_idx }.meancols;
     
     % Which columns to include for the variance effect
-    if ~isnan( vdglm_idx ) 
+    if ~isnan( vdglm_idx )
         varcolsnow  = models{ vdglm_idx }.varcols;
     else
-        varcolsnow  = models{ glm_idx }.varcols; 
+        varcolsnow  = models{ glm_idx }.varcols;
     end
     
     % set up design matrices
@@ -135,12 +135,12 @@ for mp = 1:size( model_pairs , 1 )
     %% Prewhiten
     % Prewhiten on all the data
     if prewhiten
-            
-    if and( i == 1, j == 5)
-        x = 1;
-    end
+        
+        if and( i == 1, j == 5)
+            x = 1;
+        end
         [Y_pre, Xm_pre, B_pre, sigma2_pre, L, bc ] = solve_glm( Xm, Y, prewhiten, TukN);
-        badchol( glm_idx ) = bc; 
+        badchol( glm_idx ) = bc;
     end
     
     %% Fit Each Fold
@@ -171,23 +171,26 @@ for mp = 1:size( model_pairs , 1 )
         end
         
         % Define the Likelihoods and Prediction Functions
-        if var_log_transform
-            ind_fun = @(x) loglik_varmean_matrix_logtransform( x,Xm_train, Xv_train( :, 1 )  , Y_train);
-            
-            % Define the (negative) out-of-sample likelihood
-            ind_funtest = @(x) loglik_varmean_matrix_logtransform( x ,Xm_test, Xv_test( :, 1 )  , Y_test);
-            
-            % Define the predicted activation function
-            ind_predfun = @(x) preds_varmean_matrix_logtransform( x,Xm_test, Xv_test( :, 1 ) );
-        else
-            ind_fun = @(x) loglik_varmean_matrix_var( x,Xm_train, Xv_train( :, 1 )  , Y_train);
-            
-            % Define the (negative) out-of-sample likelihood
-            ind_funtest = @(x) loglik_varmean_matrix_var( x ,Xm_test, Xv_test( :, 1 )  , Y_test);
-            
-            % Define the predicted activation function
-            ind_predfun = @(x) preds_varmean_matrix_var( x,Xm_test, Xv_test( :, 1 ) );
-        end
+        %         if var_log_transform
+        %             ind_fun = @(x) loglik_varmean_matrix_logtransform_var( x,Xm_train, Xv_train( :, 1 )  , Y_train);
+        %
+        %             % Define the (negative) out-of-sample likelihood
+        %             ind_funtest = @(x) loglik_varmean_matrix_logtransform_var( x ,Xm_test, Xv_test( :, 1 )  , Y_test);
+        %
+        %             % Define the predicted activation function
+        %             ind_predfun = @(x) preds_varmean_matrix_logtransform_var( x,Xm_test, Xv_test( :, 1 ) );
+        %         else
+        ind_fun = @(x) loglik_varmean_matrix_var( x,Xm_train, Xv_train( :, 1 )  , Y_train);
+        
+        % Define the (negative) out-of-sample likelihood
+        ind_funtest = @(x) loglik_varmean_matrix_var( x ,Xm_test, Xv_test( :, 1 )  , Y_test);
+        
+        % Define the predicted activation function
+        ind_predfun = @(x) preds_varmean_matrix_var( x,Xm_test, Xv_test( :, 1 ) );
+        %         end
+        
+        % % Since we are fitting the GLM using OLS without an exponential transformation, 
+        % we don't want the objective, prediction functions to be exponentially transformed
         
         %% Fit Independent Model (GLM-OLS)
         [~, ~, B, sigma2, ~, ~] = solve_glm( Xm_train, Y_train, 0 ); % do not prewhiten (we will have already done it above)
@@ -211,10 +214,10 @@ for mp = 1:size( model_pairs , 1 )
             
             % Define the Likelihoods and Prediction Functions
             if var_log_transform
-                fun = @(x) loglik_varmean_matrix_logtransform( x,Xm_train, Xv_train , Y_train);
+                fun = @(x) loglik_varmean_matrix_logtransform_var( x,Xm_train, Xv_train , Y_train);
                 
                 % Define the (negative) out-of-sample likelihood
-                funtest = @(x) loglik_varmean_matrix_logtransform( x ,Xm_test, Xv_test  , Y_test);
+                funtest = @(x) loglik_varmean_matrix_logtransform_var( x ,Xm_test, Xv_test  , Y_test);
                 
                 % Define the predicted activation function
                 predfun = @(x) preds_varmean_matrix_logtransform( x,Xm_test, Xv_test );
@@ -253,9 +256,9 @@ for mp = 1:size( model_pairs , 1 )
         end
         %% Store parameters
         if f == K+1
-
+            
             % compute and store BIC, out-of-sample log-likelihood, predictions
-            if ~isnan( vdglm_idx ) 
+            if ~isnan( vdglm_idx )
                 paramsnow{ vdglm_idx } = depparams';
                 bicnow{ vdglm_idx } = log( ntrain )*length(depparams) + 2*fun( depparams );
                 [ predm{ vdglm_idx } , predv{ vdglm_idx } ] = predfun( depparams );
@@ -266,7 +269,7 @@ for mp = 1:size( model_pairs , 1 )
             [ predm{ glm_idx } , predv{ glm_idx } ] = ind_predfun( indparams );
         else
             
-            if ~isnan( vdglm_idx ) 
+            if ~isnan( vdglm_idx )
                 lloutofsample{ f, vdglm_idx } = -funtest(depparams);
             end
             lloutofsample{ f, glm_idx } = -ind_funtest(indparams);

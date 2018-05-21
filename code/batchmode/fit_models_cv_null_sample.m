@@ -57,29 +57,29 @@ T = size(Y,1);
 M = length(models);
 K = length(whtrain_sets) - 1; % the last fold is all data
 
-%% Prewhiten the data
+%% Estimate the Whitening Matrix 
 if prewhiten
-    [Y_pre, Xm_pre, B_pre, sigma2_pre, W, badchol ] = solve_glm( Xm, Y, prewhiten, TukN);
+    [ ~, ~, ~, ~, W, badchol, df ] = solve_glm( Xm, Y, prewhiten, TukN);
     
-    % get inverse of whitening matrix
-    Winv = inv(W); 
+    % get inverse of whitening matrix for generating autocorreled noise 
+    Winv = inv(W);
     if rcond(Winv) < eps
-        badchol = 1;  
+        badchol = 1;
     else
-        badchol = 0; 
+        badchol = 0;
     end
     
 end
 
 % solve the non-prewhitened GLM
-[~, ~, B, sigma2, ~, ~ ] = solve_glm( Xm, Y, 0, TukN);
+[~, ~, B, sigma2, ~, ~, df] = solve_glm( Xm, Y, 0, TukN);
 Yhat = Xm*B;
 
 if badchol
     LOG.warn('WARN', sprintf('S is not positive definite subject %d, region %d', i, j));
 end
 
-%% Generate Data and Fit models
+%% Run Sampling Routine 
 paramsnow = cell( M , Nsamp );
 bicnow = cell( M , Nsamp );
 lloutofsample = cell( K+1 , M , Nsamp );
@@ -87,15 +87,22 @@ lloutofsample = cell( K+1 , M , Nsamp );
 vdglm_idx = 1;
 glm_idx = 2;
 
-
 for n = 1:Nsamp
     
+    %% Generate Sample
     % add noise to the non-prewhitened mean trend
-    % we add standard noise because variance is accounted for by L
-    % (L is the square root matrix of the sample autocovariance)
-    noise = mvnrnd(zeros(T, 1), eye(T))';
-    Ysamp = Yhat + Winv*noise; % removing noise would be Ypre = L \ Ysamp;
-
+    % use the biased estimation of the variance because the autocorrelation
+    % estimate is also biased (biased led to better AR parameter recovery)
+    noise = mvnrnd(zeros(T, 1), sigma2*(df/T)*eye(T))';
+    Ysamp = Yhat + Winv*noise; % removing noise would be Ypre = W * Ysamp or Ypre = Winv \ Ysamp;
+    
+    %% Model Fitting 
+    
+    % prewhiten generated time series 
+    if prewhiten
+        [Y_pre, Xm_pre, ~, ~, ~, badchol, df ] = solve_glm( Xm, Ysamp, prewhiten, TukN);
+    end
+    
     %% Fit Each Fold
     for f = 1:K+1
         
@@ -103,7 +110,6 @@ for n = 1:Nsamp
         testnow = whtest_sets{f};
         
         ntrain = sum( trainnow );
-        ntest  = sum( testnow );
         
         % set train and test for variance matrix
         Xv_train = Xv( trainnow, : );
@@ -150,14 +156,14 @@ for n = 1:Nsamp
             % Which columns to include for the variance effect
             varcolsnow  = models{ vdglm_idx }.varcols;
             
-%             % Initial parameters for VDGLM optimization
-%             initsnow = [models{ vdglm_idx }.initsmean, ... % mean experiment regressors
-%                 models{ vdglm_idx}.initsmotion*ones(1, sum( ismotionparam{ vdglm_idx} )), ... % motion regressors
-%                 models{ vdglm_idx}.initsvar]'; % variance parameters
+            %             % Initial parameters for VDGLM optimization
+            %             initsnow = [models{ vdglm_idx }.initsmean, ... % mean experiment regressors
+            %                 models{ vdglm_idx}.initsmotion*ones(1, sum( ismotionparam{ vdglm_idx} )), ... % motion regressors
+            %                 models{ vdglm_idx}.initsvar]'; % variance parameters
             
             % use GLM as an estimate of the mean parameters. Should
-            % converge faster. 
-            initsnow = [ B',  1, models{vdglm_idx}.initsvar(2:end)]'; 
+            % converge faster.
+            initsnow = [ B',  1, models{vdglm_idx}.initsvar(2:end)]';
             
             % Define the Likelihoods and Prediction Functions
             if var_log_transform

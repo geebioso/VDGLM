@@ -157,6 +157,30 @@ elseif whsim == 29
         {{ 'Intercept'                            }           , { 'Intercept'                       }   , {'Intercept', ''}   },
         };
     
+elseif (whsim==36)
+    % HCP DATA BASIC CIFTI (NO TD, PW) with FIXATION IN VARIANCE
+    whs     = 2; % which data set? 8= Ohio State Well Being (edge voxels removed); 0 = HCP WM
+    K       = 10; % Number of folds in CV; K=0 do not CV
+    seed    = 1;
+    Tremove = 10; % How many time steps to remove from data?
+    doconstrained = false; % 1 = Use fmincon; 0 = fminunc
+    
+    prewhiten = true;
+    var_log_transform = true;
+    TukN = 5;
+    multivariate = false;
+    addmotion = true;
+    
+    [ roifile, designfile, combdesignfile ] = set_design_filenames(isHPC, whs);
+    output_directory = fullfile( results_directory, 'batch_analyses', 'single_jobs');
+    
+    runmodels  = {
+        {{ '0-back', '2-back' , 'Instruction' } , { 'Intercept' , '0-back', '2-back', 'Instruction' }    , {'Var+Mean', 'Mean'} },
+        {{ '0-back', '2-back' , 'Instruction' } , { 'Intercept' }                         , {'Mean', ''} },
+        {{ 'Intercept' }                                      , { 'Intercept' , '0-back', '2-back', 'Instruction'  }   , {'Var', 'Intercept'}},
+        {{ 'Intercept'                            }           , { 'Intercept'                       }   , {'Intercept', ''}   },
+        };
+    
 elseif whsim == 40
     % Just Fits two different GLM models. One uses fixation in the mean
     % design, the other uses the intercept
@@ -241,7 +265,7 @@ end
 
 end
 
-function [ roifile, designfile, combdesignfile ] = set_design_filenames(isHPC, whs) 
+function [ roifile, designfile, combdesignfile ] = set_design_filenames(isHPC, whs)
 
 if isHPC
     % hcproifile =  '/pub/ggaut/HCP/all_tc_hpc.mat';

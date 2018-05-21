@@ -1,10 +1,23 @@
 function [models, allbicm, allllsm, bestmodelBIC, bestmodelCV, all_subjs, sub_nums] = ...
-    load_results(results_directory, whsim, dotest, LOG)
+    load_results(results_directory, whsim, dotest, LOG, whmode)
+
+% INPUT: 
+%   results_directory: path to where we store results 
+%   whsim: which simulation to run 
+%   dotest: test mode? 
+%   LOG: log4 logger 
+%   whmode: are we fitting the real data or doing null distribution
+%       sampling ('analyze' or 'null') 
 
 LOG.info('INFO', sprintf('Loading Results, whsim = %d', whsim));
-if whsim > 25 
+if whsim > 25
     
-    input_directory = fullfile(results_directory, 'batch_analyses', 'combined');
+    switch whmode
+        case 'analyze'
+            input_directory = fullfile(results_directory, 'batch_analyses', 'combined');
+        case 'null'
+            input_directory = fullfile(results_directory, 'batch_analyses', 'null_combined');
+    end
     if dotest
         input_directory = [input_directory '_test'];
     end
@@ -17,23 +30,23 @@ if whsim > 25
         filenames{i} = files(i).name;
     end
     
-    % get simulation file names 
-    % get only files that are from the appropriate simulation 
-    ii = cellfun( @(x)  contains( x, sprintf('whs%d', whsim)) , filenames, 'UniformOutput', true); 
-    filenames = filenames( ii ); 
+    % get simulation file names
+    % get only files that are from the appropriate simulation
+    ii = cellfun( @(x)  contains( x, sprintf('whs%d', whsim)) , filenames, 'UniformOutput', true);
+    filenames = filenames( ii );
     
     % get model files
     ii = cellfun( @(x) regexp( x , 'allmodels' ), filenames, 'UniformOutput', 0);
     ii = cellfun( @(x) ~isempty(x), ii);
     filenames = filenames(ii);
-    NF = length(filenames); 
+    NF = length(filenames);
     
     % parse model number from each filename
-    mods = zeros(NF, 1); 
+    mods = zeros(NF, 1);
     for f = 1:NF
-        temp = split(filenames{f}, '_'); 
-        temp = split(temp{3}, '.'); 
-        mods(f) = str2num(temp{1}); 
+        temp = split(filenames{f}, '_');
+        temp = split(temp{3}, '.');
+        mods(f) = str2num(temp{1});
     end
     
     M = length(mods);

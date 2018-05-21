@@ -3,8 +3,8 @@ whsims = [26];
 input_directory = 'batchmode/Results_all';
 whmodel = 1;
 var_correction = 0;
-dobraincontingency = 1;
-doscatter = 0;
+dobraincontingency = 0; 
+doscatter = 1;
 docompute = 1;
 logscale = 0;
 doabs = 0;
@@ -12,8 +12,13 @@ doabs = 0;
 isHPC = 0;
 dotest = 0;
 
-addpath('ROI2NIfTI');
+if whmodel ==2
+   dobraincontingency = 0;  
+   doscatter = 0; 
+end
+
 addpath('/Users/Garren/Dropbox/FMRI/BrainVisualization/NIfTI/NIfTI');
+addpath('/Users/Garren/Dropbox/FMRI/Projects/varianceGLM/ROI2NIfTI');
 addpath('/Users/Garren/Dropbox/FMRI/Projects/varianceGLM/ROI2NIfTI/dicm2nii');
 
 LOG = log4m.getLogger('test_log.txt');
@@ -24,13 +29,18 @@ LOG.setLogLevel(LOG.OFF);
 
 %% Define Contrasts
 contrasts = struct();
-% contrasts.sim7.model1 = {[ 0 1 0 -1 0 0 0], [ 0 0 0 0 0 0 1], [ 0 0 0 0 0 1 0]};
-% contrasts.sim7.model2 = {[ 0 1 0 -1 0 ]};
-%
-% contrasts.sim1.model1 = {[ 0 1 -1 0 0 0], [ 0 0 0 0 0 1]};
-% contrasts.sim1.model2 = {[ 0 1 -1 0 0]};
+contrasts.sim7.model2.vec = {
+    [ -1 1 0 0 ], ...    
+    [  0 1 0 0 ],...
+    [  1 0 0 0 ]
+    };
+contrasts.sim7.model2.names = {
+    '2bck_minus_0bck_mean', ... 
+    '2bck_minus_baseline_mean',...
+    '0bck_minus_baseline_mean',
+    }; 
 
-contrasts.sim7.model1 = {
+contrasts.sim7.model1.vec = {
     [ -1 1 0 0 0 0 0], ...
     [ 0 0 0 0 -1 1 0], ...
     [ 0 1 0 0 0 0 0], ...
@@ -41,7 +51,7 @@ contrasts.sim7.model1 = {
     [ 0 0 0 0 0 0 1]
     };
 
-contrasts.sim7.names = {
+contrasts.sim7.model1.names = {
     '2bck_minus_0bck_mean', ...
     '2bck_minus_0bck_var',...
     '2bck_minus_baseline_mean',...
@@ -52,8 +62,8 @@ contrasts.sim7.names = {
     'Instruction_minus_baseline_var'
     };
 
-contrasts.sim1.model1 = {[ 0 1 -1 0 0 0], [ 0 0 0 0 0 1]};
-contrasts.sim1.names= {'2bck_minus_0bck_mean', '2bck_minus_baseline_variance'};
+contrasts.sim1.model1.vec   = {[ 0 1 -1 0 0 0], [ 0 0 0 0 0 1]};
+contrasts.sim1.model1.names = {'2bck_minus_0bck_mean', '2bck_minus_baseline_variance'};
 
 % same contrasts for pre-whitened and CIfTI analyses of the HCP data
 contrasts.sim26 = contrasts.sim7;
@@ -77,7 +87,8 @@ if docompute
         %% Load Data
         
         [models, allbicm, allllsm, bestmodelBIC, bestmodelCV, all_subjs, bad_subjs] = ...
-            load_results(results_directory, whsim, dotest, LOG);
+            load_results(results_directory, whsim, dotest, LOG, 'analyze');
+         
         allparams = models{whmodel}.allparams;
         
         [NS, P, R] = size(allparams);
@@ -87,22 +98,22 @@ if docompute
             allparams(nanp_subjs,:,:) = [];
             %XS(nanp_subjs) = [];
             %FI(nanp_subjs,:) = [];
-            I%FI(nanp_subjs,:) = [];
+            %FI(nanp_subjs,:) = [];
             %RCOND(nanp_subjs,:) = [];
             %tcn(:,nanp_subjs,:) = [];
             NS = NS - 1;
         end
         
         modelfield = sprintf('model%d', whmodel);
-        NC = length(contrasts.(simfield).(modelfield)); % number of contrasts
+        NC = length(contrasts.(simfield).(modelfield).vec); % number of contrasts
         
         %% Cohen's D
-        
+        A = permute(allparams, [1 3 2]);
         for c = 1:NC
             
             % specify contrast
-            C = contrasts.(simfield).(modelfield){c};
-            contrast_str = contrasts.(simfield).names{c};
+            C = contrasts.(simfield).(modelfield).vec{c};
+            contrast_str = contrasts.(simfield).(modelfield).names{c};
             contrast_str = strrep(contrast_str,' ', '');
             g=sprintf('%d ', C);
             fprintf('\tContrast: %s, C = %s\n', contrast_str, g);
@@ -110,7 +121,7 @@ if docompute
             % compute individual contrasts
             C2 = zeros(1,1,P);
             C2(:) = C;
-            copes = sum( bsxfun( @times, permute(allparams, [1 3 2]), C2), 3); % checked that this is the same result as using a for loop
+            copes = sum( bsxfun( @times, A, C2), 3); % checked that this is the same result as using a for loop
             
             % group level contrasts
             group_copes = mean( copes, 1);
@@ -118,6 +129,13 @@ if docompute
             % Cohen's d
             cohensd = group_copes./std(copes,[],1);
             
+            % Non-paired Cohen's D 
+%             s1 = std(A(:,:,1)); 
+%             s2 = std(A(:,:,2)); 
+%             T = 395; 
+%             cohensd = group_copes./sqrt( (s1.^2 + s2.^2)*( T/(T-9) )); 
+%             
+          
             % correct variance for 1200 subjects
             if var_correction
                 cohensd = sqrt( NS/1200 )*cohensd;
@@ -141,7 +159,7 @@ if docompute
         sprintf('cohensd_whs%d_whmodel%d', whsim, whmodel));
     
     % output contrast names
-    f = fopen( sprintf('contrast_names_whs%d.txt', whsim), 'w');
+    f = fopen( fullfile('..', 'plotting', sprintf('contrast_names_whs%d_mdl%d.txt', whsim, whmodel)), 'w');
     for c = 1:NC
         fprintf(f, '%s\n', D.(simfield).contrast_names{c});
     end
@@ -159,6 +177,31 @@ if docompute
         
         save( fullfile( results_directory, '..', 'code', 'stats',...
             sprintf('cohensd_whs%d_whmodel%d.mat', whsim, whmodel)), 'D'); 
+        
+        % save fixed min/max bounds for mean and variance contrats 
+        ismean = cellfun( @(x) contains( x, 'mean'), D.sim26.contrast_names); 
+        isvar = ~ismean; 
+        is_inst = cellfun( @(x) contains( x, 'Instruction'), D.sim26.contrast_names); 
+       
+        p = 1;
+        idx = and(ismean, ~is_inst);
+        upper = quantile( [D.sim26.cohensd{idx}], 1 - ( 1 - p )/2); 
+        lower = quantile( [D.sim26.cohensd{idx}], (1-p)/2 );
+        filenm =  fullfile('..', 'plotting', sprintf('bounds_whs%d_mdl%d_mean.txt', whsim, whmodel)); 
+        f = fopen(filenm, 'w'); 
+        fprintf(f, '%2.2f\n%2.2f\n', lower, upper); 
+        fclose(f); 
+        
+        if whmodel == 1
+            idx = and(isvar, ~is_inst);
+            upper = quantile( [D.sim26.cohensd{idx}], 1 - ( 1 - p )/2);
+            lower = quantile( [D.sim26.cohensd{idx}], (1-p)/2 );
+            filenm =  fullfile('..', 'plotting', sprintf('bounds_whs%d_mdl%d_var.txt', whsim, whmodel));
+            f = fopen(filenm, 'w'); 
+            fprintf(f, '%2.2f\n%2.2f\n', lower, upper); 
+            fclose(f); 
+        
+        end
     end
 end
 
@@ -210,13 +253,14 @@ if dobraincontingency
                 % get contrast names
                 cont_str = cont_strs{c};
                 fprintf('Processing %s at effect size %2.2f\n', cont_str, effect_threshold);
-                mean_cont_str = [cont_str '_mean'];
-                var_cont_str = [cont_str '_var'];
                 
                 % get cohens d for the mean and variance
+                mean_cont_str = [cont_str '_mean'];
                 mean_idx = strcmp( D.(simfield).contrast_names, mean_cont_str);
-                var_idx = strcmp( D.(simfield).contrast_names, var_cont_str);
                 mean_cohens = D.(simfield).cohensd{mean_idx};
+                
+                var_cont_str = [cont_str '_var'];
+                var_idx = strcmp( D.(simfield).contrast_names, var_cont_str);
                 var_cohens = D.(simfield).cohensd{var_idx};
                 
                 % compute which effects occur
@@ -264,6 +308,16 @@ if doscatter
     NC = length(cont_strs);
     effect_thresholds = [0.2, 0.5, 0.8];
     
+    %% Get min and max cohensd for mean and var 
+    ii = cellfun( @(x) ~isempty(x), strfind( D.sim26.contrast_names, 'mean')); 
+    MD = cell2mat(D.sim26.cohensd(ii)); 
+    xlims = [min(MD(:)), max(MD(:))]; 
+    
+    VD = cell2mat(D.sim26.cohensd(~ii)); 
+    ylims = [min(VD(:)), max(VD(:))]; 
+    
+    delta = 0.1; 
+    
     %% Plot
     
     f = figure(1); clf
@@ -271,12 +325,16 @@ if doscatter
     
     for c = 1:NC
         cont_str = cont_strs{c};
+        
         mean_cont_str = [cont_str '_mean'];
-        var_cont_str = [cont_str '_var'];
         mean_idx = strcmp( D.(simfield).contrast_names, mean_cont_str);
-        var_idx = strcmp( D.(simfield).contrast_names, var_cont_str);
         mean_rois = D.(simfield).cohensd{mean_idx};
+        mean_groups = zeros(size(mean_rois));
+        
+        var_cont_str = [cont_str '_var'];
+        var_idx = strcmp( D.(simfield).contrast_names, var_cont_str);
         var_rois = D.(simfield).cohensd{var_idx};
+        var_groups = zeros( size(var_rois)); 
         
         cont_str = strrep(cont_str, '2', 'two');
         cont_str = strrep(cont_str, '0', 'zero');
@@ -285,13 +343,32 @@ if doscatter
         thresholds = [0.2, 0.5, 0.8];
         linetypes = {'-k', '--k', ':k' };
         
-        groups = zeros(size(mean_rois));
-        map = brewermap(4, 'Set1');
+        map = brewermap(9, 'Set1');
+        temp = map(9,:); 
+        map(2:9,:) = map(1:8,:);
+        map(1,:) = temp;
         for i = 1:length(thresholds)
-            threshold = thresholds(i);
-            ii = or( abs(mean_rois) > threshold, abs(var_rois) > threshold) ;
-            groups(ii) = i;
+            if i == 1
+                lower = 0;
+            else
+                lower = thresholds(i-1);  
+            end
+            upper = thresholds(i);
+            
+            if i == 1
+               no_effect_idx = and( abs(mean_rois) < upper, abs(var_rois) < upper); 
+            end
+            ii = and( abs(mean_rois) > lower, abs(mean_rois) < upper) ;
+            mean_groups(ii) = i;
+            
+            ii = and( abs(var_rois) > lower, abs(var_rois) < upper) ;
+            var_groups(ii) = i;
         end
+        
+        % get which regions have mean and variance effect sizes in the same
+        % threshold bin 
+        groups = (var_groups == mean_groups) + 1; 
+        groups(no_effect_idx) = 0; 
         
         % add negative effecdt sizes
         thresholds = [-thresholds, thresholds];
@@ -309,6 +386,9 @@ if doscatter
         
         % sc = scatter( x, y ); hold on;
         sc = gscatter( x, y, groups, map); hold on;
+        
+        h(c).XLim = [xlims(1) - delta, xlims(2) + delta];
+        h(c).YLim = [ylims(1) - delta, ylims(2) + delta];
         
         if logscale
             h(c).XScale = 'log';
@@ -344,7 +424,7 @@ if doscatter
             li = plot( [thresholds(i), thresholds(i)], h(c).YLim, linetypenow, 'LineWidth', 0.1 ); hold on;
         end
         
-        legend(sc, {'No', 'Small', 'Medium', 'Large'});
+        legend(sc, {'no effect', 'diff size', 'same size'});
         uistack(sc, 'top');
         
     end

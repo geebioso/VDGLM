@@ -2,12 +2,13 @@
 
 whsim = 26; 
 dotest = 0; 
+isHPC = 0; 
 
 LOG = log4m.getLogger('crap.txt');
 LOG.setCommandWindowLevel(LOG.INFO);
 LOG.setLogLevel(LOG.OFF);
 
-%% Load Results 
+[results_directory] = set_results_directory( isHPC );
 
 %% Set Simulation
 [ opts, dotest] = set_analysis_options_v2(whsim, isHPC, dotest, LOG);
@@ -28,7 +29,8 @@ motionX = dat.motionX;
 scrubX = dat.scrubX;
 
 %% Load Results 
-load(fullfile( results_directory, 'batch_analyses', 'combined', sprintf('whs%d_allllsm.mat', whsim))); 
+load(fullfile( results_directory, 'batch_analyses', 'combined', sprintf('whs%d_allllsm.mat', whsim))); % allllsm: OOSLL values 
+load(fullfile( results_directory, 'batch_analyses', 'combined', sprintf('whs%d_all_subjs.mat', whsim))); % all_subjs: list of subjects 
 bestmodelCV  = NaN( NS , R );
 for s=1:NS
     for j=1:R
@@ -71,4 +73,27 @@ filename = fullfile( getenv('HOME'), 'Dropbox', 'FMRI', 'Projects', 'varianceGLM
     'images', sprintf('head_motion_vs_VM_preference_whs%d', whsim)); 
 
 print( filename, '-dpng'); 
+
+%% See if GMIN correlates with model performance 
+
+gmin = load(fullfile(getenv('HOME'), 'Dropbox', 'FMRI', 'restingstatedata', 'WM_LR_gmin.mat')); 
+gmin_subjs = gmin.subjs; 
+gmin = gmin.gmin; 
+
+% index from gmin to allsubjs
+ii = ismember( all_subjs, gmin_subjs); 
+roi_pref = mean( bestmodelCV, 2); 
+roi_pref = roi_pref(ii); 
+    
+if isequal( all_subjs(ii), gmin_subjs ) 
+
+    mdl = fitlm( gmin, roi_pref ); 
+    plot( mdl ); 
+end
+
+
+
+
+
+
 

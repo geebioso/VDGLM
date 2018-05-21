@@ -1,64 +1,65 @@
 function [] = plot_predicted_vs_actual( tcn, fig, name, models, bestmodel, ...
-    models_to_plot, groups, design, var_method, filenm, sub_nums )
+    models_to_plot, groups, design, var_method, filenm, sub_nums, var_log_transform )
 
 % This function plots model predictions against the actual data. It groups
 % data points (e.g., a time series from a subject and roi) by which model
-% they prefer. We plot predictions for the mean and variance of the average 
-% time series at each point. 
+% they prefer. We plot predictions for the mean and variance of the average
+% time series at each point.
 
-%Explanation in paper: 
-% We perform predictive checks to qualitatively capture which models 
-% accurately describe the mean and variance in the data. We compare three 
-% types of time series: 1) model predictions, 2) data generated from the 
-% model, and 3) the raw data. We group time series by whether they prefer 
-% the \textit{Var+Mean} model or another model. Next, we compute a group 
-% mean time series. For each region, we average the time series for all 
-% subjects within a group. Then we average each mean regional time series 
+%Explanation in paper:
+% We perform predictive checks to qualitatively capture which models
+% accurately describe the mean and variance in the data. We compare three
+% types of time series: 1) model predictions, 2) data generated from the
+% model, and 3) the raw data. We group time series by whether they prefer
+% the \textit{Var+Mean} model or another model. Next, we compute a group
+% mean time series. For each region, we average the time series for all
+% subjects within a group. Then we average each mean regional time series
 % to obtain an overall mean time series. We compute a group mean predicted
-% time series using the same procedure but using model predictions instead 
-% of the raw data. The procedure changes to when computing the variance. 
-% We make the assumption that the set of time series that prefer a given 
+% time series using the same procedure but using model predictions instead
+% of the raw data. The procedure changes to when computing the variance.
+% We make the assumption that the set of time series that prefer a given
 % model are samples from a true underlying model, i.e., that we can compute
 % variance across regions and subjects rather than only for a single region
-% from a single subject. This assumption allows us to estimate the variance 
-% at each point in the time series. For each region, we compute the variance 
-% over subjects in a group at each time point. Then we compute the mean 
+% from a single subject. This assumption allows us to estimate the variance
+% at each point in the time series. For each region, we compute the variance
+% over subjects in a group at each time point. Then we compute the mean
 % variance over regions. We plot the actual and predicted mean and variance
 % of each of the three time series we compare. The plots serve as a sanity
-% check to make sure 1) the model can accurately predict that data and 
-% 2) that subjects and regions that prefer the Var+Mean model exhibit 
-% non-constant patterns in the variance and 3) that the model can predict 
+% check to make sure 1) the model can accurately predict that data and
+% 2) that subjects and regions that prefer the Var+Mean model exhibit
+% non-constant patterns in the variance and 3) that the model can predict
 % these trends.
 
-% INPUT: 
+% INPUT:
 %   tcn: data
 %   fig: figure number
-%   name: name of figure window 
-%   models: model results 
-%   bestmodel: matrix of which model is best for each data point 
-%   models_to_plot: which models to plot, 
-%   design: design matrix with all columns (mean and var) 
+%   name: name of figure window
+%   models: model results
+%   bestmodel: matrix of which model is best for each data point
+%   models_to_plot: which models to plot,
+%   design: design matrix with all columns (mean and var)
 %   var_method: method for computing variance
-%   filenm: for saving 
+%   filenm: for saving
+%   var_log_transform: is the variance transformed?
 
-%% Plot predicted versus actual 
+%% Plot predicted versus actual
 h = figure( fig ); clf;
 h.Position =  [137 47 947 592];
 hs = tight_subplot(1,2,[.05 .03],[0.03 .05],[.13 .01]);
 set( gcf , 'Name' , name );
-lw = 1.5; 
-T = size(design, 1); 
-models = models(models_to_plot); 
-M = length(models); 
-NS = size(models{models_to_plot(1)}.allparams, 1); 
-R = size(models{models_to_plot(1)}.allparams, 3); 
+lw = 1.5;
+T = size(design, 1);
+models = models(models_to_plot);
+M = length(models);
+NS = size(models{models_to_plot(1)}.allparams, 1);
+R = size(models{models_to_plot(1)}.allparams, 3);
 
 meandesignnow = design(:, models{1}.meancols);
 vardesignnow = design(:, models{1}.varcols);
 
 % plot mean design
-map = brewermap( 4, 'Set1'); 
-size_diff = size(vardesignnow, 2) - size(meandesignnow,2); 
+map = brewermap( 4, 'Set1');
+size_diff = size(vardesignnow, 2) - size(meandesignnow,2);
 for c = 1:size(meandesignnow,2)
     axes(hs(1));
     plot( 1:T , meandesignnow(:,c) * 0.2 + c - 1 + size_diff, '-' , 'LineWidth' , lw , 'Color', map(c+size_diff,:) ); hold on;
@@ -80,7 +81,7 @@ labels = cellfun( @(x) strrep( x, '_', 'emp '), labels, 'UniformOutput', 0);
 
 for k=1:M
     
-    m = models_to_plot(k); 
+    m = models_to_plot(k);
     allpredsm = models{m}.allpredsm;
     allpredsv = models{m}.allpredsv;
     
@@ -93,29 +94,33 @@ for k=1:M
     
     % Calculate mean and std of data for these cases (separately for each time point)
     meany = nanmean( tcn(:,wh) , 2 );
-    % stdy = std( tcn(:,wh) , [] , 2 );
-    stdy = var( tcn(:,wh) , [] , 2 );
+    % vary = std( tcn(:,wh) , [] , 2 );
+    vary = nanvar( tcn(:,wh) , [] , 2 );
     
     % Predictions from model for these cases
     ypreds_mean = nanmean( models{ m }.allpredsm(:,wh) , 2 );
     
     %if strcmp( var_method, 'meanpred')
-        ypreds_std  = nanmean( models{ m }.allpredsv(:,wh) , 2 );
-    %elseif strcmp( var_method, 'sample')
-        samples = zeros( T, NS, R);
-        for s = 1:NS
-            for r = 1:R
-                samples(:,s,r) = normrnd( allpredsm(:,s,r), allpredsv(:,s,r));
-            end
+    ypreds_var  = nanmedian( models{ m }.allpredsv(:,wh) , 2 );
+    
+%     if var_log_transform
+%         ypreds_var = ypreds_var.^2;
+%     end
+%   elseif strcmp( var_method, 'sample')
+    samples = zeros( T, NS, R);
+    for s = 1:NS
+        for r = 1:R
+            samples(:,s,r) = normrnd( allpredsm(:,s,r), sqrt(allpredsv(:,s,r)));
         end
-        samp_ypreds_std = var(samples(:,wh), [], 2);
-        samp_ypreds_mean = nanmean( samples(:,wh), 2 );
+    end
+    samp_ypreds_var = nanvar(samples(:,wh), [], 2);
+    samp_ypreds_mean = nanmean( samples(:,wh), 2 );
     %end
     
     % Plot the means
     axes(hs(1));
-    plot( 1:T , ypreds_mean - m, 'b-' , 'LineWidth' , lw ); hold on;
-    plot( 1:T , samp_ypreds_mean - m, 'b--' , 'LineWidth' , lw ); hold on;
+    plot( 1:T , ypreds_mean - m , 'b-' , 'LineWidth' , lw ); hold on;
+    plot( 1:T , samp_ypreds_mean - m , 'b--' , 'LineWidth' , lw ); hold on;
     plot( 1:T , meany - m, 'r-' , 'LineWidth' , lw );
     title( titlestr );
     xlim( [ 0 T ] );
@@ -123,9 +128,11 @@ for k=1:M
     
     % Plot the stds
     axes(hs(2));
-    plot( 1:T , ypreds_std - m - 1, 'b-' , 'LineWidth' , lw ); hold on;
-    plot( 1:T , samp_ypreds_std - m - 1, 'b--' , 'LineWidth' , lw ); hold on;
-    plot( 1:T , stdy - m - 1, 'r-' , 'LineWidth' , lw );
+    plot( 1:T , ypreds_var - m - 1, 'b-' , 'LineWidth' , lw ); hold on;
+    plot( 1:T , samp_ypreds_var- m - 1 , 'b--' , 'LineWidth' , lw ); hold on;
+    plot( 1:T , sqrt(ypreds_var) - m - 1, 'g-' , 'LineWidth' , lw ); hold on;
+    plot( 1:T , sqrt(samp_ypreds_var)- m - 1 , 'g--' , 'LineWidth' , lw ); hold on;
+    plot( 1:T , vary - m - 1, 'r-' , 'LineWidth' , lw );hold on; 
     xlim( [ 0 T ] );
     ylim( [-M-1 NC]);
 end

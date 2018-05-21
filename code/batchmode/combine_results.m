@@ -1,4 +1,4 @@
-cdfunction[] = combine_results( whsim, isHPC , dotest, logging)
+function[] = combine_results( whsim, isHPC , dotest, logging)
 
 % This function will read through the directory containing results from
 % single subjects and aggregate them into a combined result. Due to the
@@ -80,17 +80,6 @@ for f = 1:NF
     
     sub_nums(f) = sub_num; 
 end
-
-%         sub_already_in_list = ismember(all_subjs, subjs); 
-%         if ~any(sub_already_in_list)
-%             all_subjs = [all_subjs; subjs];
-%             sub_nums = [sub_nums; sub_num]; 
-%         else % find bad filename 
-%            bf_temp = cell(1,2); 
-%            bf_temp{1} = filenow; 
-%            bf_temp{2} = fullfile( input_directory, filenames{sub_already_in_list}); 
-%            bad_files = [bad_files; bf_temp];
-%         end
      
 [~, ii] = sort(sub_nums); 
 sub_nums = sub_nums(ii); 
@@ -104,7 +93,7 @@ end
 bad_files = bad_files(2:end, :); 
 NS = length(all_subjs);
 
-%% Load one batch to get model storage structure
+%% Load one subject to get model storage structure
 load(filenow);
 R = size(models{1}.allpredsm, 3);
 T = size(models{1}.allpredsm, 1);
@@ -113,6 +102,7 @@ M = length(models);
 %% Create master storage
 allbicm = zeros(NS, R, M);
 allllsm = zeros(NS, R, M);
+allbadchol = zeros(NS, R, M); 
 bad_subjs = cell(1); 
 
 all_models = models;
@@ -140,6 +130,7 @@ for f = 1:NF
     subjsnow = results.subjs;  
     subjnow = results.subjs{1};
     modelsnow = results.models;
+    badchol = results.allbadchol; 
     
     % For each subject insert the results into master storage using the unique
     % subject identifier
@@ -149,10 +140,6 @@ for f = 1:NF
     
     all_idx = find(ismember(all_subjs, subjnow));  % index into master list of subject
     now_idx = 1; % only works if 
-    
-    if sub_num_now == 16
-       x = 1;  
-    end
     
     if LOG.commandWindowLevel < 3
         LOG.debug( 'DEBUG', sprintf('check: %s=%s, filename=%s, sub_num=%d', all_subjs{all_idx}, subjnow, filenames{f}, sub_num_now)); 
@@ -167,6 +154,7 @@ for f = 1:NF
         
         allbicm(all_idx,:,m) = bicm(now_idx,:,m);
         allllsm(all_idx,:,m) = llsm(now_idx,:,m);
+        allbadchol(all_idx,:,m) = badchol(now_idx, :, m); 
     end
     
 end

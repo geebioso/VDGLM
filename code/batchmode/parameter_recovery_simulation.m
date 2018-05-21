@@ -1,7 +1,7 @@
 
 %% Options
 
-whsim = 13;
+whsim = 36;
 dohighpassfilter = 0;
 prewhiten_mean_models = 0;
 prewhiten_var_models = 0;

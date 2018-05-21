@@ -3,9 +3,9 @@
 # RUN from directory ROI2NIFTI/files
 
 # OPTIONS 
-SPEC_FILENAME="contrasts.spec"
+SPEC_FILENAME="tstats.spec"
 WHSIM="26"
-FILENAME="/Users/Garren/Dropbox/FMRI/Projects/varianceGLM/ROI2NIfTI/files/cohensd_whs26_whmodel1.dscalar.nii"
+FILENAME="/Users/Garren/Dropbox/FMRI/Projects/varianceGLM/ROI2NIfTI/files/balanced_tstats_whs26_whmodel1.dscalar.nii"
 
 # PALETTE 
 PALETTE_MODE="MODE_AUTO_SCALE_PERCENTAGE"
@@ -19,8 +19,8 @@ DISP_POS=true
 DISP_ZERO=0
 THRESH_TYPE="THRESHOLD_TYPE_NORMAL"
 THRESH_TEST="THRESHOLD_TEST_SHOW_OUTSIDE"
-THRESH_MIN=$((-$1))
-THRESH_MAX=$(($1))
+THRESH_MIN=-3.6
+THRESH_MAX=3.6
 
 # Read in Contrast Names 
 unset VALUES
