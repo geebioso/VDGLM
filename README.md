@@ -20,20 +20,21 @@ follows:
 **Important**: you will have to make several 
 changes to get this code to run on your machine. You will have to edit the file
  `set_analysis_options.m` to set the paths to the data and the design files. 
-The files that we are using for analysis 
-are `tc_csf_wm_motion_out_globalMask5000_203subj.mat` for the OSUWB data and 
-`all_tc_hcp.mat` for the HCP data. The design files we are using are 
-`WorkingMem_mtx_3column_filter90s.mat` for the OSUWB data and 
-`behav_Result_WM_LR.mat` and `behav_Result_WM_LR_comb.mat` for the HCP data. 
-`behav_Result_WM_LR.mat` contains the uncombined design (10 conditions) and 
-`behav_Result_WM_LR_comb.mat` contains the combined design (4 conditions). 
+
+The files that we are using for analysis and a description of our preprocessing 
+pipelines can be found on our [Open Science
+Foundation page](https://osf.io/4rvbz/wiki/home/). The main files we use for
+analysis are `all_tc_hcp.mat` which contains the imaging time course and  
+`behav_Result_WM_LR.mat` and `behav_Result_WM_LR_comb.mat`, which contain the  
+uncombined design matrix (10 conditions) and combined design matrix (4 
+conditions), respectively. 
 
 The key analysis files are:    
     
 `batchmode/analyzedata_batch_v2.m`: This is the main function for analyzing a 
 batch of subjects and the compiled version of this function is called when we 
 submit a job to the HPC. This funciton performs parameter analysis and computes
- out-of-sample log likelihood,  model predictions, and BIC. 
+ out-of-sample log likelihood, model predictions, and BIC. 
 
 `batchmode/set_analysis_options_v2.m`: This file sets analysis parameters and 
 is called by `analyzedata_batch_v2.m`. Edit this function to specify the paths 
