@@ -8,12 +8,10 @@ of the Human Connectome Project (HCP) on the UCI High Performance Cluster (HPC).
 Our data files and a description of our preprocessing pipelines can be found 
 on our [Open Science Foundation page](https://osf.io/4rvbz/wiki/home/). 
 
-Our analyses begin with data from the [Minimal Preprocessing Pipeline]
-(https://www.sciencedirect.com/science/article/pii/S1053811913005053). We run 
+Our analyses begin with data from the [Minimal Preprocessing Pipeline](https://www.sciencedirect.com/science/article/pii/S1053811913005053). We run 
 out anlaysis on 875 subjects that had low head motion. From the original 
 grayordinate data, we extracted the time series for 333 surface regions of 
-interest (ROIs) based on the [Gordon et al. atlas]
-(https://academic.oup.com/cercor/article/26/1/288/2367115). Additionally, we 
+interest (ROIs) based on the [Gordon et al. atlas](https://academic.oup.com/cercor/article/26/1/288/2367115). Additionally, we 
 performed scrubbing and motion correction. The data from the working memory 
 task are stored in the file `tc_WM_875subj.mat.mat`. This file contains the 
 following fields: 
@@ -29,8 +27,7 @@ corresponding uncombined (10 conditions) and combined (4 conditions) design
 matrices, respectively. Each file contains the fields: 
 
     conditions: condition labels
-    rst: a structure that contains variables describing the time series. 
-        rst.mtx is the design matrix. 
+    rst: a structure that contains variables describing the time series. rst.mtx is the design matrix. 
 
 
 The main files we use for
