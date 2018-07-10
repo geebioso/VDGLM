@@ -140,7 +140,7 @@ switch whs
         design_dat = load(combdesignfile); % loads combined design
         
         rst = design_dat.rst; 
-        design = [ ones(size(rst(1).mtx, 1), 1), rst(1).mtx];
+        design = [ ones(size(rst.mtx, 1), 1), rst.mtx];
         
         % compute temporal derivative for the fixation condition
         temp_d = diff(design(:,4)); % temporal derivative, one point less than X

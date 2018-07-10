@@ -290,10 +290,11 @@ else
         roifile =  fullfile(getenv('HOME'), 'Dropbox','anatomical',...
             'ICAresults','all_tc_hcp.mat');
     end
+    
     designfile =  fullfile( getenv('HOME'), 'Dropbox','FMRI', 'Projects', ...
-        'varianceGLM', 'onsetfiles', 'behav_Result_WM_LR.mat');
+        'varianceGLM', 'onsetfiles', 'design_WM_LR.mat');
     combdesignfile =  fullfile( getenv('HOME'), 'Dropbox','FMRI', 'Projects', ...
-        'varianceGLM', 'onsetfiles', 'behav_Result_WM_LR_comb.mat');
+        'varianceGLM', 'onsetfiles', 'combdesign_WM_LR.mat');
 end
 
 end
