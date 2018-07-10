@@ -1,7 +1,9 @@
 # Intro
 
-The code in this repository will fit the VDGLM to the 1200 subject release 
+The code in this repository s what we used fit the VDGLM to the 1200 subject release 
 of the Human Connectome Project (HCP) on the UCI High Performance Cluster (HPC). 
+Note that this code is not intended to be production level code and will require 
+considerable hacking to run. 
 
 ## Data 
 
@@ -47,6 +49,7 @@ follows:
     * `stats`: functions for computing statistics     
     * `batchmode`: functions for fitting models in batch mode     
     * `utils`: utility functions    
+    * `HPC_scripts`: scripts for running jobs on the HPC     
 
 
 
