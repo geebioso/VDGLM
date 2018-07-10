@@ -3,6 +3,42 @@
 The code in this repository will fit the VDGLM to the 1200 subject release 
 of the Human Connectome Project (HCP) on the UCI High Performance Cluster (HPC). 
 
+## Data 
+
+Our data files and a description of our preprocessing pipelines can be found 
+on our [Open Science Foundation page](https://osf.io/4rvbz/wiki/home/). 
+
+Our analyses begin with data from the [Minimal Preprocessing Pipeline]
+(https://www.sciencedirect.com/science/article/pii/S1053811913005053). We run 
+out anlaysis on 875 subjects that had low head motion. From the original 
+grayordinate data, we extracted the time series for 333 surface regions of 
+interest (ROIs) based on the [Gordon et al. atlas]
+(https://academic.oup.com/cercor/article/26/1/288/2367115). Additionally, we 
+performed scrubbing and motion correction. The data from the working memory 
+task are stored in the file `tc_WM_875subj.mat.mat`. This file contains the 
+following fields: 
+    
+    motionX: estimated mean head motion for each subject and run 
+    readme: short readme 
+    subjs: subject ids
+    tasks: run ids 
+    tc: timecourse for each subject and run 
+    
+The files `design_WM_LR.mat` and `combdesign_WM_LR.mat` contain the 
+corresponding uncombined (10 conditions) and combined (4 conditions) design 
+matrices, respectively. Each file contains the fields: 
+
+    conditions: condition labels
+    rst: a structure that contains variables describing the time series. 
+        rst.mtx is the design matrix. 
+
+
+The main files we use for
+analysis are `tc_WM_875subj.mat` which contains the imaging time course and  
+`design_WM_LR.mat` and `combdesign_WM_LR.mat`, which contain the  
+uncombined design matrix (10 conditions) and combined design matrix (4 
+conditions), respectively. 
+
 # Code Overview 
     
 This code will run the analyses. The directory structure of the code is as 
@@ -21,13 +57,6 @@ follows:
 changes to get this code to run on your machine. You will have to edit the file
  `set_analysis_options.m` to set the paths to the data and the design files. 
 
-The files that we are using for analysis and a description of our preprocessing 
-pipelines can be found on our [Open Science
-Foundation page](https://osf.io/4rvbz/wiki/home/). The main files we use for
-analysis are `all_tc_hcp.mat` which contains the imaging time course and  
-`behav_Result_WM_LR.mat` and `behav_Result_WM_LR_comb.mat`, which contain the  
-uncombined design matrix (10 conditions) and combined design matrix (4 
-conditions), respectively. 
 
 The key analysis files are:    
     
