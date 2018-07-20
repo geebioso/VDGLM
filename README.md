@@ -49,24 +49,27 @@ follows:
     * `stats`: functions for computing statistics     
     * `batchmode`: functions for fitting models in batch mode     
     * `utils`: utility functions    
-    * `HPC_scripts`: scripts for running jobs on the HPC     
+    * `HPC_scripts`: scripts for running jobs on the HPC (these must be located on the HPC)      
 
-
+I would recommend running code on a desktop machine to save the hassle of sending code to and from the HPC and compiling MATLAB code. 
 
 **Important**: you will have to make several 
 changes to get this code to run on your machine. You will have to edit the file
  `set_analysis_options.m` to set the paths to the data and the design files. 
+The key files for running the analysis on your own machine are: 
 
-
-The key analysis files are:    
+`batchmode/run_subjects_in_parallel.m`: This function is used to set up and run 
+all the analyses you would like to run. There are options provided in the 
+function for running the null hypothesis test or a comparison between the 
+VDGLM and GLM on HCP data. 
     
-`batchmode/analyzedata_batch_v2.m`: This is the main function for analyzing a 
+`batchmode/analyzedata_batch.m`: This is the main function for analyzing a 
 batch of subjects and the compiled version of this function is called when we 
 submit a job to the HPC. This funciton performs parameter analysis and computes
  out-of-sample log likelihood, model predictions, and BIC. 
 
-`batchmode/set_analysis_options_v2.m`: This file sets analysis parameters and 
-is called by `analyzedata_batch_v2.m`. Edit this function to specify the paths 
+`batchmode/set_analysis_options.m`: This file sets analysis parameters and 
+is called by `analyzedata_batch.m`. Edit this function to specify the paths 
 to the data and the design matrices. The function takes an analysis number as a
  parameter and returns the options for analysis. Some important options that 
 are set are all data and output file paths, the models to run, whether to 
