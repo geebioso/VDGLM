@@ -1,4 +1,4 @@
-function [] = analyzedata_batch_v2(whsim, dotest, isHPC, start_sub, end_sub, logging, logfile)
+function [] = analyzedata_batch(whsim, dotest, isHPC, start_sub, end_sub, logging, logfile)
 
 % This function will fit a set of models (VDGLM and GLM pairs) specified
 % by whsim and the function set_analysis_options_v2.m. We fit models for
@@ -43,7 +43,7 @@ if start_sub > end_sub
 end
 
 %% Set Simulation
-[ opts, dotest] = set_analysis_options_v2(whsim, isHPC, dotest, LOG);
+[ opts, dotest] = set_analysis_options(whsim, isHPC, dotest, LOG);
 
 %% Load the ROI timecourse data and Design
 [ dat ] = load_data_and_design( opts, dotest, LOG );

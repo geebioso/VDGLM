@@ -1,4 +1,4 @@
-function [ opts, dotest ] = set_analysis_options_v2(whsim, isHPC, dotest, LOG)
+function [ opts, dotest ] = set_analysis_options(whsim, isHPC, dotest, LOG)
 
 % NOTE!!!!!!
 %   Right now this code will not run for any sim numbers except 26 and 27.
@@ -35,6 +35,8 @@ function [ opts, dotest ] = set_analysis_options_v2(whsim, isHPC, dotest, LOG)
 %   The set-up is reflected here and the change in the code is reflected in
 %   the function fit_models.m
 
+%   The function set_design_filenames.m is defined below this function
+
 
 % INPUT:
 %   whsim: which analysis do we want to run?
@@ -59,8 +61,7 @@ function [ opts, dotest ] = set_analysis_options_v2(whsim, isHPC, dotest, LOG)
 
 %% Set directories for OSUWB and HCP data
 
-
-[results_directory] = set_results_directory( isHPC );
+[results_directory] = set_results_directory( isHPC ); 
 
 %% Pick simulation
 if (whsim==26)
@@ -77,7 +78,7 @@ if (whsim==26)
     multivariate = false;
     addmotion = true;
     
-    [ roifile, designfile, combdesignfile ] = set_design_filenames(isHPC, whs);
+    [ roifile, designfile, combdesignfile ] = set_design_filenames(isHPC, whs); 
     output_directory = fullfile( results_directory, 'batch_analyses', 'single_jobs');
     
     runmodels  = {

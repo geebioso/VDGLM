@@ -38,7 +38,7 @@ parfor i = 1:length(subs)
     
     switch jobtype
         case 'analyze'
-            analyzedata_batch_v2(whsim, dotest, isHPC, subnow, subnow, logging, logfile);
+            analyzedata_batch(whsim, dotest, isHPC, subnow, subnow, logging, logfile);
         case 'null'
             null_sample_hypothesis_test(whsim, dotest, isHPC, subnow, subnow, Nsamp, logging, logfile)
     end

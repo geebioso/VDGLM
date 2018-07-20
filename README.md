@@ -49,14 +49,20 @@ follows:
     * `stats`: functions for computing statistics     
     * `batchmode`: functions for fitting models in batch mode     
     * `utils`: utility functions    
-    * `HPC_scripts`: scripts for running jobs on the HPC (these must be located on the HPC)      
+    * `HPC_scripts`: scripts for running jobs on the HPC (these must be 
+located on the HPC)      
 
-I would recommend running code on a desktop machine to save the hassle of sending code to and from the HPC and compiling MATLAB code. 
+I would recommend running code on a desktop machine to save the hassle of 
+sending code to and from the HPC and compiling MATLAB code. 
 
 **Important**: you will have to make several 
 changes to get this code to run on your machine. You will have to edit the file
- `set_analysis_options.m` to set the paths to the data and the design files. 
-The key files for running the analysis on your own machine are: 
+ `batchmode/set_analysis_options.m` to set the paths to the data and the design
+ files. You will have to modify the function 
+`batchmode/set_results_directory.m` to set the result directory path. You can 
+supply an option that will automatically create the required subdirectories. 
+
+The key files for running the analysis on your own machine are:     
 
 `batchmode/run_subjects_in_parallel.m`: This function is used to set up and run 
 all the analyses you would like to run. There are options provided in the 
@@ -65,7 +71,7 @@ VDGLM and GLM on HCP data.
     
 `batchmode/analyzedata_batch.m`: This is the main function for analyzing a 
 batch of subjects and the compiled version of this function is called when we 
-submit a job to the HPC. This funciton performs parameter analysis and computes
+submit a job to the HPC. This function performs parameter estimation and computes
  out-of-sample log likelihood, model predictions, and BIC. 
 
 `batchmode/set_analysis_options.m`: This file sets analysis parameters and 
@@ -105,7 +111,7 @@ Before trying any examples, make sure to set the paths by running
 
 ## Setting up a simulation 
 Here is the example output from running the function 
-`set_analysis_options_v2.m` with the parameters `whsim=26`, `isHPC=0`, 
+`set_analysis_options.m` with the parameters `whsim=26`, `isHPC=0`, 
 `dotest=0`, and `LOG=LOG = log4m.getLogger('test_log.txt')`: 
 
 ```
