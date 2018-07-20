@@ -1,8 +1,4 @@
-function [] = null_sample_hypothesis_test(whsim, dotest, isHPC, start_sub, end_sub, Nsamp, logging, logfile)
-
-
-%% THIS CODE IS SCREWED UP: WE WANT TO MODEL THE AUTOCORRELATION AS THE INVERSE OF THE WHITENING MATRIX 
-
+function [] = null_sample_hypothesis_test(whsim, dotest, isHPC, start_sub, end_sub, Nsamp, logging, logfile, set_up_directory_structure,)
 
 % This function generated data from the mean model, adds autocorrelation
 % similar to the empirical autocorrelation, and then estimates the VDGLM
@@ -60,7 +56,7 @@ if start_sub > end_sub
 end
 
 %% Set Simulation
-[ opts, dotest] = set_analysis_options_v2(whsim, isHPC, dotest, LOG);
+[ opts, dotest] = set_analysis_options(whsim, isHPC, dotest, set_up_directory_structure, LOG);
 
 %% Load the ROI timecourse data and Design
 [ dat ] = load_data_and_design( opts, dotest, LOG);

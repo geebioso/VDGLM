@@ -1,4 +1,4 @@
-function [ opts, dotest ] = set_analysis_options(whsim, isHPC, dotest, LOG)
+function [ opts, dotest ] = set_analysis_options(whsim, isHPC, dotest, set_up_directory_structure, LOG)
 
 % NOTE!!!!!!
 %   Right now this code will not run for any sim numbers except 26 and 27.
@@ -61,7 +61,7 @@ function [ opts, dotest ] = set_analysis_options(whsim, isHPC, dotest, LOG)
 
 %% Set directories for OSUWB and HCP data
 
-[results_directory] = set_results_directory( isHPC ); 
+[results_directory] = set_results_directory( isHPC, set_up_directory_structure ); 
 
 %% Pick simulation
 if (whsim==26)

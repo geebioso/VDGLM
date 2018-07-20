@@ -13,6 +13,7 @@ logging = 'INFO';    % set logging console information (see log4 for MATLAB cont
 logfile = 'test_log.txt'; % set log outfile, this is currently deprecated because i set file output to be off, but the options is required by log4
 subs = start_sub:end_sub;
 Nsamp = 1;           % number of samples for the null hypothesis testing routine 
+set_up_directory_structure = 1 % autopopulated results subdirectories 
 
 %% Start parallel loop
 
@@ -38,9 +39,9 @@ parfor i = 1:length(subs)
     
     switch jobtype
         case 'analyze'
-            analyzedata_batch(whsim, dotest, isHPC, subnow, subnow, logging, logfile);
+            analyzedata_batch(whsim, dotest, isHPC, subnow, subnow, logging, logfile, set_up_directory_structure);
         case 'null'
-            null_sample_hypothesis_test(whsim, dotest, isHPC, subnow, subnow, Nsamp, logging, logfile)
+            null_sample_hypothesis_test(whsim, dotest, isHPC, subnow, subnow, Nsamp, logging, logfile, set_up_directory_structure)
     end
     
 end
