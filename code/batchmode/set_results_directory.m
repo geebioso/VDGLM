@@ -1,4 +1,4 @@
-function [results_directory] = set_results_directory( isHPC, set_up_directory_structure )
+function [results_directory, images_directory, ROI2NIfTI_directory] = set_results_directory( isHPC, set_up_directory_structure )
 
 % INPUT: 
 %   isHPC: are we running analysis on the HPC (0/1) 
@@ -11,7 +11,10 @@ if isHPC
 else
     results_directory = fullfile( getenv('HOME'), 'Dropbox', 'FMRI', 'Projects',...
         'varianceGLM', 'Results');
-    
+    images_directory = fullfile( getenv('HOME'), 'Dropbox', 'FMRI', 'Projects',...
+        'varianceGLM', 'images'); 
+    ROI2NIfTI_directory = fullfile( getenv('HOME'), 'Dropbox', 'FMRI', 'Projects',...
+        'varianceGLM', 'ROI2NIfTI'); 
 end
 
 if set_up_directory_structure
@@ -32,6 +35,21 @@ if set_up_directory_structure
     mkdir batch_analyses/null_single_jobs_test
     mkdir batch_analyses/null_combined_test
     
+    cd(images_directory) 
+    
+    mkdir contrasts
+    mkdir wb_contrasts
+    mkdir wb_effects
+    
+    cd(ROI2NIfTI_directory) 
+    
+    mkdir files 
+    mkdir files/effects
+    mkdir dicm2nii 
+     
     cd(wd); 
+    
+    
+    
 end 
 

@@ -315,8 +315,6 @@ and nii
 `images\wb_effects`            
     * `dicm2nii`: contains code for converting between dicm and nii       
 
-* `onsetfiles`: contains the onsetfiles for HCP and OSUWB datasets 
-
 Most of these are excluded from the git repo to keep the size of the repo 
 maneageable. You will need to make stand in directories for some of the 
 output to save. `Results` and `images` and their subdirectories will need to 
