@@ -1,4 +1,4 @@
-function [] = analyzedata_batch(whsim, dotest, isHPC, start_sub, end_sub, logging, logfile, set_up_directory_structure,)
+function [] = analyzedata_batch(whsim, dotest, isHPC, start_sub, end_sub, logging, logfile, set_up_directory_structure)
 
 % This function will fit a set of models (VDGLM and GLM pairs) specified
 % by whsim and the function set_analysis_options_v2.m. We fit models for
