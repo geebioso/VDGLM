@@ -17,6 +17,10 @@ else
         'varianceGLM', 'ROI2NIfTI'); 
 end
 
+mkdir(results_directory)
+mkdir(images_directory)
+mkdir(ROI2NIfTI_directory) 
+
 if set_up_directory_structure
     
     wd = pwd; 

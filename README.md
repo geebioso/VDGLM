@@ -320,6 +320,7 @@ maneageable. You will need to make stand in directories for some of the
 output to save. `Results` and `images` and their subdirectories will need to 
 exist for functions to run.  
 
+<!-- 
 # Running on the HPC
 
 ## Sending Code and Data to HPC
@@ -392,3 +393,5 @@ The function `combine_results.m` will combine all results from the directory
 ## To-do
 
 1) Use job arrays rather than for-loop for submitting multiple jobs
+
+-->
