@@ -1,4 +1,4 @@
-function[] = combine_results( whsim, isHPC , dotest, logging)
+function[] = combine_results( whsim, isHPC , dotest, logging, set_up_directory_structure )
 
 % This function will read through the directory containing results from
 % single subjects and aggregate them into a combined result. Due to the
@@ -23,7 +23,7 @@ LOG.setLogLevel(LOG.OFF);
 
 
 %% Set up input and output directories 
-[results_directory] = set_results_directory( isHPC );
+[results_directory] = set_results_directory( isHPC, set_up_directory_structure );
 
 input_directory = fullfile( results_directory, 'batch_analyses', 'single_jobs'); 
 output_directory = fullfile( results_directory, 'batch_analyses', 'combined'); 
