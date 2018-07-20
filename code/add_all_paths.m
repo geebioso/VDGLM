@@ -8,3 +8,6 @@ addpath('plotting');
 addpath('batchmode'); 
 addpath('misc'); 
 
+
+% Add NIFTI path 
+

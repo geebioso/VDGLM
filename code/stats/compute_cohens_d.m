@@ -173,7 +173,7 @@ if docompute
            temp(:,c) = D.(simfield).cohensd{c};  
         end
         
-        ROI2dscalar_nii_v2(temp, filename, D.(simfield).contrast_names, 'pct');
+        ROI2dscalar_nii_v2(temp, filename, D.(simfield).contrast_names, 'pct', dotest);
         
         save( fullfile( results_directory, '..', 'code', 'stats',...
             sprintf('cohensd_whs%d_whmodel%d.mat', whsim, whmodel)), 'D'); 
