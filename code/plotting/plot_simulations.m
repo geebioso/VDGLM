@@ -1,4 +1,4 @@
-function [sims] = plot_simulations(whsims, isHPC, dotest)
+function [sims] = plot_simulations(whsims, isHPC, dotest, set_up_directory_structure)
 
 % This function plots:
 %   1) Parameter histograms
@@ -48,7 +48,7 @@ var_method = 'meanpred';    % choose fom 'sample', 'meanpred'
 nsamp = 100;                % numer of samples to use if var_method is 'sample'
 models_to_plot = 1:4;       % which models to plot 
 
-[results_directory] = set_results_directory( isHPC ); 
+[results_directory] = set_results_directory( isHPC, set_up_directory_structure ); 
 
 
 %%
