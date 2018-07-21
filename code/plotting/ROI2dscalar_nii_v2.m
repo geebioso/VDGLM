@@ -12,7 +12,12 @@ function ROI2dscalar_nii(rst333, fname, mapName,  modenow, dotest)
 % 171211 by Xiangrui Li 
 % 180129 Work for multiple maps 
 
-if and( size(rst333, 1) ~= 333, dotest == 0), error('first dim must be 333'); end
+if and( size(rst333, 1) ~= 333, dotest == 0)
+    error('first dim must be 333'); 
+else
+    NROI = size(rst333,1);    
+end
+
 nMap = size(rst333, 2);
 
 if nargin<2 || isempty(fname)
@@ -38,7 +43,7 @@ nii.img = repmat(nii.img, [1 1 1 1 size(rst333,2) 1]);
 if strcmp(modenow, 'pct')
         nii.img= zeros(size(nii.img)); 
 end
-for i = 1:333
+for i = 1:NROI
     ind = roi==i;
     img = repmat(rst333(i,:), [sum(ind) 1]);
     nii.img(1,1,1,1,:,ind) = permute(img, [3:6 2 1]);
