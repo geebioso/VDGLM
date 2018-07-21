@@ -2,10 +2,12 @@
 
 # RUN from directory ROI2NIFTI/files
 
+source wb_global_variables.bash
+
 # OPTIONS 
 SPEC_FILENAME="contrasts_fixed_mdl2.spec"
 WHSIM="26"
-FILENAME="/Users/Garren/Dropbox/FMRI/Projects/varianceGLM/ROI2NIfTI/files/cohensd_whs26_whmodel2.dscalar.nii"
+FILENAME="${MAIN_FILE_DIRECTORY}/files/cohensd_whs26_whmodel2.dscalar.nii"
 
 # PALETTE 
 PALETTE_MODE="MODE_USER_SCALE"
@@ -51,11 +53,11 @@ rm $SPEC_FILENAME
 echo "Creating .spec file" 
 echo "Adding brain files" 
 wb_command -add-to-spec-file $SPEC_FILENAME \
-    CORTEX_RIGHT ../../ROI2NIfTI/S1200.R.pial_MSMAll.32k_fs_LR.surf.gii
+    CORTEX_RIGHT ${MAIN_FILE_DIRECTORY}/S1200.R.pial_MSMAll.32k_fs_LR.surf.gii
 wb_command -add-to-spec-file $SPEC_FILENAME \
-    CORTEX_LEFT ../../ROI2NIfTI/S1200.L.pial_MSMAll.32k_fs_LR.surf.gii
+    CORTEX_LEFT ${MAIN_FILE_DIRECTORY}/S1200.L.pial_MSMAll.32k_fs_LR.surf.gii
 wb_command -add-to-spec-file $SPEC_FILENAME \
-    CORTEX ../../ROI2NIfTI/Gordon333.32k_fs_LR.dlabel.nii
+    CORTEX ${MAIN_FILE_DIRECTORY}/Gordon333.32k_fs_LR.dlabel.nii
 
 # add all results files 
 echo "Adding Cohen's d file" 

@@ -82,7 +82,6 @@ end
 
 end
 
-
 %%
 function [propTab, models, design, descriptions, rst] = plot_one_sim(results_directory, ...
     whsim, plot_params, opt_file, surf_file, plot_mode, metric, ...
