@@ -2,9 +2,8 @@ function [sims] = plot_simulations(whsims, isHPC, dotest, set_up_directory_struc
 
 % This function plots:
 %   1) Parameter histograms
-%   2) Brain visualization of model preference
-%   3) Predicted vs actual
-%   4) Area plots of model preference
+%   2) Predicted vs actual
+%   3) Area plots of model preference
 
 % You can turn these plots on and off in the options section. 
 
@@ -40,7 +39,6 @@ LOG.setLogLevel(LOG.OFF);
 %% Options
 
 plot_params = true;        % plot histograms of the parameters?
-plot_brain = false;         % do brain plots?
 plot_preds = true;          % do predicted vs actual plots
 plot_best = true;           % do best model plots
 
@@ -68,7 +66,7 @@ for i = 1:Nsims
     % plot for a single simulation
     [propTab, models, design, descriptions, rst] = plot_one_sim(results_directory,...
         whsim, plot_params, opt_file, surf_file, plot_mode, metric,...
-        plot_brain, isHPC, var_method, dotest, models_to_plot, LOG, plot_preds, plot_best, ... 
+        isHPC, var_method, dotest, models_to_plot, LOG, plot_preds, plot_best, ... 
         set_up_directory_structure);
     
     % store simulation output for group comparisons
@@ -88,7 +86,7 @@ end
 %%
 function [propTab, models, design, descriptions, rst] = plot_one_sim(results_directory, ...
     whsim, plot_params, opt_file, surf_file, plot_mode, metric, ...
-    plot_brain, isHPC, var_method, dotest, models_to_plot, LOG, plot_preds, plot_best, ...
+    isHPC, var_method, dotest, models_to_plot, LOG, plot_preds, plot_best, ...
     set_up_directory_structure)
 % Function to plot the results from a single simulation
 
@@ -102,7 +100,6 @@ function [propTab, models, design, descriptions, rst] = plot_one_sim(results_dir
 %   char surf_file: surface file for brain plots
 %   char plot_mode: something for brain plots
 %   char metric: 'BIC' or 'CV'
-%   bool plot_brain: do brain plots?
 %   bool isHPC: are we running on HPC?
 %   char var_method: for plotting model predictions, how to we want to compute
 %       the variance (`sample` or `meanpred`)
@@ -248,14 +245,6 @@ if plot_params
             str =  paramlabels{ p };
             title( str );
         end
-    end
-end
-
-%% 2) Brain visualization of model preference
-if plot_brain
-    if ispc % Brain Net Viewer is screwing up on my MAC
-        plot_spatial_visualization( whsim, roifile, input_directory,...
-            plot_mode, metric, multivariate, whs, opt_file, surf_file)
     end
 end
 
