@@ -10,7 +10,7 @@ logscale = 0;
 doabs = 0;
 
 isHPC = 0;
-dotest = 1;
+dotest = 0;
 
 if whmodel ==2
    dobraincontingency = 0;  
