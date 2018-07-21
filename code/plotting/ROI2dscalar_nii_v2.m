@@ -12,7 +12,7 @@ function ROI2dscalar_nii(rst333, fname, mapName,  modenow, dotest)
 % 171211 by Xiangrui Li 
 % 180129 Work for multiple maps 
 
-if and( size(rst333, 1) ~= 333, dotest = 0), error('first dim must be 333'); end
+if and( size(rst333, 1) ~= 333, dotest == 0), error('first dim must be 333'); end
 nMap = size(rst333, 2);
 
 if nargin<2 || isempty(fname)
