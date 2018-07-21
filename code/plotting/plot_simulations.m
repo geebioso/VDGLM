@@ -68,7 +68,8 @@ for i = 1:Nsims
     % plot for a single simulation
     [propTab, models, design, descriptions, rst] = plot_one_sim(results_directory,...
         whsim, plot_params, opt_file, surf_file, plot_mode, metric,...
-        plot_brain, isHPC, var_method, dotest, models_to_plot, LOG, plot_preds, plot_best);
+        plot_brain, isHPC, var_method, dotest, models_to_plot, LOG, plot_preds, plot_best, ... 
+        set_up_directory_structure);
     
     % store simulation output for group comparisons
     % have to add 'sim' to the fieldname because numbers aren't allowed to
@@ -87,7 +88,8 @@ end
 %%
 function [propTab, models, design, descriptions, rst] = plot_one_sim(results_directory, ...
     whsim, plot_params, opt_file, surf_file, plot_mode, metric, ...
-    plot_brain, isHPC, var_method, dotest, models_to_plot, LOG, plot_preds, plot_best)
+    plot_brain, isHPC, var_method, dotest, models_to_plot, LOG, plot_preds, plot_best, ...
+    set_up_directory_structure)
 % Function to plot the results from a single simulation
 
 % INPUT:
