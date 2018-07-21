@@ -10,7 +10,7 @@ logscale = 0;
 doabs = 0;
 
 isHPC = 0;
-dotest = 0;
+dotest = 1;
 
 if whmodel ==2
    dobraincontingency = 0;  
@@ -21,7 +21,7 @@ LOG = log4m.getLogger('test_log.txt');
 LOG.setCommandWindowLevel(LOG.INFO);
 LOG.setLogLevel(LOG.OFF);
 
-[results_directory] = set_results_directory( isHPC, set_up_directory_structure );
+[results_directory, images_directory] = set_results_directory( isHPC, set_up_directory_structure );
 
 %% Define Contrasts
 contrasts = struct();
