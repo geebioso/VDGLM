@@ -40,7 +40,7 @@ LOG.setLogLevel(LOG.OFF);
 %% Options
 
 plot_params = true;        % plot histograms of the parameters?
-plot_brain = true;         % do brain plots?
+plot_brain = false;         % do brain plots?
 plot_preds = true;          % do predicted vs actual plots
 plot_best = true;           % do best model plots
 
