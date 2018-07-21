@@ -141,7 +141,7 @@ function [propTab, models, design, descriptions, rst] = plot_one_sim(results_dir
 %   descriptions: plain text description of each model run
 
 %% Set Simulation
-[ opts, dotest] = set_analysis_options(whsim, isHPC, dotest, LOG);
+[ opts, dotest] = set_analysis_options(whsim, isHPC, dotest, set_up_directory_structure, LOG);
 
 %% Load the ROI timecourse data and Design
 [ dat ] = load_data_and_design( opts, dotest, LOG );
