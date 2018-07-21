@@ -39,10 +39,10 @@ LOG.setLogLevel(LOG.OFF);
 
 %% Options
 
-plot_params = false;        % plot histograms of the parameters?
-plot_brain = false;         % do brain plots?
+plot_params = true;        % plot histograms of the parameters?
+plot_brain = true;         % do brain plots?
 plot_preds = true;          % do predicted vs actual plots
-plot_best = false;           % do best model plots
+plot_best = true;           % do best model plots
 
 var_method = 'meanpred';    % choose fom 'sample', 'meanpred'
 nsamp = 100;                % numer of samples to use if var_method is 'sample'
