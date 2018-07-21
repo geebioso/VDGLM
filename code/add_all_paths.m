@@ -10,4 +10,4 @@ addpath('misc');
 
 
 % Add NIFTI path 
-
+addpath('/Users/Garren/Dropbox/FMRI/BrainVisualization/NIfTI/NIfTI');

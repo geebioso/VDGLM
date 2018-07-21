@@ -13,8 +13,10 @@ else
         'varianceGLM', 'Results');
     images_directory = fullfile( getenv('HOME'), 'Dropbox', 'FMRI', 'Projects',...
         'varianceGLM', 'images'); 
-    ROI2NIfTI_directory = fullfile( getenv('HOME'), 'Dropbox', 'FMRI', 'Projects',...
-        'varianceGLM', 'ROI2NIfTI'); 
+    ROI2NIfTI_directory = fullfile( '..', '..', 'ROI2NIfTI'); 
+    
+    addpath( ROI2NIfTI_directory ); 
+    addpath( fullfile( ROI2NIfTI_directory, 'dicm2nii') ); 
 end
 
 mkdir(results_directory)

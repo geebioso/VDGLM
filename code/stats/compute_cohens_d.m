@@ -17,10 +17,6 @@ if whmodel ==2
    doscatter = 0; 
 end
 
-addpath('/Users/Garren/Dropbox/FMRI/BrainVisualization/NIfTI/NIfTI');
-addpath('/Users/Garren/Dropbox/FMRI/Projects/varianceGLM/ROI2NIfTI');
-addpath('/Users/Garren/Dropbox/FMRI/Projects/varianceGLM/ROI2NIfTI/dicm2nii');
-
 LOG = log4m.getLogger('test_log.txt');
 LOG.setCommandWindowLevel(LOG.INFO);
 LOG.setLogLevel(LOG.OFF);
