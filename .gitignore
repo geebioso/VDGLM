@@ -1,5 +1,7 @@
 .DS_Store
-FSL*
+FSL/
+FSLOutput.feat/
+FSLOutputHCP.feat/
 HPC
 ROI2NIfTI/files
 ROI2NIfTI/GordonParcels/*
