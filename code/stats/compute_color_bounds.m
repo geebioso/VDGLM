@@ -17,7 +17,7 @@ isHPC = 0;
 dotstats = 0; 
 dofitxed = 1; 
 
-[results_directory] = set_results_directory( isHPC );
+[results_directory] = set_results_directory( isHPC, set_up_directory_structure);
 
 %% Load data 
 

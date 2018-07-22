@@ -20,8 +20,8 @@ DISP_POS=true
 DISP_ZERO=0
 THRESH_TYPE="THRESHOLD_TYPE_NORMAL"
 THRESH_TEST="THRESHOLD_TEST_SHOW_OUTSIDE"
-THRESH_MIN=$((-$1))
-THRESH_MAX=$(($1))
+THRESH_MIN=$(echo "-$1" | bc)
+THRESH_MAX=$(echo "$1" | bc)
 
 # Read in Contrast Names 
 unset VALUES
