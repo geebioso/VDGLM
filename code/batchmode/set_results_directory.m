@@ -21,12 +21,12 @@ else
     addpath( fullfile( ROI2NIfTI_directory, 'dicm2nii') );
 end
 
+warning off;  % mkdir will ouput warnings if directories already exist 
+
 mkdir(results_directory)
 mkdir(images_directory)
 
 if set_up_directory_structure
-    
-    warning off;  % mkdir will ouput warnings if directories already exist 
     
     cd(ROI2NIfTI_directory)
     
@@ -49,14 +49,12 @@ if set_up_directory_structure
     
     cd(images_directory)
     
-    mkdir contrasts
-    mkdir wb_contrasts
+    mkdir wb_cohensd
     mkdir wb_effects
     
     cd(wd);
     
-    warning on; 
-    
-    
 end
+
+warning on; 
 

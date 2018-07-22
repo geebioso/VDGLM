@@ -19,7 +19,7 @@ THRESH_NAME="small"
 # print images from scene file 
 ITER=1
 for c in ${CONTRASTS[@]}; do 
-    wb_command -show-scene cohens_d_whs26_mdl2_small.scene $c ../../images/wb_cohensd/${c}_cohens_d_whs26_mdl2_${THRESH_NAME}.png \
+    wb_command -show-scene cohens_d_whs26_mdl2_small.scene $c ${IMAGE_DIRECTORY}/wb_cohensd/${c}_cohens_d_whs26_mdl2_${THRESH_NAME}.png \
         10 10 -use-window-size  
     ITER=$(expr $ITER + 1)
 done 
