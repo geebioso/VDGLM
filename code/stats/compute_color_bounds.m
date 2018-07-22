@@ -22,7 +22,7 @@ whmodel = 2;
 isHPC = 0; 
 dotstats = 0; 
 
-[results_directory] = set_results_directory( isHPC, set_up_directory_structure);
+[results_directory, images_directory, ROI2NIfTI_directory] = set_results_directory( isHPC, set_up_directory_structure);
 
 %% Load data 
 
@@ -57,7 +57,7 @@ fprintf( f, '%2.2f', varmax );
 fclose(f); 
 
 %% Get number of voxels per ROI 
-filepath = fullfile( getenv( 'HOME'), 'Dropbox', 'FMRI', 'Projects', 'varianceGLM', 'ROI2NIfTI'); 
+filepath = ROI2NIfTI_directory; 
 roi = nii_tool('img', [filepath '/Gordon333.32k_fs_LR.dlabel.nii']);
 roi = squeeze(roi);
 roi = roi(1:59412);
@@ -109,8 +109,7 @@ for c = 1:NC
     h.FontSize = 20;
     
     
-    filename = fullfile(getenv('HOME'), 'Dropbox', 'FMRI', 'Projects', ...
-        'varianceGLM', 'images', sprintf( 'colorbar_cohensd_mdl%d_%s', whmodel, contrast_now));
+    filename = fullfile(images_directory, sprintf( 'colorbar_cohensd_mdl%d_%s', whmodel, contrast_now));
     print(filename, '-depsc');
 
 
@@ -163,8 +162,7 @@ for c = 1:NC
     h.FontSize = 20;
     
     
-    filename = fullfile(getenv('HOME'), 'Dropbox', 'FMRI', 'Projects', ...
-        'varianceGLM', 'images', sprintf( 'colorbar_tstat_%s', contrast_now));
+    filename = fullfile(images_directory, sprintf( 'colorbar_tstat_%s', contrast_now));
     print(filename, '-depsc', '-opengl', '-r0');
 
 
@@ -178,10 +176,10 @@ end
 addpath( fullfile( getenv('HOME'), 'Dropbox', 'FMRI', 'cifti-matlab')); 
 addpath( fullfile( getenv('HOME'), 'Dropbox', 'FMRI', 'cifti-matlab', '@xmltree')); 
 
-filename = fullfile( results_directory, '..', 'ROI2NIfTI', ...
+filename = fullfile( ROI2NIfTI_directory, ...  
     'HCP_S1200_997_tfMRI_ALLTASKS_level2_cohensd_hp200_s4_MSMSulc.dscalar.nii');
     
-tmpfile = fullfile( results_directory, '..', 'ROI2NIfTI', ...
+tmpfile = fullfile( ROI2NIfTI_directory, ...
     'HCP_S1200_997_tfMRI_ALLTASKS_level2_cohensd_hp200_s4_MSMSulc.gii');
 
 cifti = gifti(tmpfile);
@@ -206,8 +204,7 @@ h.TickLabels = {num2str(round(negmin, 2)), '±0.2',  num2str(round(posmax, 2))};
 h.TickLength = 0;
 h.FontSize = 20;
 
- filename = fullfile(getenv('HOME'), 'Dropbox', 'FMRI', 'Projects', ...
-        'varianceGLM', 'images', sprintf( 'colorbar_hcp_fixed_mean', contrast_now));
+ filename = fullfile( images_directory, sprintf( 'colorbar_hcp_fixed_mean', contrast_now));
     print(filename, '-dpng'); 
     
     
@@ -245,8 +242,7 @@ for i = 1:3
     h.FontSize = 20;
     
     
-    filename = fullfile(getenv('HOME'), 'Dropbox', 'FMRI', 'Projects', ...
-        'varianceGLM', 'images', sprintf( 'colorbar_hcp_%s', contrast_now));
+    filename = fullfile( images_directory, sprintf( 'colorbar_hcp_%s', contrast_now));
     print(filename, '-depsc', '-opengl', '-r0');
     
 end
@@ -279,8 +275,7 @@ if dofixed
     h.TickLength = 0; 
     h.FontSize = 20;
     
-    filename = fullfile(getenv('HOME'), 'Dropbox', 'FMRI', 'Projects', ...
-        'varianceGLM', 'images', sprintf( 'colorbar_cohensd_fixed_mdl%d_mean', whmodel));
+    filename = fullfile( images_directory, sprintf( 'colorbar_cohensd_fixed_mdl%d_mean', whmodel));
     print(filename, '-dpng');
     
     filenm =  fullfile('..', 'plotting', sprintf('bounds_whs%d_mdl%d_var.txt', whsim, whmodel)); 
@@ -299,8 +294,7 @@ if dofixed
         h.FontSize = 20;
         
         
-        filename = fullfile(getenv('HOME'), 'Dropbox', 'FMRI', 'Projects', ...
-            'varianceGLM', 'images', sprintf( 'colorbar_cohensd_fixed_mdl%d_var', whmodel));
+        filename = fullfile( images_directory, sprintf( 'colorbar_cohensd_fixed_mdl%d_var', whmodel));
         print(filename, '-dpng');
     end
     
