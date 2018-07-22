@@ -6,6 +6,8 @@ function [results_directory, images_directory, ROI2NIfTI_directory] = set_result
 %       results directory with the appropriate subdirectories? (0/1)
 %       MATLAB will issue a warning if the directories already exist
 
+wd = pwd;
+
 if isHPC
     results_directory = '/pub/ggaut/VDGLM/Results';
 else
@@ -13,7 +15,7 @@ else
         'varianceGLM', 'Results');
     images_directory = fullfile( getenv('HOME'), 'Dropbox', 'FMRI', 'Projects',...
         'varianceGLM', 'images');
-    ROI2NIfTI_directory = fullfile( '..', '..', 'ROI2NIfTI');
+    ROI2NIfTI_directory = fullfile( wd, '..', '..', 'ROI2NIfTI');
     
     addpath( ROI2NIfTI_directory );
     addpath( fullfile( ROI2NIfTI_directory, 'dicm2nii') );
@@ -24,7 +26,7 @@ mkdir(images_directory)
 
 if set_up_directory_structure
     
-    wd = pwd;
+    warning off;  % mkdir will ouput warnings if directories already exist 
     
     cd(ROI2NIfTI_directory)
     
@@ -53,6 +55,7 @@ if set_up_directory_structure
     
     cd(wd);
     
+    warning on; 
     
     
 end
