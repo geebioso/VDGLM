@@ -135,8 +135,8 @@ used to check our analysis (model predictions, area plots, e.g. non-brain images
 4) UNDER CONSTRUCTION: To plot the brain images in the paper, perform the 
 following:     
     a)  Get rid of all MAC newlines so that windows bash can run the scripts:     
-`cd plotting`
-`sed -i 's/\r$//' format_wb_scripts_for_windows.bash`
+`cd plotting`    
+`sed -i 's/\r$//' format_wb_scripts_for_windows.bash`    
 	b) There are a few important files for how to format images:     
 		* `wb_cont_format.bash`: this will format an image for wb_view on a 
 non-fixed scale for the VDGLM     
