@@ -347,14 +347,14 @@ For example:
 
 ```
 
-## Where to Modify Code
+<!-- ## Where to Modify Code
 
 To modify the code to run your machine, you will have to edit the functions
 `set_analysis_options_v2.m` and `utils/set_results_directory.m`. The paths to 
 the data must be updated in `set_analysis_options_v2.m`. You must update
 `utils/set_results_directory.m` to indicate where you want your results to be 
 saved. Make sure that the directory structure is the same as the `Results` 
-directory structure outlined below.
+directory structure outlined below. -->
 
 ## Working Directory Structure
 
