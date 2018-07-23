@@ -100,9 +100,70 @@ rate for the VDGLM. This function is not ready to be used quite yet.
 
 The main plotting function is: 
 
-`plotting/plot_simulations.m`: This function plots are plots of model
+`plotting/plot_simulations.m`: This function plots of model
 comparisons, brain visualizations of model comparisons, parameter histograms, 
 and model predictions versus the actual data. 
+
+# Running the Analysis in the Paper 
+
+
+
+1) First you will have to edit directory paths for the following files:     
+    * `add_all_paths.m`: change  the path to a NIFTI installation     
+    * `batchmode/set_analysis_options.m`: change the paths to the time course and the 
+design matrix     
+    * `batchmode/set_results_directory`: specify the paths where you would like to save 
+model results, generated images, and ROI brain files 
+    * `plotting/wb_global_variables.bash`: change the MAIN_FILE_DIRECTORY to be
+equal to the directory where you store ROI brain files, change the IMAGE_DIRECTORY
+to the same image directory specified in `set_results_directory.m`     
+2) Next run the function `add_all_paths.m`, which will add the important 
+code subdirectories to your path.      
+3)  Run the following functions in order:         
+    * `batchmode/run_subjects_in_parallel`: this file will perform one analysis
+for each subject in parallel    
+    * `batchmode/combine_results`: this file will join all the results into group level
+files     
+    * `stats/compute_cohens_d`: this function will compute group-level Cohen's d for
+all contrasts specified in the paper     
+    * `stats/compute_color_bounds`: this function will compute the appropriate color 
+bounds and create color bars for the Cohen's d values just computed (colorbars 
+ are saved in the image directory)     
+    * `plotting/plot_simulations`: this will plot the scatter plot and any figures
+used to check our analysis (model predictions, area plots, e.g. non-brain images)     
+
+4) UNDER CONSTRUCTION: To plot the brain images in the paper, perform the 
+following:     
+    a)  Get rid of all MAC newlines so that windows bash can run the scripts:     
+```
+cd plotting
+sed -i 's/\r$//' format_wb_scripts_for_windows.bash```
+	b) There are a few important files for how to format images:     
+		* `wb_cont_format.bash`: this will format an image for wb_view on a 
+non-fixed scale for the VDGLM     
+	    * `wb_cont_format_mdl2.bash`: this will format an image for wb_view on 
+a non-fixed scale for the GLM     
+		* `wb_cont_format_fixed(_mdl2).bash`: these scripts will format images 
+for wb_view on a fixed scale (_mdl2 is GLM )     
+		These files can be fun as follows: `source wb_cont_format.bash 0.2` to 
+format an image with a non-fixed color scheme with a Cohen’s d threshold of 0.2     
+	c) There are also corresponding files for writing the images (these iterate
+ over the thresholds we need): 
+		```wb_cont_to_image.bash
+		wb_cont_to_image_fixed_mdl2.bash
+		wb_cont_to_image_fixed.bash
+		wb_cont_to_image_mdl2.bash```    
+		These files can be run as follows: `source wb_cont_to_image.bash`
+	d) For each effect size threshold, you need to MANUALLY CREATE A SCENE FILE:     
+		1) For example, for a small threshold, run the command: 
+			```source wb_cont_format.bash 0.2 
+			wb_view contrasts.spec``` 
+		2) Create a scene file with the name cohens_d_whs26_[threshsize].scene.
+ Thresh size much match Cohen’s d: {small:0.2, medium:0.5, large:0.8}    
+			a) click the movie click board in workbench     
+			b) for each MAP in workbench add a new scene, click add window        
+    e) Once you have saved all the scene files, you can print images using to 
+image commands as follows: `source wb_cont_to_image.bash` 
 
 # Examples
 
