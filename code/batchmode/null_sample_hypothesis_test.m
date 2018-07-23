@@ -1,4 +1,4 @@
-function [] = null_sample_hypothesis_test(whsim, dotest, isHPC, start_sub, end_sub, Nsamp, logging, logfile, set_up_directory_structure,)
+function [] = null_sample_hypothesis_test(whsim, dotest, isHPC, start_sub, end_sub, Nsamp, logging, logfile, set_up_directory_structure)
 
 % This function generated data from the mean model, adds autocorrelation
 % similar to the empirical autocorrelation, and then estimates the VDGLM
