@@ -1,18 +1,19 @@
+% This script computes Cohen's d for group-level contrasts and saves 
+% cifti files to be visualized in workbench. 
 
 whsims = [26];
-input_directory = 'batchmode/Results_all';
-whmodel = 1;
+whmodel = 1; % 1 = VDGLM, 2=GLM 
 var_correction = 0;
-dobraincontingency = 0; 
-doscatter = 1;
-docompute = 1;
+dobraincontingency = 1; % should be plot where mean and var effects occur? 
+doscatter = 1; % plot scatter plot of mean and var effects? 
+docompute = 1; % compute Cohen's d? 
 logscale = 0;
 doabs = 0;
 
+% analysis options 
 isHPC = 0;
 dotest = 0;
-
-if whmodel ==2
+if whmodel == 2 % don't do some plotting for the GLM 
    dobraincontingency = 0;  
    doscatter = 0; 
 end
@@ -123,14 +124,7 @@ if docompute
             group_copes = mean( copes, 1);
             
             % Cohen's d
-            cohensd = group_copes./std(copes,[],1);
-            
-            % Non-paired Cohen's D 
-%             s1 = std(A(:,:,1)); 
-%             s2 = std(A(:,:,2)); 
-%             T = 395; 
-%             cohensd = group_copes./sqrt( (s1.^2 + s2.^2)*( T/(T-9) )); 
-%             
+            cohensd = group_copes./std(copes,[],1);         
           
             % correct variance for 1200 subjects
             if var_correction
@@ -201,15 +195,6 @@ if docompute
     end
 end
 
-% options = struct();
-% filename = fullfile(results_directory, '../ROI2NIfTI', 'files', sprintf('%s_contrast_cohensd_whs%d_whmodel%d.nii.gz', ...
-%     contrast_str , whsim, whmodel));
-% if whsim < 26
-%     viewer = 'nii_viewer';
-%     h = ROI2NIfTI(cohensd, filename, viewer, options);
-% else
-%     ROI2dscalar_nii(cohensd, filename, 'pct');
-% end
 
 %% Compare Mean and Variance Affects
 if dobraincontingency
@@ -292,7 +277,7 @@ if dobraincontingency
     for i = {'small', 'medium', 'large'}
         fprintf('%s\n', i{1});
         for c = 1:NC
-            fprintf('\tlength unique = %d\n', length(unique(BC.sim26.(i{1}){c})));
+            fprintf('\t number effect combinations = %d\n', length(unique(BC.sim26.(i{1}){c})));
         end
     end
     

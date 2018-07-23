@@ -106,9 +106,10 @@ and model predictions versus the actual data.
 
 # Running the Analysis in the Paper 
 
-0) First download the data and design from our [OSF webpage](https://osf.io/4rvbz/)   
-1) First you will have to edit directory paths for the following files:     
-    * `add_all_paths.m`: change  the path to a NIFTI installation     
+0) First download the data and design from our [OSF webpage](https://osf.io/4rvbz/).
+All code can be found in the code directory and its subdirectories.    
+1) You will have to edit directory paths for the following files:     
+    * `add_all_paths.m`: change the path to a NIFTI installation     
     * `batchmode/set_analysis_options.m`: change the paths to the time course and the 
 design matrix     
     * `batchmode/set_results_directory`: specify the paths where you would like to save 
@@ -120,7 +121,7 @@ to the same image directory specified in `set_results_directory.m`
 code subdirectories to your path.      
 3)  Run the following functions in order:         
     * `batchmode/run_subjects_in_parallel`: this file will perform one analysis
-for each subject in parallel    
+for each subject in parallel. We use `whsim=26` in the paper.     
     * `batchmode/combine_results`: this file will join all the results into group level
 files     
     * `stats/compute_cohens_d`: this function will compute group-level Cohen's d for

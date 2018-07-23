@@ -11,7 +11,7 @@ negmax=0.98;
 % These values can either refer to fixed values (across contrasts) or
 % percentage thresholds. 
 
-dofixed = 1; % should we compute bounds for fixed bounds (across contrasts), or to have a separate bound for each contrast (0/1)
+dofixed = 1; % should we compute bounds for fixed bounds (across contrasts), or have separate bounds for each contrast (0/1)
 
 addpath('/Users/Garren/Dropbox/FMRI/BrainVisualization/NIfTI/NIfTI');
 addpath('/Users/Garren/Dropbox/FMRI/Projects/varianceGLM/ROI2NIfTI/dicm2nii');
@@ -20,7 +20,7 @@ addpath('/Users/Garren/Dropbox/FMRI/Projects/varianceGLM/ROI2NIfTI/dicm2nii');
 whsim = 26; 
 whmodel = 2; 
 isHPC = 0; 
-dotstats = 0; 
+dotstats = 0; % this will compute color bounds for tstats (if they have been computed) 
 
 [results_directory, images_directory, ROI2NIfTI_directory] = set_results_directory( isHPC, set_up_directory_structure);
 

@@ -1,5 +1,5 @@
 
-% This function will run things in parallel on my desktop. For when
+% This function will run things in parallel on a desktop. For when
 % the queue is terrible on the HPC.
 
 jobtype = 'analyze'; % 'null' or 'analyze': 'null' corresponds to the null hypothesis testing routine, 'analyze` omits the null hypothesis testing 
@@ -13,7 +13,7 @@ logging = 'INFO';    % set logging console information (see log4 for MATLAB cont
 logfile = 'test_log.txt'; % set log outfile, this is currently deprecated because i set file output to be off, but the options is required by log4
 subs = start_sub:end_sub;
 Nsamp = 1;           % number of samples for the null hypothesis testing routine 
-set_up_directory_structure = 1; % autopopulated results subdirectories 
+set_up_directory_structure = 1; % autopopulate results subdirectories? (0/1) 
 
 %% Start parallel loop
 

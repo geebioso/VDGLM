@@ -6,6 +6,11 @@ function [results_directory, images_directory, ROI2NIfTI_directory] = set_result
 %       results directory with the appropriate subdirectories? (0/1)
 %       MATLAB will issue a warning if the directories already exist
 
+% OUTPUT: 
+%   results_directory: where model results will be saved
+%   image_directory: where images and figures will be saved
+%   ROI2NIfTI_directory: where NIfTI files will be saved 
+
 wd = pwd;
 
 if isHPC
