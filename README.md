@@ -163,10 +163,13 @@ format an image with a non-fixed color scheme with a Cohen’s d threshold of 0.
 			`wb_view contrasts.spec`    
 		* Create a scene file with the name cohens_d_whs26_[threshsize].scene.
  Thresh size much match Cohen’s d: {small:0.2, medium:0.5, large:0.8}    
-			* click the movie click board in workbench     
-			* for each MAP in workbench add a new scene, click add window        
+			* Click the movie click board in workbench     
+			* For each map in workbench add a new scene, click add window to 
+see the image information. Make sure that the Name of the scene matches the 
+name of the map.        
     7) Once you have saved all the scene files, you can print images using to 
-image commands as follows: `source wb_cont_to_image.bash`     
+image commands as follows: `source wb_cont_to_image.bash`. Images will be saved 
+in the image directory.     
 
 # Examples
 
