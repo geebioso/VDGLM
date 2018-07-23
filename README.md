@@ -134,10 +134,10 @@ used to check our analysis (model predictions, area plots, e.g. non-brain images
 
 4) UNDER CONSTRUCTION: To plot the brain images in the paper, perform the 
 following:     
-    a)  Get rid of all MAC newlines so that windows bash can run the scripts:     
+    1)  Get rid of all MAC newlines so that windows bash can run the scripts:     
 `cd plotting`    
 `sed -i 's/\r$//' format_wb_scripts_for_windows.bash`    
-	b) There are a few important files for how to format images:     
+	2) There are a few important files for how to format images:     
 		* `wb_cont_format.bash`: this will format an image for wb_view on a 
 non-fixed scale for the VDGLM     
 	    * `wb_cont_format_mdl2.bash`: this will format an image for wb_view on 
@@ -146,22 +146,22 @@ a non-fixed scale for the GLM
 for wb_view on a fixed scale (_mdl2 is GLM )     
 		These files can be fun as follows: `source wb_cont_format.bash 0.2` to 
 format an image with a non-fixed color scheme with a Cohen’s d threshold of 0.2     
-	c) There are also corresponding files for writing the images (these iterate
+	3) There are also corresponding files for writing the images (these iterate
  over the thresholds we need):     
 		`wb_cont_to_image.bash`    
 		`wb_cont_to_image_fixed_mdl2.bash`    
 		`wb_cont_to_image_fixed.bash`    
 		`wb_cont_to_image_mdl2.bash`    
 		These files can be run as follows: `source wb_cont_to_image.bash`    
-	d) For each effect size threshold, you need to MANUALLY CREATE A SCENE FILE:     
-		1) For example, for a small threshold, run the command:     
+	4) For each effect size threshold, you need to MANUALLY CREATE A SCENE FILE:     
+		* For example, for a small threshold, run the command:     
 			`source wb_cont_format.bash 0.2`     
 			`wb_view contrasts.spec`    
-		2) Create a scene file with the name cohens_d_whs26_[threshsize].scene.
+		* Create a scene file with the name cohens_d_whs26_[threshsize].scene.
  Thresh size much match Cohen’s d: {small:0.2, medium:0.5, large:0.8}    
-			a) click the movie click board in workbench     
-			b) for each MAP in workbench add a new scene, click add window        
-    e) Once you have saved all the scene files, you can print images using to 
+			* click the movie click board in workbench     
+			* for each MAP in workbench add a new scene, click add window        
+    5) Once you have saved all the scene files, you can print images using to 
 image commands as follows: `source wb_cont_to_image.bash`     
 
 # Examples
