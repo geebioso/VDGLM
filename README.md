@@ -106,8 +106,7 @@ and model predictions versus the actual data.
 
 # Running the Analysis in the Paper 
 
-
-
+0) First download the data and design from our [OSF webpage](https://osf.io/4rvbz/)   
 1) First you will have to edit directory paths for the following files:     
     * `add_all_paths.m`: change  the path to a NIFTI installation     
     * `batchmode/set_analysis_options.m`: change the paths to the time course and the 
