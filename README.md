@@ -55,6 +55,7 @@ located on the HPC)
 I would recommend running code on a desktop machine to save the hassle of 
 sending code to and from the HPC and compiling MATLAB code. 
 
+<!-- 
 **Important**: you will have to make several 
 changes to get this code to run on your machine. You will have to edit the file
  `batchmode/set_analysis_options.m` to set the paths to the data and the design
@@ -103,6 +104,7 @@ The main plotting function is:
 `plotting/plot_simulations.m`: This function plots of model
 comparisons, brain visualizations of model comparisons, parameter histograms, 
 and model predictions versus the actual data. 
+-->
 
 # Running the Analysis in the Paper 
 
