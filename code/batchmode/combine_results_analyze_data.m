@@ -1,4 +1,4 @@
-function[] = combine_results_null_sample_hypothesis_test( whsim, isHPC , dotest, logging, set_up_directory_structure )
+function[] = combine_results_analyze_data( whsim, isHPC , dotest, logging, set_up_directory_structure )
 
 % This function will read through the directory containing results from
 % single subjects and aggregate them into a combined result. Due to the
@@ -21,11 +21,12 @@ LOG = log4m.getLogger('test_log.txt');
 LOG.setCommandWindowLevel(LOG.(logging));
 LOG.setLogLevel(LOG.OFF);
 
-%% Set up input and output directories 
-[results_directory, images_directory, ROI2NIfTI_directory] = set_results_directory( isHPC, set_up_directory_structure );
 
-input_directory = fullfile( results_directory, 'batch_analyses', 'null_single_jobs'); 
-output_directory = fullfile( results_directory, 'batch_analyses', 'null_combined'); 
+%% Set up input and output directories 
+[results_directory] = set_results_directory( isHPC, set_up_directory_structure );
+
+input_directory = fullfile( results_directory, 'batch_analyses', 'single_jobs'); 
+output_directory = fullfile( results_directory, 'batch_analyses', 'combined'); 
 if dotest
    input_directory = [input_directory '_test'];  
    output_directory = [output_directory '_test'];  
@@ -69,7 +70,7 @@ for f = 1:NF
     
     % parse subject number
     parts = split(filenames{f}, '_');
-    sub_num = str2num(parts{5});
+    sub_num = str2num(parts{4});
     load(filenow, 'subjs');
     
     % keep track of which subjects have been processed
@@ -94,20 +95,24 @@ NS = length(all_subjs);
 
 %% Load one subject to get model storage structure
 load(filenow);
-R = size(models{1}.allparams, 2);
+R = size(models{1}.allpredsm, 3);
+T = size(models{1}.allpredsm, 1);
 M = length(models);
-Nsamp = size(models{1}.allparams, 3); 
 
 %% Create master storage
-allbicm = zeros(NS, R, Nsamp, M);
-allllsm = zeros(NS, R, Nsamp, M);
+allbicm = zeros(NS, R, M);
+allllsm = zeros(NS, R, M);
 allbadchol = zeros(NS, R, M); 
+bad_subjs = cell(1); 
 
 all_models = models;
 for m = 1:M
-    P = size(all_models{m}.allparams, 4);
-    all_models{m}.allparams = zeros(NS, R, Nsamp, P);
+    P = size(all_models{m}.allparams, 2);
+    all_models{m}.allparams = zeros(NS, P, R);
     all_models{m}.motionparams = cell(NS, R); 
+    all_models{m}.allpredsm = zeros(T, NS, R);
+    all_models{m}.allpredsv = zeros(T, NS, R);
+    
 end
 
 %% Iterate over files and add to master storage
@@ -115,7 +120,6 @@ for f = 1:NF
     
     filenow = fullfile(input_directory, filenames{f});
     sub_num_now = sub_nums(f); 
-    fprintf('adding %s\n', filenow); 
     
     % load results from the current file and store
     results = load(filenow);
@@ -123,12 +127,12 @@ for f = 1:NF
     llsm = results.allllsm;
     bmBIC = results.bestmodelBIC;
     bmCV = results.bestmodelCV;
-    subjsnow = results.subjs;
+    subjsnow = results.subjs;  
     subjnow = results.subjs{1};
     modelsnow = results.models;
-    badchol = results.allbadchol; 
+    % badchol = results.allbadchol; 
     
-       % For each subject insert the results into master storage using the unique
+    % For each subject insert the results into master storage using the unique
     % subject identifier
     if length(subjsnow) > 1
        error('combine_results.m only works with batch sizes of 1');  
@@ -142,29 +146,25 @@ for f = 1:NF
     elseif LOG.commandWindowLevel >= 3
         LOG.info('INFO', sprintf('%s', filenames{f})); 
     end
-    
-    % at each subject form the current file to master storage using unique
-    % subject identifier
-    for s = 1:length(subjsnow)
+    for m = 1:M
+        all_models{m}.allparams( all_idx, :, :) = modelsnow{m}.allparams( now_idx, :, : );
+        all_models{m}.motionparams( all_idx, : ) = modelsnow{m}.motionparams( now_idx, : );
+        all_models{m}.allpredsm( :, all_idx, :) = modelsnow{m}.allpredsm( :, now_idx, : );
+        all_models{m}.allpredsv( :, all_idx, :) = modelsnow{m}.allpredsv( :, now_idx, : );
         
-            subjnow = subjsnow{s};
-            for m = 1:M
-                all_models{m}.allparams( all_idx, :, :, :) = modelsnow{m}.allparams( now_idx, :, :, : );
-                
-                allbicm(all_idx,:,:,m) = bicm(now_idx,:,:,m);
-                allllsm(all_idx,:,:,m) = llsm(now_idx,:,:,m);
-                allbadchol(all_idx,:,m) = badchol(now_idx,:,m);
-            end
+        allbicm(all_idx,:,m) = bicm(now_idx,:,m);
+        allllsm(all_idx,:,m) = llsm(now_idx,:,m);
+        % allbadchol(all_idx,:,m) = badchol(now_idx, :, m); 
     end
     
-  
 end
 
-% compute best BIC and best CV 
-[~, bestmodelBIC] = min(allbicm, [], 4);
-[~, bestmodelCV ] = max(allllsm, [], 4);
+%% compute best BIC and best CV 
+[~, bestmodelBIC] = min(allbicm, [], 3);
+[~, bestmodelCV ] = max(allllsm, [], 3); 
 
-% Save it all! Models saved separately 
+
+%% Save it all! Models saved separately 
 fprintf('\n'); 
 for m = 1:M
     filename = fullfile( output_directory, sprintf('whs%d_allmodels_%d', whsim, m));

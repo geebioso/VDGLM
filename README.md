@@ -121,16 +121,25 @@ to the same image directory specified in `set_results_directory.m`
 code subdirectories to your path.      
 3)  Run the following functions in order:         
     * `batchmode/run_subjects_in_parallel`: this file will perform one analysis
-for each subject in parallel. We use `whsim=26` in the paper.     
+for each subject in parallel. We use `whsim=26` in the paper. Use the parameter
+`jobtype` to indicate whether you want to run the standard VDGLM vs. GLM analyses
+or if you would like to simulate data from a null model and then run the analyses.      
     * `batchmode/combine_results`: this file will join all the results into group level
-files     
+files.      
     * `stats/compute_cohens_d`: this function will compute group-level Cohen's d for
-all contrasts specified in the paper     
+all contrasts specified in the paper. Requires that the results for the `analyze`
+jobtype have been computed and combined.      
     * `stats/compute_color_bounds`: this function will compute the appropriate color 
 bounds and create color bars for the Cohen's d values just computed (colorbars 
- are saved in the image directory)     
+ are saved in the image directory). Requires taht the results for the `analyze` 
+jobtype have been computed and combined.      
     * `plotting/plot_simulations`: this will plot the scatter plot and any figures
-used to check our analysis (model predictions, area plots, e.g. non-brain images)     
+used to check our analysis (model predictions, area plots, e.g. non-brain images)
+. Requires that the results for the `analyze` jobtype have been computed and 
+combined. 
+    * `plot_null_best`: this function will plot the VDGLM preference for the
+real data compared to the preference for the simulated data. Requires that the 
+`null` jobtype results have been computed and combined.      
 
 4) UNDER CONSTRUCTION: To plot the brain images in the paper, perform the 
 following:     

@@ -35,8 +35,6 @@
 %     '/Users/Garren/Dropbox/FMRI/Projects/varianceGLM/code/batchmode/set_analysis_options_v2.m'
 %     '/Users/Garren/Dropbox/FMRI/Projects/varianceGLM/code/utils/tight_subplot.m'
 %     '/Users/Garren/Dropbox/FMRI/PRojects/varianceGLM/code/plotting/plot_best_models.m'
-%     '/Users/Garren/Dropbox/FMRI/PRojects/varianceGLM/code/plotting/plot_predicted_vs_actual.m'
-%     '/Users/Garren/Dropbox/FMRI/PRojects/varianceGLM/code/plotting/plot_predicted_vs_actual_varmean_only.m'
 %     '/Users/Garren/Dropbox/FMRI/PRojects/varianceGLM/code/plotting/plot_spatial_visualization'
 
 addpath( fullfile(getenv('HOME'), 'Dropbox', 'MATLAButils'));
@@ -49,7 +47,7 @@ LOG.setLogLevel(LOG.OFF);
 %% Options
 
 models_to_plot = 1:2;       % which models to plots
-[results_directory] = set_results_directory( isHPC );
+[results_directory, images_directory, ROI2NIfTI_directory] = set_results_directory( isHPC, set_up_directory_structure );
 
 %%
 % list of simulations to plot figure for. Only the last will be currently displayed
@@ -58,7 +56,7 @@ plot_mode = 'all';
 metric = 'CV';
 
 %% Set Simulation
-[ opts, dotest] = set_analysis_options_v2(whsim, isHPC, dotest, LOG);
+[ opts, dotest] = set_analysis_options(whsim, isHPC, dotest, set_up_directory_structure, LOG);
 
 %% Load the ROI timecourse data and Design
 [ dat ] = load_data_and_design( opts, dotest, LOG );
@@ -88,8 +86,9 @@ T = dat.T;
 NS = dat.NS;
 R = dat.R;
 
-%% Load Results
+%% Load Null Results 
 
+% load original results 
 load(fullfile( results_directory, 'batch_analyses', 'combined', sprintf('whs%d_allllsm.mat', whsim))); 
 bestmodelCV  = NaN( NS , R );
 for s=1:NS
@@ -103,11 +102,12 @@ for s=1:NS
     end
 end
 
-x = load(fullfile( results_directory, 'batch_analyses', 'null_combined', sprintf('whs%d_bestmodelCV.mat', whsim))); 
-bestmodelCV_null = x.bestmodelCV; 
+% load results for data sampled from null 
+[models, allbicm, allllsm, bestmodelBIC_null, bestmodelCV_null, all_subjs, sub_nums] = ...
+    load_results(results_directory, whsim, dotest, LOG, 'null');
 
-NS = size( models{1}.allparams, 1 );
-R  = size( models{1}.allparams, 2 );
+NS = size( bestmodelCV_null, 1 );
+R  = size( bestmodelCV_null, 2 ); 
 M = length(models);
 
 %%
@@ -133,7 +133,7 @@ end
 
 fig = 4;
 name = 'Best Models per Subject (CV)';
-filename = fullfile( results_directory, '..', 'images', sprintf('best_models_per_subject_CV_whsim%d_null_sample', whsim));
+filename = fullfile( images_directory, sprintf('best_models_per_subject_CV_whsim%d_null_sample', whsim));
 %% Create Area Plot 
 
 figure( fig ); clf;
@@ -169,8 +169,6 @@ set( gca, 'FontSize', 13);
 
 print( filename, '-depsc');
 
-%% Load Null Results 
-[models, allbicm, allllsm, bestmodelBIC, bestmodelCV, all_subjs, sub_nums] = ...
-    load_results(results_directory, whsim, dotest, LOG, 'null');
+
 
 

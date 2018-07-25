@@ -61,7 +61,7 @@ function [ opts, dotest ] = set_analysis_options(whsim, isHPC, dotest, set_up_di
 
 %% Set directories for OSUWB and HCP data
 
-[results_directory] = set_results_directory( isHPC, set_up_directory_structure ); 
+[results_directory, image_directory, ROI2NIfTI_directory] = set_results_directory( isHPC, set_up_directory_structure ); 
 
 %% Pick simulation
 if (whsim==26)
