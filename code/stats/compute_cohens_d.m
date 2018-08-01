@@ -411,7 +411,7 @@ if doscatter
     end
     
     filename = fullfile( results_directory, '../images', sprintf('cohensd_mean_var_scatter_whs%d', whsim));
-    print(filename, '-dpng');
+    print(filename, '-depsc');
     
     %     %% Plot Num regions by threshold
     %     h = figure(2); clf;

@@ -22,7 +22,7 @@ following fields:
     readme: short readme 
     subjs: subject ids
     tasks: run ids 
-    tc: timecourse for each subject and run 
+    tc: timecourse for each subject and run. We will use run 1 (tc(:,1)) for analysis 
     
 The files `design_WM_LR.mat` and `combdesign_WM_LR.mat` contain the 
 corresponding uncombined (10 conditions) and combined (4 conditions) design 
@@ -160,27 +160,28 @@ a non-fixed scale for the GLM
 		* `wb_cont_format_fixed(_mdl2).bash`: these scripts will format images 
 for wb_view on a fixed scale (_mdl2 is GLM )     
 		These files can be fun as follows: `source wb_cont_format.bash 0.2` to 
-format an image with a non-fixed color scheme with a Cohen’s d threshold of 0.2     
-	5) There are also corresponding files for writing the images (these iterate
- over the thresholds we need):     
-		`wb_cont_to_image.bash`    
-		`wb_cont_to_image_fixed_mdl2.bash`    
-		`wb_cont_to_image_fixed.bash`    
-		`wb_cont_to_image_mdl2.bash`    
-		These files can be run as follows: `source wb_cont_to_image.bash`    
-	6) For each effect size threshold, you need to MANUALLY CREATE A SCENE FILE:     
-		* For example, for a small threshold, run the command:     
-			`source wb_cont_format.bash 0.2`     
-			`wb_view contrasts.spec`    
-		* Create a scene file with the name cohens_d_whs26_[threshsize].scene.
- Thresh size much match Cohen’s d: {small:0.2, medium:0.5, large:0.8}    
-			* Click the movie click board in workbench     
-			* For each map in workbench add a new scene, click add window to 
-see the image information. Make sure that the Name of the scene matches the 
-name of the map.        
-    7) Once you have saved all the scene files, you can print images using to 
-image commands as follows: `source wb_cont_to_image.bash`. Images will be saved 
-in the image directory.     
+format an image with a non-fixed color scheme with a Cohen’s d threshold of 0.2
+. Each script reads the cifti data from a file of the form 
+`cohensd_whs{x}_whmodel{y}{str}.dscalar.nii` where x indicates the simulation 
+number and y indicates the model (1=VDGLM, 2=GLM). The way the file is 
+formatted for visualization is determined by the script. The output produced by
+each script is a workbench spec file with naming convention 
+ `contrasts_{str}.spec` where `str=`:    
+`''`:indicates the VDGLM results with a non-fixed scale.     
+`fixed`: indicates the VDGLM with a fixed scale.     
+`mdl2`: indicates the GLM with a non-fixed scale.    
+`fixed_mdl2`: indicates the GLM with a fixed scale.     
+To visualize results (e.g., `contrasts.spec`) type the following: 
+`wb_view contrasts.spec`. Images can be saved using File/Capture Image. 
+The cifti files used to create the spec files 
+are stored in the directory `ROI2NIfTI/files`.      
+	6) If there is a problem running the bash scripts for formatting images, 
+you can also manually create each image. To do this, open the files: 
+    `ROI2NIfTI/files/cohensd_whs{x}_whmodel{y}{str}.dscalar.nii`    
+    `ROI2NIfTI/files/S1200.R.pial_MSMAll.32k_fs_LR.surf.gii`    
+    `ROI2NIfTI/files/S1200.L.pial_MSMAll.32k_fs_LR.surf.gii`    
+    `ROI2NIfTI/files/Gordon333.32k_fs_LR.dlabel.nii`    
+and set the viewing options manually. 
 
 # Examples
 
