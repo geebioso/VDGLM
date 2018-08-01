@@ -108,9 +108,12 @@ and model predictions versus the actual data.
 
 # Running the Analysis in the Paper 
 
-0) First download the data and design from our [OSF webpage](https://osf.io/4rvbz/).
+## Data 
+ First download the data and design from our [OSF webpage](https://osf.io/4rvbz/).
 All code can be found in the code directory and its subdirectories.    
-1) You will have to edit directory paths for the following files:     
+
+## Edit Directory Paths 
+You will have to edit directory paths for the following files:     
     * `add_all_paths.m`: change the path to a NIFTI installation     
     * `batchmode/set_analysis_options.m`: change the paths to the time course and the 
 design matrix     
@@ -119,9 +122,13 @@ model results, generated images, and ROI brain files
     * `plotting/wb_global_variables.bash`: change the MAIN_FILE_DIRECTORY to be
 equal to the directory where you store ROI brain files, change the IMAGE_DIRECTORY
 to the same image directory specified in `set_results_directory.m`     
-2) Next run the function `add_all_paths.m`, which will add the important 
+
+Next run the function `add_all_paths.m`, which will add the important 
 code subdirectories to your path.      
-3)  Run the following functions in order:         
+
+## Run Analyses 
+
+ Run the following functions in order:         
     * `batchmode/run_subjects_in_parallel`: this file will perform one analysis
 for each subject in parallel. We use `whsim=26` in the paper. Use the parameter
 `jobtype` to indicate whether you want to run the standard VDGLM vs. GLM analyses
@@ -143,7 +150,10 @@ combined.
 real data compared to the preference for the simulated data. Requires that the 
 `null` jobtype results have been computed and combined.      
 
-4) To plot the brain images in the paper, perform the 
+
+## Plot Brain Images 
+
+To plot the brain images in the paper, perform the 
 following:     
 	1) Download workbench from HCP. Follow instructions provided with workbench
  to use it via the command line     
@@ -173,7 +183,9 @@ To visualize results (e.g., `contrasts.spec`) type the following:
 `wb_view contrasts.spec`. Images can be saved using File/Capture Image. 
 The cifti files used to create the spec files 
 are stored in the directory `ROI2NIfTI/files`.      
-	6) If there is a problem running the bash scripts for formatting images, 
+
+
+If there is a problem running the bash scripts for formatting images, 
 you can also manually create each image. To do this, open the files: 
     `ROI2NIfTI/files/cohensd_whs{x}_whmodel{y}{str}.dscalar.nii`    
     `ROI2NIfTI/files/S1200.R.pial_MSMAll.32k_fs_LR.surf.gii`    
