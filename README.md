@@ -108,11 +108,11 @@ and model predictions versus the actual data.
 
 # Running the Analysis in the Paper 
 
-## Data 
+## 1) Data 
  First download the data and design from our [OSF webpage](https://osf.io/4rvbz/).
 All code can be found in the code directory and its subdirectories.    
 
-## Edit Directory Paths 
+## 2) Edit Directory Paths 
 You will have to edit directory paths for the following files:     
     * `add_all_paths.m`: change the path to a NIFTI installation     
     * `batchmode/set_analysis_options.m`: change the paths to the time course and the 
@@ -126,7 +126,7 @@ to the same image directory specified in `set_results_directory.m`
 Next run the function `add_all_paths.m`, which will add the important 
 code subdirectories to your path.      
 
-## Run Analyses 
+## 3) Run Analyses 
 
  Run the following functions in order:         
     * `batchmode/run_subjects_in_parallel`: this file will perform one analysis
@@ -151,7 +151,7 @@ real data compared to the preference for the simulated data. Requires that the
 `null` jobtype results have been computed and combined.      
 
 
-## Plot Brain Images 
+## 4) Plot Brain Images 
 
 Brain images can be plotted in a semi-automated way, or manually. 
 
@@ -168,8 +168,8 @@ commands will be run in Cygwin
     `cd plotting`    
     `sed -i 's/\r$//' format_wb_scripts_for_windows.bash`    
 	4) There are a few important files for how to format images:     
-	    * `wb_cont_format(_mdl2).bash`: this will format an image for wb_view on 
-a non-fixed scale (_mdl2 is GLM):         
+	    * `wb_cont_format(_mdl2).bash`: these scripts will format images for 
+wb_view on a non-fixed scale (_mdl2 is GLM):         
 		* `wb_cont_format_fixed(_mdl2).bash`: these scripts will format images 
 for wb_view on a fixed scale (_mdl2 is GLM )     
 		These files can be fun as follows: `source wb_cont_format.bash 0.2` to 
@@ -220,7 +220,16 @@ For fixed images, we use the following parameters:
     * DISP_ZERO=0    
     * THRESH_TYPE="THRESHOLD_TYPE_NORMAL"    
     * THRESH_TEST="THRESHOLD_TEST_SHOW_OUTSIDE"    
+Images can be saved using File/Capture Image. 
 
+To plot the effect size image, visualize the files:     
+    * `ROI2NIfTI/files/S1200.R.pial_MSMAll.32k_fs_LR.surf.gii`    
+    * `ROI2NIfTI/files/S1200.L.pial_MSMAll.32k_fs_LR.surf.gii`    
+    * `ROI2NIfTI/files/Gordon333.32k_fs_LR.dlabel.nii`    
+    * `ROI2NIfTI/files/effects_cohensd_small_whs26_whmodel1.dscalar.nii`    
+    * `ROI2NIfTI/files/effects_cohensd_medium_whs26_whmodel1.dscalar.nii`    
+    * `ROI2NIfTI/files/effects_cohensd_large_whs26_whmodel1.dscalar.nii`    
+Use the JET256 colormap on a fixed scale with min of 1 and max of 3. 
 
 # Examples
 
