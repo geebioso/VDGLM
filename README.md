@@ -153,8 +153,13 @@ real data compared to the preference for the simulated data. Requires that the
 
 ## Plot Brain Images 
 
-To plot the brain images in the paper, perform the 
-following:     
+Brain images can be plotted in a semi-automated way, or manually. 
+
+### Semi-automated Plotting 
+
+We use bash scripts to format each image for plotting. Given a scene file, we 
+can automatically print images using `wb_command -show-scene`, however this 
+function does not work for Windows. Thus, on windows, perform the following:     
 	1) Download workbench from HCP. Follow instructions provided with workbench
  to use it via the command line     
 	2) Download Cygwin so that you can run the bash scripts. All the following 
@@ -184,6 +189,7 @@ To visualize results (e.g., `contrasts.spec`) type the following:
 The cifti files used to create the spec files 
 are stored in the directory `ROI2NIfTI/files`.      
 
+### Manual Plotting
 
 If there is a problem running the bash scripts for formatting images, 
 you can also manually create each image. To do this, open the files:     
