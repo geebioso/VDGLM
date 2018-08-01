@@ -197,7 +197,8 @@ you can also manually create each image. To do this, open the files:
     * `ROI2NIfTI/files/S1200.R.pial_MSMAll.32k_fs_LR.surf.gii`    
     * `ROI2NIfTI/files/S1200.L.pial_MSMAll.32k_fs_LR.surf.gii`    
     * `ROI2NIfTI/files/Gordon333.32k_fs_LR.dlabel.nii`    
-and set the viewing options manually. For non-fixed images, we use the 
+and set the viewing options manually.(the wrench in workbench viewer). 
+ For non-fixed images, we use the 
 following parameters:     
     * PALETTE_MODE="MODE_AUTO_SCALE_PERCENTAGE"    
     * PALETTE_NAME="FSL"                           
