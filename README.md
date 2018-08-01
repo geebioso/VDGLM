@@ -154,7 +154,9 @@ real data compared to the preference for the simulated data. Requires that the
 
 ## 4) Plot Brain Images 
 
-Brain images can be plotted in a semi-automated way, or manually. 
+Brain images can be plotted in a semi-automated way, or manually. All the files
+this section instructs you how to create are already included in the repo for
+analysis we ran in the paper. 
 
 ### Semi-automated Plotting 
 

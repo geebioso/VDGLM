@@ -9,6 +9,7 @@ doscatter = 1; % plot scatter plot of mean and var effects?
 docompute = 1; % compute Cohen's d? 
 logscale = 0;
 doabs = 0;
+set_up_directory_structure = 1; 
 
 % analysis options 
 isHPC = 0;
