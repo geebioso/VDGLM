@@ -160,8 +160,8 @@ following:
 	2) Download Cygwin so that you can run the bash scripts. All the following 
 commands will be run in Cygwin    
     3)  Get rid of all MAC newlines so that windows bash can run the scripts:     
-`cd plotting`    
-`sed -i 's/\r$//' format_wb_scripts_for_windows.bash`    
+    `cd plotting`    
+    `sed -i 's/\r$//' format_wb_scripts_for_windows.bash`    
 	4) There are a few important files for how to format images:     
 	    * `wb_cont_format(_mdl2).bash`: this will format an image for wb_view on 
 a non-fixed scale (_mdl2 is GLM):         
@@ -175,10 +175,10 @@ number and y indicates the model (1=VDGLM, 2=GLM). The way the file is
 formatted for visualization is determined by the script. The output produced by
 each script is a workbench spec file with naming convention 
  `contrasts_{str}.spec` where `str=`:    
-    `''`:indicates the VDGLM results with a non-fixed scale.     
-    `fixed`: indicates the VDGLM with a fixed scale.     
-    `mdl2`: indicates the GLM with a non-fixed scale.    
-    `fixed_mdl2`: indicates the GLM with a fixed scale.     
+    * `''`:indicates the VDGLM results with a non-fixed scale.     
+    * `fixed`: indicates the VDGLM with a fixed scale.     
+    * `mdl2`: indicates the GLM with a non-fixed scale.    
+    * `fixed_mdl2`: indicates the GLM with a fixed scale.     
 To visualize results (e.g., `contrasts.spec`) type the following: 
 `wb_view contrasts.spec`. Images can be saved using File/Capture Image. 
 The cifti files used to create the spec files 
@@ -186,34 +186,34 @@ are stored in the directory `ROI2NIfTI/files`.
 
 
 If there is a problem running the bash scripts for formatting images, 
-you can also manually create each image. To do this, open the files: 
-    `ROI2NIfTI/files/cohensd_whs{x}_whmodel{y}{str}.dscalar.nii`    
-    `ROI2NIfTI/files/S1200.R.pial_MSMAll.32k_fs_LR.surf.gii`    
-    `ROI2NIfTI/files/S1200.L.pial_MSMAll.32k_fs_LR.surf.gii`    
-    `ROI2NIfTI/files/Gordon333.32k_fs_LR.dlabel.nii`    
+you can also manually create each image. To do this, open the files:     
+    * `ROI2NIfTI/files/cohensd_whs{x}_whmodel{y}{str}.dscalar.nii`    
+    * `ROI2NIfTI/files/S1200.R.pial_MSMAll.32k_fs_LR.surf.gii`    
+    * `ROI2NIfTI/files/S1200.L.pial_MSMAll.32k_fs_LR.surf.gii`    
+    * `ROI2NIfTI/files/Gordon333.32k_fs_LR.dlabel.nii`    
 and set the viewing options manually. For non-fixed images, we use the 
 following parameters:     
-* PALETTE_MODE="MODE_AUTO_SCALE_PERCENTAGE"    
-* PALETTE_NAME="FSL"                           
-* POS_MIN=4.00                                 
-* POS_MAX=96.00                                
-* NEG_MIN=2.00                                 
-* NEG_MAX=98.00                                
-* DISP_NEG=true                                
-* DISP_POS=true                                
-* DISP_ZERO=0                                  
-* THRESH_TYPE="THRESHOLD_TYPE_NORMAL"          
-* THRESH_TEST="THRESHOLD_TEST_SHOW_OUTSIDE"    
+    * PALETTE_MODE="MODE_AUTO_SCALE_PERCENTAGE"    
+    * PALETTE_NAME="FSL"                           
+    * POS_MIN=4.00                                 
+    * POS_MAX=96.00                                
+    * NEG_MIN=2.00                                 
+    * NEG_MAX=98.00                                
+    * DISP_NEG=true                                
+    * DISP_POS=true                                
+    * DISP_ZERO=0                                  
+    * THRESH_TYPE="THRESHOLD_TYPE_NORMAL"          
+    * THRESH_TEST="THRESHOLD_TEST_SHOW_OUTSIDE"    
 For fixed images, we use the following parameters:     
-* PALETTE_MODE="MODE_USER_SCALE"    
-* PALETTE_NAME="FSL"    
-* POS_MIN_USER=0.00    
-* NEG_MAX_USER=0.00    
-* DISP_NEG=true    
-* DISP_POS=true    
-* DISP_ZERO=0    
-* THRESH_TYPE="THRESHOLD_TYPE_NORMAL"    
-* THRESH_TEST="THRESHOLD_TEST_SHOW_OUTSIDE"    
+    * PALETTE_MODE="MODE_USER_SCALE"    
+    * PALETTE_NAME="FSL"    
+    * POS_MIN_USER=0.00    
+    * NEG_MAX_USER=0.00    
+    * DISP_NEG=true    
+    * DISP_POS=true    
+    * DISP_ZERO=0    
+    * THRESH_TYPE="THRESHOLD_TYPE_NORMAL"    
+    * THRESH_TEST="THRESHOLD_TEST_SHOW_OUTSIDE"    
 
 
 # Examples
