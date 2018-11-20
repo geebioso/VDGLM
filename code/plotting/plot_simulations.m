@@ -28,8 +28,10 @@ function [sims] = plot_simulations(whsims, isHPC, dotest, set_up_directory_struc
 %     '/Users/Garren/Dropbox/FMRI/PRojects/varianceGLM/code/plotting/plot_predicted_vs_actual_varmean_only.m'
 %     '/Users/Garren/Dropbox/FMRI/PRojects/varianceGLM/code/plotting/plot_spatial_visualization'
 
-
+addpath( fullfile( '..', 'utils'));
+addpath( fullfile( '..', 'batchmode'));
 addpath( fullfile(getenv('HOME'), 'Dropbox', 'MATLAButils'));
+
 
 % set up logger
 LOG = log4m.getLogger('crap.txt');

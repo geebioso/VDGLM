@@ -18,6 +18,8 @@ function [] = analyzedata_batch(whsim, dotest, isHPC, start_sub, end_sub, loggin
 % NOTE: running this on the HPC will change the input type to char, hence
 %   the following if statment that makes the requisite inputs numeric
 
+addpath('../utils'); 
+
 if ~isa(whsim, 'numeric')
     whsim = str2num(whsim);
     start_sub = str2num(start_sub);
@@ -35,6 +37,7 @@ LOG.setLogLevel(LOG.OFF);
 
 if ~isHPC
     addpath('..');
+    addpath(fullfile('..', 'utils'));
     addpath(fullfile(getenv('HOME'), 'Dropbox', 'MATLAButils'));
 end
 

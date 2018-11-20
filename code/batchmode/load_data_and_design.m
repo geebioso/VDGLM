@@ -1,9 +1,9 @@
- function [ dat ] = load_data_and_design( opts, dotest, LOG)
+function [ dat ] = load_data_and_design( opts, dotest, LOG)
 
 
- % 12/21/17 GG: changed individual design matrices to use a single design matrix 
- 
-%% Unpack Options 
+% 12/21/17 GG: changed individual design matrices to use a single design matrix
+
+%% Unpack Options
 
 whsim = opts.whsim;
 whs = opts.whs;
@@ -19,7 +19,7 @@ roifile = opts.roifile;
 designfile = opts.designfile;
 combdesignfile = opts.combdesignfile;
 runmodels = opts.runmodels;
-addmotion = opts.addmotion; 
+addmotion = opts.addmotion;
 
 %% Load the ROI timecourse data if not in memory already
 LOG.info('INFO', sprintf('Loading data: %s' , roifile ));
@@ -42,7 +42,7 @@ LOG.info('INFO', 'Converting data and transforming to z-scores' );
 
 if whs == 2 % then we are using HCP data and have run 1 and run 2 timecourses
     tc = tc(:,1);
-     motionX = motionX(:,1); 
+    motionX = motionX(:,1);
 end
 
 if whs==9
@@ -69,37 +69,43 @@ if Tremove>0
     T = size( tcn , 1 );
     
     for s = 1:NS
-       motionX{s}( 1:Tremove , :) = [];  
+        motionX{s}( 1:Tremove , :) = [];
     end
 end
 
 %% Split Motion and Scrubbing
+
+% The scrub values for subject s are contained in columns 7-12 of
+% motionX{s}. These were logical columns, but h ave since been normalized. 
+% Anything that was a 1 is now just larger than 0 
 if whs == 2
     tempX = cell(NS,1);
     scrubX = cell(NS,1);
     for s = 1:NS
-        if s == 11
-           x = 1;  
-        end
         tempX{s} = motionX{s}(:,1:6);
         if size(motionX{s},2) > 6
-            scrubX{s} = false(T,1); 
+            scrubX{s} = false(T,1);
             for c = 7:size(motionX{s}, 2)
-                temp = false(T,1); 
-                [~, ii] = max( motionX{s}(:,c) ); 
-               temp(ii) = true; 
-               scrubX{s} = or( scrubX{s}, temp); 
+                temp = false(T,1);
+                % the array is normalized logicals => anything above 0 was true
+                ii = motionX{s}(:,c) > 0;
+                temp(ii) = true;
+                
+                % if motion in any plane (any of columns 7-12) is above threshold then we
+                % scrub
+                scrubX{s} = or( scrubX{s}, temp);
             end
         else
-            scrubX{s} = false(T, 1); 
+            scrubX{s} = false(T, 1);
         end
     end
-    motionX = tempX; 
+    motionX = tempX;
 end
+
 %% Convert each ROI / Subject data to Z-scores
 stdnow = std( tcn , [] , 1 );
 stdnow( stdnow == 0 ) = 1;
-% rewrot:  tcn = ( tcn - mean( tcn , 1 )) ./ stdnow; to be compatible with 2016a for HPC
+% rewrote:  tcn = ( tcn - mean( tcn , 1 )) ./ stdnow; to be compatible with 2016a for HPC
 tcn = bsxfun( @rdivide, bsxfun( @minus, tcn, mean(tcn,1)), stdnow);
 
 
@@ -139,7 +145,7 @@ switch whs
         % load(designfile); % loads rst
         design_dat = load(combdesignfile); % loads combined design
         
-        rst = design_dat.rst; 
+        rst = design_dat.rst;
         design = [ ones(size(rst.mtx, 1), 1), rst.mtx];
         
         % compute temporal derivative for the fixation condition
@@ -192,21 +198,21 @@ if dotest
     tcn = tcn(:,1:NS, 1:R);
 end
 
-%% Load Into Data Structure 
-dat = struct(); 
-dat.tcn = tcn;  
-dat.design = design; 
-dat.designlabels = designlabels; 
-dat.T = T; 
-dat.NS = NS; 
-dat.R = R; 
-dat.subjs = subjs; 
+%% Load Into Data Structure
+dat = struct();
+dat.tcn = tcn;
+dat.design = design;
+dat.designlabels = designlabels;
+dat.T = T;
+dat.NS = NS;
+dat.R = R;
+dat.subjs = subjs;
 if addmotion
-    dat.motionX = motionX; 
-    dat.scrubX = scrubX; 
+    dat.motionX = motionX;
+    dat.scrubX = scrubX;
 else
-    dat.motionX = NaN;  
-    dat.scrubX = NaN; 
+    dat.motionX = NaN;
+    dat.scrubX = NaN;
 end
 
 

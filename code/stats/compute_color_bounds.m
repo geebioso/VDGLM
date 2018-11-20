@@ -18,7 +18,7 @@ addpath('/Users/Garren/Dropbox/FMRI/Projects/varianceGLM/ROI2NIfTI/dicm2nii');
 
 % Add simulation information 
 whsim = 26; 
-whmodel = 2; 
+whmodel = 1; 
 isHPC = 0; 
 dotstats = 0; % this will compute color bounds for tstats (if they have been computed) 
 
@@ -289,7 +289,7 @@ if dofixed
         figure(2); clf; imagesc([D.sim26.cohensd{idx}]); h = colorbar; colormap(map); title( strrep( contrast_now, '_', ' ') );
         delta = (posmax - negmin);
         h.Ticks = [negmin + 0.03*delta delta/2 + negmin posmax - 0.03*delta];
-        h.TickLabels = {num2str(round(negmin, 2)), '±0.2',  num2str(round(posmax, 2))};
+        h.TickLabels = {num2str(round(negmin, 2)), '±0.2',  num2str(max( round(posmax, 2), 0.21))};
         h.TickLength = 0;
         h.FontSize = 20;
         

@@ -2,13 +2,13 @@
 % This function will run things in parallel on a desktop. For when
 % the queue is terrible on the HPC.
 
-jobtype = 'null';    % 'null' or 'analyze': 'null' corresponds to the null hypothesis testing routine, 'analyze` omits the null hypothesis testing 
-whsim = 26;          % which simulation to run (see set_analysis_options_v2.m) 
+jobtype = 'analyze';    % 'null' or 'analyze': 'null' corresponds to the null hypothesis testing routine, 'analyze` omits the null hypothesis testing 
+whsim = 27;          % which simulation to run (see set_analysis_options_v2.m) 
 isHPC = 0;           % are we running analysis remotely or on the UCI HPC? 
-dotest = 1;          % are we running in test mode? NOTE: test mode only supports 5 subjects and 3 ROIs 
+dotest = 0;          % are we running in test mode? NOTE: test mode only supports 5 subjects and 3 ROIs 
 start_sub = 1;       % subject to start on  
 end_sub = 875;       % last subject to run (max of 875 for dotest=0, max of 5 for dotest =1)
-Nworkers = 8;        % number of parallel cores to use 
+Nworkers = min( 8, feature('numCores')); % number of parallel cores to use 
 logging = 'INFO';    % set logging console information (see log4 for MATLAB contained in utils) 
 logfile = 'test_log.txt'; % set log outfile, this is currently deprecated because i set file output to be off, but the options is required by log4
 subs = start_sub:end_sub;
