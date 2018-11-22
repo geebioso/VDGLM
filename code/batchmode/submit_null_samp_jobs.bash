@@ -21,7 +21,7 @@
 # 	$11: job submit script 
 
 # Example Usage 
-# source submit_all_jobs.bash 26 0 1 1 1 875 INFO log.txt 1 100 single_job_submit.bash
+# source submit_null_samp_jobs.bash 26 0 1 1 1 875 INFO log.txt 1 100 single_null_samp_job_submit.bash
 
 
 ##############################################################################
