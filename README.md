@@ -467,9 +467,34 @@ source code/batchmode/send_data_to_HPC.bash
 
 ### Compiling on the HPC
 
+<!-- mcc -m analyzedata_batch.m -I /data/users/ggaut/VDGLM -->
+First you will have to compile the mex function for the toeplitz solver: 
+
 ```
-module load MATALB/r2018a
-mcc -m analyzedata_batch.m -I /data/users/ggaut/VDGLM
+cd code/utils
+module load MATLAB/r2017b
+matlab 
+
+mex toepsolve.c
+exit
+```
+
+Then, because MATLAB no longer supports mex files in their compiled applications, 
+you must hide the function `toepsolve.m` from out compilation path. 
+
+```
+cd ../../
+mkdir mex 
+
+mv code/utils/toepsolve.m mex/ 
+```
+
+Then we are ready to compile our mex applicaitons: 
+
+```
+mcc -m analyzedata_batch.m -I /data/users/ggaut/VDGLM/code/batchmode -I /data/users/ggaut/VDGLM/code/utils -I /data/users/ggaut/VDGLM/code/optimization
+
+mcc -m null_sample_hypothesis_test.m -I /data/users/ggaut/VDGLM/code/batchmode -I /data/users/ggaut/VDGLM/code/utils -I /data/users/ggaut/VDGLM/code/optimization
 ```
 
 ### Submitting Jobs
