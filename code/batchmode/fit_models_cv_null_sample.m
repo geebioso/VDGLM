@@ -73,6 +73,9 @@ if prewhiten
         badchol = 0;
     end
     
+else
+   badchol = 0;  
+   Winv = eye(length(Y)); 
 end
 
 % solve the non-prewhitened GLM

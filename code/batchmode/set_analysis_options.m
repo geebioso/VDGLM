@@ -94,7 +94,7 @@ elseif (whsim==27)
     K       = 10; % Number of folds in CV; K=0 do not CV
     seed    = 1;
     Tremove = 10; % How many time steps to remove from data?
-    doconstrained = false; % 1 = Use fmincon; 0 = fminunc
+    doconstrained = true; % 1 = Use fmincon; 0 = fminunc
     
     prewhiten = false;
     var_log_transform = false;

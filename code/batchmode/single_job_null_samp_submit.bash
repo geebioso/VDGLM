@@ -10,6 +10,6 @@
 module load MATLAB/r2017b
 
 # ./analyzedata_batch $whsim $dotest $isHPC $start_subj $end_subj 
-./null_sample_hypothesis_teest $whsim $dotest $isHPC $start_subj $end_subj $logging $logfile $set_up_directory_structure $Nsamp
+./null_sample_hypothesis_test $whsim $dotest $isHPC $start_subj $end_subj $logging $logfile $set_up_directory_structure $Nsamp
 
 module unload MATLAB/r2017b

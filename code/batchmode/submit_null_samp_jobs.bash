@@ -38,7 +38,7 @@ do
     END_SUBJ=$(($i + $5 -1))
 
     # compute the file suffix indicating subject for the job 
-    SUFFIX=whs_${1}_${i}_${END_SUBJ}_test${2}
+    SUFFIX=n_whs_${1}_${i}_${END_SUBJ}_test${2}
 
     # submit job 
     qsub -v whsim=$1,dotest=$2,isHPC=$3,start_subj=$i,end_subj=$END_SUBJ,logging=$7,logfile=$8,set_up_directory_structure=$9,Nsamp=${10} \
