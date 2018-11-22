@@ -102,13 +102,14 @@ if whs == 2
     motionX = tempX;
 end
 
-%% Convert each ROI / Subject data to Z-scores
-stdnow = std( tcn , [] , 1 );
-stdnow( stdnow == 0 ) = 1;
-% rewrote:  tcn = ( tcn - mean( tcn , 1 )) ./ stdnow; to be compatible with 2016a for HPC
-tcn = bsxfun( @rdivide, bsxfun( @minus, tcn, mean(tcn,1)), stdnow);
+% %% Convert each ROI / Subject data to Z-scores
+% stdnow = std( tcn , [] , 1 );
+% stdnow( stdnow == 0 ) = 1;
+% % rewrote:  tcn = ( tcn - mean( tcn , 1 )) ./ stdnow; to be compatible with 2016a for HPC
+% tcn = bsxfun( @rdivide, bsxfun( @minus, tcn, mean(tcn,1)), stdnow);
 
-
+%% Just Mean-center the data 
+tcn = bsxfun( @minus, tcn, mean(tcn,1)); 
 
 %% Create the convolved design
 LOG.info('INFO', 'Creating convolved design matrix for all experimental variables' );

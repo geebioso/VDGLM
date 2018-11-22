@@ -449,29 +449,29 @@ and nii
 Most of these are excluded from the git repo to keep the size of the repo 
 maneageable. You will need to make stand in directories for some of the 
 output to save. `Results` and `images` and their subdirectories will need to 
-exist for functions to run.  
+exist for functions to run.   
 
-<!-- 
-# Running on the HPC
 
-## Sending Code and Data to HPC
+## Running on the HPC
+
+### Sending Code and Data to HPC
 
 To send code and the requisite data to the HPC, open up a terminal and type
 the following commands:
 
 ```
-source toHPC.bash
-source send_data_to_HPC.bash
+source code/HPC_scripts/toHPC.bash
+source code/HPC_scripts/send_data_to_HPC.bash
 ```
 
-## Compiling on the HPC
+### Compiling on the HPC
 
 ```
-module load MATALB/r2017b
+module load MATALB/r2018a
 mcc -m analyzedata_batch.m -I /data/users/ggaut/VDGLM
 ```
 
-## Submitting Jobs
+### Submitting Jobs
 
 The main functions for submitting jobs on the HPC are `submit_all_jobs.bash`
 and `single_job_submit.bash`. To submit jobs, cd to the directory `/data/users/ggaut/VDGLM`
@@ -492,7 +492,7 @@ are:
 * logfile: where to save log. is deprecated since I turned logging to file off
 in the code
 
-## HPC Results
+### HPC Results
 
 The HPC Results directory is contained in `/pub/ggaut/VDGLM`. The Results
 structure will be the same as the directory structure on my local machine.
@@ -521,8 +521,5 @@ The function `combine_results.m` will combine all results from the directory
 `Results\batch_analyses\single_jobs` into single files and store them in
 `Results\batch_analyses\combined`.
 
-## To-do
-
-1) Use job arrays rather than for-loop for submitting multiple jobs
-
--->
+`behav_Result_WM_LR.mat` contains the uncombined design (10 conditions) and
+`behav_Result_WM_LR_comb.mat` contains the combined design (4 conditions).

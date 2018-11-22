@@ -46,6 +46,7 @@ function [ paramsnow, ismotionparam, bicnow, lloutofsample, predm, predv, badcho
 %   bool badchol: was there a problem with solving the root of the
 %       autocovariance matrix during prewhitening?
 
+addpath(fullfile('..', 'optimization')); 
 LOG.debug('DEBUG', sprintf('fitting subject %d, region %d', i, j));
 T = size(Y,1);
 M = length(models);

@@ -34,6 +34,7 @@ if ~(poolsize == Nworkers)
 end
 
 %% Run Jobs
+tic; 
 parfor i = 1:length(subs)
     subnow = subs(i);
     
@@ -45,3 +46,4 @@ parfor i = 1:length(subs)
     end
     
 end
+toc; 
