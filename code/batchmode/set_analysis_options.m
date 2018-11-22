@@ -179,8 +179,8 @@ if isHPC
     roifile =  '/pub/ggaut/HCP/tc_WM_875subj.mat';
     
     % design files
-    designfile =  '/pub/ggaut/HCP/behav_Result_WM_LR.mat';
-    combdesignfile =  '/pub/ggaut/HCP/behav_Result_WM_LR_comb.mat';
+    designfile =  '/pub/ggaut/HCP/design_WM_LR.mat';
+    combdesignfile =  '/pub/ggaut/HCP/combdesign_WM_LR.mat';
 else
     % osu
     roifile = fullfile(getenv('HOME'), 'Dropbox','FMRI', 'restingstatedata',...

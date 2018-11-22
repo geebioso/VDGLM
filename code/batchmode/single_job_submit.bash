@@ -10,6 +10,6 @@
 module load MATLAB/r2017b
 
 # ./analyzedata_batch $whsim $dotest $isHPC $start_subj $end_subj 
-./analyzedata_batch_v2 $whsim $dotest $isHPC $start_subj $end_subj $logging $logfile
+./analyzedata_batch $whsim $dotest $isHPC $start_subj $end_subj $logging $logfile
 
 module unload MATLAB/r2017b

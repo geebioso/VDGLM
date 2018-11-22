@@ -58,6 +58,10 @@ predm = cell(M,1);
 predv = cell(M,1); 
 ismotionparam = cell(M,1); 
 
+if ~isdeployed
+    addpath(fullfile('..', 'optimization')); 
+end
+
 %% Find model dependencies
 model_pairs = [];
 for m = 1:M

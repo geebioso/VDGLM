@@ -18,7 +18,15 @@ function [] = analyzedata_batch(whsim, dotest, isHPC, start_sub, end_sub, loggin
 % NOTE: running this on the HPC will change the input type to char, hence
 %   the following if statment that makes the requisite inputs numeric
 
-addpath('../utils'); 
+if ~isdeployed
+   addpath('../utils'); 
+end
+
+if ~isHPC
+    addpath('..');
+    addpath(fullfile('..', 'utils'));
+    addpath(fullfile(getenv('HOME'), 'Dropbox', 'MATLAButils'));
+end
 
 if ~isa(whsim, 'numeric')
     whsim = str2num(whsim);
@@ -34,12 +42,6 @@ end
 LOG = log4m.getLogger(logfile);
 LOG.setCommandWindowLevel(LOG.(logging));
 LOG.setLogLevel(LOG.OFF);
-
-if ~isHPC
-    addpath('..');
-    addpath(fullfile('..', 'utils'));
-    addpath(fullfile(getenv('HOME'), 'Dropbox', 'MATLAButils'));
-end
 
 if start_sub > end_sub
     LOG.error('ERROR', 'subject order is reversed');

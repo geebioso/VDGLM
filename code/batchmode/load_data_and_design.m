@@ -38,7 +38,7 @@ NS  = size( tc , 1 );     % number of subjects
 R   = size( tc{1} , 2 );  % number of ROIs
 
 %% Convert time-course data to array
-LOG.info('INFO', 'Converting data and transforming to z-scores' );
+LOG.info('INFO', 'Converting data and normalizing by global mean' );
 
 if whs == 2 % then we are using HCP data and have run 1 and run 2 timecourses
     tc = tc(:,1);

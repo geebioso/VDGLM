@@ -15,13 +15,20 @@ wd = pwd;
 
 if isHPC
     results_directory = '/pub/ggaut/VDGLM/Results';
+    images_directory = '/pub/ggaut/VDGLM/images';
+    ROI2NIfTI_directory = '/data/users/ggaut/VDGLM/ROI2NIfTI';
+    
+    mkdir('/data/users/ggaut/VDGLM/code/batchmode/output_log')
+    mkdir('/data/users/ggaut/VDGLM/code/batchmode/error_log')
 else
     results_directory = fullfile( getenv('HOME'), 'Dropbox', 'FMRI', 'Projects',...
         'varianceGLM', 'Results');
     images_directory = fullfile( getenv('HOME'), 'Dropbox', 'FMRI', 'Projects',...
         'varianceGLM', 'images');
     ROI2NIfTI_directory = fullfile( wd, '..', '..', 'ROI2NIfTI');
-    
+end
+
+if ~isdeployed
     addpath( ROI2NIfTI_directory );
     addpath( fullfile( ROI2NIfTI_directory, 'dicm2nii') );
 end

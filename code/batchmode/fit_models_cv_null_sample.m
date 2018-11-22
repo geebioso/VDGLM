@@ -57,6 +57,10 @@ T = size(Y,1);
 M = length(models);
 K = length(whtrain_sets) - 1; % the last fold is all data
 
+if ~isdeployed
+    addpath(fullfile('..', 'optimization')); 
+end
+
 %% Estimate the Whitening Matrix 
 if prewhiten
     [ ~, ~, ~, ~, W, badchol, df ] = solve_glm( Xm, Y, prewhiten, TukN);
