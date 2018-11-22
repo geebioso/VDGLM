@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 # send main functions to the HPC 
-scp analyzedata_batch_v2.m ggaut@hpc.oit.uci.edu:/data/users/ggaut/VDGLM/analyzedata_batch_v2.m
+scp analyzedata_batch.m ggaut@hpc.oit.uci.edu:/data/users/ggaut/VDGLM/analyzedata_batch.m
 scp null_sample_hypothesis_test.m ggaut@hpc.oit.uci.edu:/data/users/ggaut/VDGLM/null_sample_hypothesis_test.m
 scp solve_glm.m ggaut@hpc.oit.uci.edu:/data/users/ggaut/VDGLM/solve_glm.m
 scp fit_models_cv.m ggaut@hpc.oit.uci.edu:/data/users/ggaut/VDGLM/fit_models_cv.m
@@ -10,7 +10,7 @@ scp combine_results.m ggaut@hpc.oit.uci.edu:/data/users/ggaut/VDGLM/combine_resu
 scp combine_results_null_sample_hypothesis_test.m ggaut@hpc.oit.uci.edu:/data/users/ggaut/VDGLM/combine_results_null_sample_hypothesis_test.m
 scp find_jobs_to_run.m ggaut@hpc.oit.uci.edu:/data/users/ggaut/VDGLM/find_jobs_to_run.m
 scp load_data_and_design.m ggaut@hpc.oit.uci.edu:/data/users/ggaut/VDGLM/load_data_and_design.m
-scp set_analysis_options_v2.m ggaut@hpc.oit.uci.edu:/data/users/ggaut/VDGLM/set_analysis_options_v2.m
+scp set_analysis_options.m ggaut@hpc.oit.uci.edu:/data/users/ggaut/VDGLM/set_analysis_options.m
 
 # optimization functions 
 cd ../optimization 
@@ -20,7 +20,7 @@ scp loglik_varmean_matrix_logtransform.m ggaut@hpc.oit.uci.edu:/data/users/ggaut
 scp varconstraint2.m ggaut@hpc.oit.uci.edu:/data/users/ggaut/VDGLM/varconstraint2.m
 
 # fmri utility functions
-cd ../Utils
+cd ../utils
 scp autocorr_woolrich.m ggaut@hpc.oit.uci.edu:/data/users/ggaut/VDGLM/autocorr_woolrich.m
 scp spm_Gpdf.m ggaut@hpc.oit.uci.edu:/data/users/ggaut/VDGLM/spm_Gpdf.m
 scp spm_hrf.m ggaut@hpc.oit.uci.edu:/data/users/ggaut/VDGLM/spm_hrf.m

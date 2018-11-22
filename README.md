@@ -456,12 +456,13 @@ exist for functions to run.
 
 ### Sending Code and Data to HPC
 
-To send code and the requisite data to the HPC, open up a terminal and type
+The code can be downloaded to the HPC by cloning this git repo. 
+Then send the data to the HPC as follows: 
+
 the following commands:
 
 ```
-source code/HPC_scripts/toHPC.bash
-source code/HPC_scripts/send_data_to_HPC.bash
+source code/batchmode/send_data_to_HPC.bash
 ```
 
 ### Compiling on the HPC
@@ -473,9 +474,10 @@ mcc -m analyzedata_batch.m -I /data/users/ggaut/VDGLM
 
 ### Submitting Jobs
 
-The main functions for submitting jobs on the HPC are `submit_all_jobs.bash`
-and `single_job_submit.bash`. To submit jobs, cd to the directory `/data/users/ggaut/VDGLM`
-and type the command:
+The main functions for submitting jobs on the HPC are 
+`code/HPC_scripts/submit_all_jobs.bash` and 
+`code/HPC_scripts/single_job_submit.bash`. To submit jobs, cd to the directory 
+`/data/users/ggaut/VDGLM/code/batchmode` and type the command:
 
 ```
 source submit_all_jobs.bash [whsim] [dotest] [isHPC] [start_sub] [increment] [end_sub] [loglevel] [logfile] single_job_submit.bash
