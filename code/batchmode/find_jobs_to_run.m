@@ -1,4 +1,4 @@
-function [subjs_run, subjs_to_run] = find_jobs_to_run(whsim, isHPC, dotest)
+function [subjs_run, subjs_to_run] = find_jobs_to_run(whsim, isHPC, dotest, job_type)
 
 if isHPC
     results_directory = '/pub/ggaut/VDGLM/Results';
@@ -7,7 +7,11 @@ else
         'varianceGLM', 'Results');
 end
 
-input_directory = fullfile( results_directory, 'batch_analyses', 'single_jobs');
+if job_type == 'analyze'
+    input_directory = fullfile( results_directory, 'batch_analyses', 'single_jobs');
+else
+    input_directory = fullfile( results_directory, 'batch_analyses', 'null_single_jobs');
+end
 if dotest
     input_directory = [input_directory '_test'];
 end

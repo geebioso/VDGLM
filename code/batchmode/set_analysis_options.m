@@ -182,13 +182,13 @@ if isHPC
     designfile =  '/pub/ggaut/HCP/design_WM_LR.mat';
     combdesignfile =  '/pub/ggaut/HCP/combdesign_WM_LR.mat';
 else
-    % osu
-    roifile = fullfile(getenv('HOME'), 'Dropbox','FMRI', 'restingstatedata',...
-        'tc_motion_CSF_WM_out_WorkingMem177.mat');
-    designfile = fullfile(getenv('HOME'), 'Dropbox','FMRI', 'Projects', ...
-        'varianceGLM', 'onsetfiles','WorkingMem_mtx_3column_filter90s.mat');
-    combdesignfile = '';
-    
+%     % osu
+%     roifile = fullfile(getenv('HOME'), 'Dropbox','FMRI', 'restingstatedata',...
+%         'tc_motion_CSF_WM_out_WorkingMem177.mat');
+%     designfile = fullfile(getenv('HOME'), 'Dropbox','FMRI', 'Projects', ...
+%         'varianceGLM', 'onsetfiles','WorkingMem_mtx_3column_filter90s.mat');
+%     combdesignfile = '';
+%     
     % hcp
     if whs==2
         roifile =  fullfile(getenv('HOME'), 'Dropbox','FMRI', ...
